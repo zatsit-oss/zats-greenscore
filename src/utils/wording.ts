@@ -1,7 +1,7 @@
 import NotFoundComponent from '@/components/errors/NotFoundComponent.vue'
 
 export const WORDING = {
-  website: 'Zats-greenscore',
+  website: 'zats-greenscore',
   titleFlow: 'zats-greenscore',
   logoutAction: 'Logout',
   saveAction: 'Save',

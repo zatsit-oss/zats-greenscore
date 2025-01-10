@@ -1,6 +1,6 @@
 <img width="892" alt="Screenshot 2025-01-09 at 10 28 34" src="https://github.com/user-attachments/assets/d66981bd-4d58-4e9b-9727-8af93c743496" />
 
-# Zats-greenscore
+# zats-greenscore
 
 The tool give you a rank (A,B,C,D,E) of you environmental impact following 4 categories: 
 * Architecture
