@@ -30,7 +30,7 @@ const getResult = () => {
     if (response) {
       projectResult.value = response
     } else {
-      router.push(PATH.flow)
+      router.push(PATH.home)
     }
   }
 }
@@ -45,7 +45,7 @@ onMounted(() => {
     getData()
     getResult()
   } else {
-    router.push(PATH.flow)
+    router.push(PATH.home)
   }
 })
 </script>
