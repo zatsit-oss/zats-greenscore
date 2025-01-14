@@ -8,14 +8,17 @@ import { PATH } from '@/utils/path'
 import { WORDING } from '@/utils/wording'
 import { CContainer } from '@coreui/vue'
 import { DateTime } from 'luxon'
-import { onMounted, ref } from 'vue'
+import { inject, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import RankPanel from './RankPanel.vue'
+import { type ToastProvid } from '@/components/CoreUiToast.vue'
+import { ToastType } from '@/type/toast.type'
 
 const router = useRouter()
 const route = useRoute()
 const currentProjectUuid = ref<null | string>(null)
 const dataSurvey = ref<DataSurvey[]>([])
+const toaster = inject<ToastProvid>("toaster")
 
 const projectResult = ref<null | ProjectResult>(null)
 
@@ -30,6 +33,9 @@ const getResult = () => {
     if (response) {
       projectResult.value = response
     } else {
+      if (toaster) {
+        toaster.showMessage({ message: "The project doesn't exist", type: ToastType.ERROR })
+      }
       router.push(PATH.home)
     }
   }
@@ -45,6 +51,9 @@ onMounted(() => {
     getData()
     getResult()
   } else {
+    if (toaster) {
+      toaster.showMessage({ message: "The project doesn't exist", type: ToastType.ERROR })
+    }
     router.push(PATH.home)
   }
 })

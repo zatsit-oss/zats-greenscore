@@ -1,24 +1,19 @@
 <template>
-  <CoreUiToast ref="toastContainer" />
   <slot />
 </template>
 
 <script lang="ts" setup>
-import { ref, onErrorCaptured } from 'vue';
-import CoreUiToast from '../CoreUiToast.vue';
+import { ToastType } from '@/type/toast.type';
+import { inject, onErrorCaptured } from 'vue';
+import type { ToastProvid } from '../CoreUiToast.vue';
 
-const toastContainer = ref<InstanceType<typeof CoreUiToast> | null>(null);
+const toaster = inject<ToastProvid>("toaster")
 
 onErrorCaptured((err) => {
-  showToast(err.message || 'Une erreur est survenue', 'error');
-  return false; // Empêche l'erreur de se propager plus loin
+  if (toaster) {
+    toaster.showMessage({ message: err.message || 'Une erreur est survenue', type: ToastType.ERROR });
+    return false; // Empêche l'erreur de se propager plus loin
+  }
 });
 
-const showToast = (message: string, type: 'success' | 'error' | 'info' | 'warning') => {
-  toastContainer.value?.addToast({
-    message,
-    type,
-    duration: 5000,
-  });
-};
 </script>

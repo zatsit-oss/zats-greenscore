@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { onBeforeMount } from 'vue'
-import { useColorModes } from '@coreui/vue'
-
-import { useThemeStore } from '@/stores/theme'
-import GlobalErrorHandler from './components/errors/GlobalErrorHandler.vue';
+import { useThemeStore } from '@/stores/theme';
+import { useColorModes } from '@coreui/vue';
+import { onBeforeMount } from 'vue';
+// import GlobalErrorHandler from './components/errors/GlobalErrorHandler.vue';
+import CoreUiToast from "./components/CoreUiToast.vue";
 const { isColorModeSet, setColorMode } = useColorModes(
   'zatsit-template-theme',
 )
@@ -33,9 +33,11 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <GlobalErrorHandler>
-    <router-view />
-  </GlobalErrorHandler>
+  <CoreUiToast>
+    <GlobalErrorHandler>
+      <router-view />
+    </GlobalErrorHandler>
+  </CoreUiToast>
 </template>
 
 <style lang="scss">
