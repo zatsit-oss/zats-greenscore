@@ -13,6 +13,7 @@ import { useRoute, useRouter } from 'vue-router'
 import RankPanel from './RankPanel.vue'
 import { type ToastProvid } from '@/components/CoreUiToast.vue'
 import { ToastType } from '@/type/toast.type'
+import { ERROR_MESSAGE } from '@/utils/errorHandler'
 
 const router = useRouter()
 const route = useRoute()
@@ -34,7 +35,7 @@ const getResult = () => {
       projectResult.value = response
     } else {
       if (toaster) {
-        toaster.showMessage({ message: "The project doesn't exist", type: ToastType.ERROR })
+        toaster.showMessage({ message: ERROR_MESSAGE.project, type: ToastType.ERROR })
       }
       router.push(PATH.home)
     }
@@ -52,7 +53,7 @@ onMounted(() => {
     getResult()
   } else {
     if (toaster) {
-      toaster.showMessage({ message: "The project doesn't exist", type: ToastType.ERROR })
+      toaster.showMessage({ message: ERROR_MESSAGE.project, type: ToastType.ERROR })
     }
     router.push(PATH.home)
   }

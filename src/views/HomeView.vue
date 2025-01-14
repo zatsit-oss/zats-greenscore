@@ -5,7 +5,7 @@ import type { ProjectsResults } from '@/type/result.type'
 import { PATH } from '@/utils/path'
 import { WORDING } from '@/utils/wording'
 import { DateTime } from 'luxon'
-import { computed, inject, onMounted, ref, } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import CardComponent from './Home/CardComponent.vue'
 
