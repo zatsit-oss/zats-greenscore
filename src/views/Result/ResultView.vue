@@ -78,9 +78,7 @@ onMounted(() => {
         <CCardBody>
           <CRow class="d-flex">
             <CCol :lg="6" :xs="6">
-              <h4>
-                <h4><u>{{ WORDING.finalStep.scoreTitle }}</u>:</h4>
-              </h4>
+              <h4><u>{{ WORDING.finalStep.scoreTitle }}</u>:</h4>
             </CCol>
             <RankPanel v-if="projectResult" :value="projectResult?.result.rank" />
           </CRow>
