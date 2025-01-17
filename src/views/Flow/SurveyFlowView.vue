@@ -36,7 +36,9 @@ const getData = () => {
   if (draftUserSurvey?.project.status === ProjectStatus.DRAFT && draftUserSurvey.flowData.id && responseDataSurvey) {
     const value = buildDataFlowWithDraftUserSurvey(draftUserSurvey?.flowData.steps, responseDataSurvey)
     dataSurvey.value = value
-    currentStep.value = draftUserSurvey.flowData.steps.length - 1
+    if (draftUserSurvey.flowData.steps.length > 0) {
+      currentStep.value = draftUserSurvey.flowData.steps.length - 1
+    }
   }
   if (!draftUserSurvey.flowData.id && responseDataSurvey) {
     const draft = {
