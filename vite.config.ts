@@ -6,8 +6,23 @@ import { defineConfig } from 'vite'
 import VueDevTools from 'vite-plugin-vue-devtools'
 
 export default defineConfig({
-  plugins: [vue(), vueJsx(), VueDevTools()],
-  base: './',
+  plugins: [
+    vue(),
+    vueJsx(),
+    VueDevTools(),
+    {
+      name: 'spa-fallback',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url && !req.url.includes('.') && !req.url.startsWith('/api')) {
+            req.url = '/index.html' // Redirect all SPA routes to `index.html`
+          }
+          next()
+        })
+      }
+    }
+  ],
+  base: '/',
   css: {
     postcss: {
       plugins: [
@@ -27,9 +42,6 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3000,
-    proxy: {
-      // https://vitejs.dev/config/server-options.html
-    }
+    port: 3000
   }
 })
