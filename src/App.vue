@@ -2,7 +2,6 @@
 import { useThemeStore } from '@/stores/theme';
 import { useColorModes } from '@coreui/vue';
 import { onBeforeMount } from 'vue';
-// import GlobalErrorHandler from './components/errors/GlobalErrorHandler.vue';
 import CoreUiToast from "./components/CoreUiToast.vue";
 const { isColorModeSet, setColorMode } = useColorModes(
   'zatsit-template-theme',
