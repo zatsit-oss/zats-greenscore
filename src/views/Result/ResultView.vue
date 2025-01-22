@@ -8,14 +8,18 @@ import { PATH } from '@/utils/path'
 import { WORDING } from '@/utils/wording'
 import { CContainer } from '@coreui/vue'
 import { DateTime } from 'luxon'
-import { onMounted, ref } from 'vue'
+import { inject, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import RankPanel from './RankPanel.vue'
+import { type ToastProvid } from '@/components/CoreUiToast.vue'
+import { ToastType } from '@/type/toast.type'
+import { ERROR_MESSAGE } from '@/utils/errorHandler'
 
 const router = useRouter()
 const route = useRoute()
 const currentProjectUuid = ref<null | string>(null)
 const dataSurvey = ref<DataSurvey[]>([])
+const toaster = inject<ToastProvid>("toaster")
 
 const projectResult = ref<null | ProjectResult>(null)
 
@@ -30,7 +34,10 @@ const getResult = () => {
     if (response) {
       projectResult.value = response
     } else {
-      router.push(PATH.flow)
+      if (toaster) {
+        toaster.showMessage({ message: ERROR_MESSAGE.project, type: ToastType.ERROR })
+      }
+      router.push(PATH.home)
     }
   }
 }
@@ -45,7 +52,10 @@ onMounted(() => {
     getData()
     getResult()
   } else {
-    router.push(PATH.flow)
+    if (toaster) {
+      toaster.showMessage({ message: ERROR_MESSAGE.project, type: ToastType.ERROR })
+    }
+    router.push(PATH.home)
   }
 })
 </script>
@@ -68,9 +78,7 @@ onMounted(() => {
         <CCardBody>
           <CRow class="d-flex">
             <CCol :lg="6" :xs="6">
-              <h4>
-                <h4><u>{{ WORDING.finalStep.scoreTitle }}</u>:</h4>
-              </h4>
+              <h4><u>{{ WORDING.finalStep.scoreTitle }}</u>:</h4>
             </CCol>
             <RankPanel v-if="projectResult" :value="projectResult?.result.rank" />
           </CRow>

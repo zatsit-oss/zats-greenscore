@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getProjectsResult } from '@/controllers/userSurvey/userSurveyHome'
+import { deleteProjectResult } from '@/controllers/userSurvey/userSurveyResults'
 import type { ProjectsResults } from '@/type/result.type'
 import { PATH } from '@/utils/path'
 import { WORDING } from '@/utils/wording'
@@ -7,7 +8,7 @@ import { DateTime } from 'luxon'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import CardComponent from './Home/CardComponent.vue'
-import { deleteProjectResult } from '@/controllers/userSurvey/userSurveyResults'
+
 const router = useRouter()
 const results = ref<null | ProjectsResults>(null)
 

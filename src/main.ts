@@ -1,14 +1,14 @@
-import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import { createApp } from 'vue'
 
 import App from './App.vue'
 
-import CoreuiVue from '@coreui/vue'
-import CIcon from '@coreui/icons-vue'
 import { iconsSet as icons } from '@/assets/icons'
-import router from './router'
+import CIcon from '@coreui/icons-vue'
+import CoreuiVue from '@coreui/vue'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import validateDigits from './directives/validateDigits'
+import router from './router'
 
 const app = createApp(App)
 const pinia = createPinia()
