@@ -1,5 +1,5 @@
-import { useFlowStore } from '@/stores/flow'
-import { useResultsStore } from '@/stores/results'
+import { useFlowStore } from '@/modules/rank/infrastructure/controllers/stores/flow'
+import { useResultsStore } from '@/modules/rank/infrastructure/controllers/stores/results'
 
 function getProjectsResultFromStore() {
   return useResultsStore().get

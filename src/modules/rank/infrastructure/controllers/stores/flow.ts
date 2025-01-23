@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { FlowData, Step } from '../type/flow.type'
+import type { FlowData, Step } from '../../../../../type/flow.type'
 import type { ProjectType } from '@/type/project.type'
 
 export const useFlowStore = defineStore('flow', {

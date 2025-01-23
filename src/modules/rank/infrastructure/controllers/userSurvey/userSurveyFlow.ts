@@ -1,17 +1,11 @@
-import { useFlowStore } from '@/stores/flow'
+import type { UserSurveyOutput } from '@/modules/rank/domain/userSurveyFlow.output'
+import { useFlowStore } from '@/modules/rank/infrastructure/controllers/stores/flow'
 
-function getDraftProjectsFromStore() {
-  return useFlowStore().get
-}
-
-function deleteUserSurveyFlowDataFromStore() {
-  useFlowStore().reset()
-}
-
-export function getUserSurveyDraft() {
-  return getDraftProjectsFromStore()
-}
-
-export function deleteUserSurveyFlowData() {
-  deleteUserSurveyFlowDataFromStore()
+export class UserSurveyFlowStore implements UserSurveyOutput {
+  getDraftProjectsFromStore() {
+    return useFlowStore().get
+  }
+  deleteUserSurveyFlowDataFromStore() {
+    useFlowStore().reset()
+  }
 }

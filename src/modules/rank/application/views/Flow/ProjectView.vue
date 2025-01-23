@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useFlowStore } from '@/stores/flow'
+import { useFlowStore } from '@/modules/rank/infrastructure/controllers/stores/flow'
 import { ProjectStatus } from '@/type/project.type'
 import { WORDING } from '@/utils/wording'
 import { v4 as uuidv4 } from 'uuid'
