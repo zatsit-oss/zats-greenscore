@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import ProjectView from './ProjectView.vue'
 import SurveyFlowView from './SurveyFlowView.vue'
-import { getUserSurveyDraft } from '@/controllers/userSurvey/userSurveyFlow';
+import { getUserSurveyDraft } from '@/modules/rank/infrastructure/controllers/userSurvey/userSurveyFlow';
 import { ProjectStatus } from '@/type/project.type';
 
 const SURVEY_FLOW = 'survey'

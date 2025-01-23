@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { getProjectsResult } from '@/controllers/userSurvey/userSurveyHome'
-import { deleteProjectResult } from '@/controllers/userSurvey/userSurveyResults'
+import { getProjectsResult } from '@/modules/rank/infrastructure/controllers/userSurvey/userSurveyHome'
+import { deleteProjectResult } from '@/modules/rank/infrastructure/controllers/userSurvey/userSurveyResults'
 import type { ProjectsResults } from '@/type/result.type'
 import { PATH } from '@/utils/path'
 import { WORDING } from '@/utils/wording'
