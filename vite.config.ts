@@ -14,7 +14,12 @@ export default defineConfig({
       name: 'spa-fallback',
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
-          if (req.url && !req.url.includes('.') && !req.url.startsWith('/api')) {
+          if (
+            server.config.env.PROD &&
+            req.url &&
+            !req.url.includes('.') &&
+            !req.url.startsWith('/api')
+          ) {
             req.url = '/index.html' // Redirect all SPA routes to `index.html`
           }
           next()
