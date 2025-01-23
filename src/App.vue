@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useThemeStore } from '@/stores/theme';
+import { useThemeStore } from '@/modules/rank/infrastructure/controllers/stores/theme';
 import { useColorModes } from '@coreui/vue';
 import { onBeforeMount } from 'vue';
 import CoreUiToast from "./components/CoreUiToast.vue";

@@ -2,7 +2,7 @@
 import { getDataSurvey } from '@/modules/rank/infrastructure/controllers/dataSurvey/dataSurvey'
 import { deleteUserSurveyFlowData, getUserSurveyDraft } from '@/modules/rank/infrastructure/controllers/userSurvey/userSurveyFlow'
 import { saveUserSurveyResult } from '@/modules/rank/infrastructure/controllers/userSurvey/userSurveyResults'
-import { useFlowStore } from '@/stores/flow'
+import { useFlowStore } from '@/modules/rank/infrastructure/controllers/stores/flow'
 import type { DataSurvey } from '@/type/dataStepSurvey.type'
 import { ProjectStatus } from '@/type/project.type'
 import { getRankingScore } from '@/utils/greenscore'
