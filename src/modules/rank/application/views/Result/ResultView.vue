@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { getDataSurvey } from '@/controllers/dataSurvey/dataSurvey'
-import { getCurrentProjectResult } from '@/controllers/userSurvey/userSurveyResults'
+import { getDataSurvey } from '@/modules/rank/infrastructure/controllers/dataSurvey/dataSurvey'
+import { getCurrentProjectResult } from '@/modules/rank/infrastructure/controllers/userSurvey/userSurveyResults'
 import type { DataSurvey } from '@/type/dataStepSurvey.type'
 import type { ProjectResult } from '@/type/result.type'
 import { getIconResult } from '@/utils/iconResult'

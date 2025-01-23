@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { getDataSurvey } from '@/controllers/dataSurvey/dataSurvey'
-import { deleteUserSurveyFlowData, getUserSurveyDraft } from '@/controllers/userSurvey/userSurveyFlow'
-import { saveUserSurveyResult } from '@/controllers/userSurvey/userSurveyResults'
+import { getDataSurvey } from '@/modules/rank/infrastructure/controllers/dataSurvey/dataSurvey'
+import { deleteUserSurveyFlowData, getUserSurveyDraft } from '@/modules/rank/infrastructure/controllers/userSurvey/userSurveyFlow'
+import { saveUserSurveyResult } from '@/modules/rank/infrastructure/controllers/userSurvey/userSurveyResults'
 import { useFlowStore } from '@/stores/flow'
 import type { DataSurvey } from '@/type/dataStepSurvey.type'
 import { ProjectStatus } from '@/type/project.type'
