@@ -1,37 +1,27 @@
-export interface Project {
-  id: string
+import type { ProjectType } from '@/type/project.type'
+
+type ResultRules = {
+  id: number
+  ruleId: string
+  value: number | boolean | null
+}
+
+type ResultSteps = {
+  rules: ResultRules[]
+  id: number
   name: string
-  createdAt: string
-  status: ProjectStatus
-  modifiedAt?: string | undefined
 }
 
-enum ProjectStatus {
-  DRAFT = 'draft',
-  PUBLISH = 'publish'
-}
-
-export type FlowData = {
+type Result = {
   id: string
   createdAt: string
   projectId: string
-  steps: Step[]
+  rank: string
+  steps: ResultSteps[]
   modifiedAt?: string
 }
 
-export type Step = {
-  stepId: number
-  stepName: string
-  rules: {
-    id: number
-    ruleId: string
-    type: string
-    checked: boolean | null
-    value: number | null
-  }[]
-}
-
-export interface userSurveyDraft {
-  project: Project
-  flowData: FlowData
-}
+export type ProjectsResults = {
+  project: ProjectType
+  result: Result
+}[]

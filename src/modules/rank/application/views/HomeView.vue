@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { outputs } from '@/config/outputs'
-import { getProjectsResult } from '@/modules/rank/infrastructure/controllers/userSurvey/userSurveyHome'
 import type { ProjectsResults } from '@/type/result.type'
 import { PATH } from '@/utils/path'
 import { WORDING } from '@/utils/wording'
@@ -9,6 +8,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { deleteProjectResult } from '../../domain/userSurveyResult/userSurveyResult.actions'
 import CardComponent from './Home/CardComponent.vue'
+import { getProjectsResult } from '../../domain/userSurveyHome/userSurveyHome.actions'
 
 const router = useRouter()
 const results = ref<null | ProjectsResults>(null)
@@ -23,7 +23,7 @@ onMounted(async () => {
 })
 
 const getUserSurvey = () => {
-  const response = getProjectsResult()
+  const response = getProjectsResult(outputs.userSurveyHome)
 
   if (response !== undefined) {
     const sort = response.sort(function (a, b) {
