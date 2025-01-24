@@ -21,7 +21,7 @@ type Result = {
   modifiedAt?: string
 }
 
-export type ProjectsResults = {
+export type ProjectResult = {
   project: ProjectType
   result: Result
-}[]
+}

@@ -1,5 +1,5 @@
 import type { ProjectType } from '@/type/project.type'
-import type { Result, ProjectsResults as ProjectsResult, ResultsStore } from '@/type/result.type'
+import type { Result, ProjectsResults, ResultsStore } from '@/type/result.type'
 import { defineStore } from 'pinia'
 
 export const useResultsStore = defineStore('results', {
@@ -7,7 +7,7 @@ export const useResultsStore = defineStore('results', {
     return {
       results: [] as Result[],
       projects: [] as ProjectType[],
-      projectsResult: [] as ProjectsResult
+      projectsResult: [] as ProjectsResults
     }
   },
   getters: {
