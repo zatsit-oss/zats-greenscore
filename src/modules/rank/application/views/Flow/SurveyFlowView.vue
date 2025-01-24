@@ -8,14 +8,16 @@ import { PATH } from '@/utils/path'
 import { WORDING } from '@/utils/wording'
 
 import { outputs } from '@/config/outputs'
-import type { userSurveyDraft } from '@/modules/rank/domain/userSurveyResult/userSurveyResult'
+
+import type { userSurveyDraft } from '@/modules/rank/domain/userSurveyFlow'
+import { deleteUserSurveyFlowData, getUserSurveyDraft } from '@/modules/rank/domain/userSurveyFlow.actions'
 import { v4 as uuidv4 } from 'uuid'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import StepView from './StepView.vue'
 import { buildDataFlowWithDraftUserSurvey, buildResultMapping, buildUserSurvey } from './utils/flow'
-import { deleteUserSurveyFlowData, getUserSurveyDraft } from '@/modules/rank/domain/userSurveyFlow/userSurveyFlow.actions'
 import { saveUserSurveyResult } from '@/modules/rank/domain/userSurveyResult/userSurveyResult.actions'
+
 
 const currentStep = ref(0)
 const router = useRouter()
