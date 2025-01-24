@@ -3,5 +3,6 @@ import { UserSurveyResultsStore } from '@/modules/rank/infrastructure/controller
 
 export const outputs = {
   userSurveyFlow: new UserSurveyFlowStore(),
-  userSurveyResult: new UserSurveyResultsStore()
+  userSurveyResult: new UserSurveyResultsStore(),
+  dataSurvey: new DataSurvey()
 }
