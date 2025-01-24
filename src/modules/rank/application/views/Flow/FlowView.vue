@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { outputs } from '@/config/outputs';
-import type { userSurveyDraft } from '@/modules/rank/domain/userSurveyFlow';
-import { getUserSurveyDraft } from '@/modules/rank/domain/userSurveyFlow.actions';
+import type { userSurveyDraft } from '@/modules/rank/domain/userSurveyResult/userSurveyResult';
+import { getUserSurveyDraft } from '@/modules/rank/domain/userSurveyResult/userSurveyResult.actions';
 import { ProjectStatus } from '@/type/project.type';
 import { onMounted, ref } from 'vue';
 import ProjectView from './ProjectView.vue';

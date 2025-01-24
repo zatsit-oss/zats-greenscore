@@ -1,3 +1,4 @@
+import type { userSurveyResult } from '@/modules/rank/domain/userSurveyResult/userSurveyResult.output'
 import { useResultsStore } from '@/modules/rank/infrastructure/controllers/stores/results'
 import type { ResultData } from '@/type/result.type'
 import { createProjectsResults } from './utils/userSurveyUtils'
@@ -18,16 +19,7 @@ function saveUserSurveyResultsFromStore(data: ResultData) {
   resultsStore.addResult(data.result)
 }
 
-export function getCurrentProjectResult(currentProjectUuid: string) {
-  return getCurrentProjectResultFromStore(currentProjectUuid)
-}
-
-export function saveUserSurveyResult(data: ResultData) {
-  saveUserSurveyResultsFromStore(data)
-  updateProjectsResult()
-}
-
-export function updateProjectsResult() {
+function updateProjectsResult() {
   const resultsStore = useResultsStore()
   const results = useResultsStore().getResults
   const projects = useResultsStore().getProjects
@@ -37,7 +29,18 @@ export function updateProjectsResult() {
   }
 }
 
-export function deleteProjectResult(projectId: string, resultId: string) {
-  deleteProjectResultFromStore(projectId, resultId)
-  updateProjectsResult()
+export class UserSurveyResultsStore implements userSurveyResult {
+  getCurrentProjectResult(currentProjectUuid: string) {
+    return getCurrentProjectResultFromStore(currentProjectUuid)
+  }
+
+  saveUserSurveyResult(data: ResultData) {
+    saveUserSurveyResultsFromStore(data)
+    updateProjectsResult()
+  }
+
+  deleteProjectResult(projectId: string, resultId: string) {
+    deleteProjectResultFromStore(projectId, resultId)
+    updateProjectsResult()
+  }
 }
