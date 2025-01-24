@@ -1,6 +1,5 @@
-import type { ProjectsResults } from './userSurveyHome'
+import type { ProjectResult } from './userSurveyHome'
 
 export interface UserSurveyHomeOutput {
-  getProjectsResult(): any
-  getDraftProjectsResult(): any
+  getProjectsResult(): ProjectResult[]
 }
