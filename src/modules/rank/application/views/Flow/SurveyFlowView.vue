@@ -1,22 +1,21 @@
 <script setup lang="ts">
 import { getDataSurvey } from '@/modules/rank/infrastructure/controllers/dataSurvey/dataSurvey'
-import { deleteUserSurveyFlowData, getUserSurveyDraft } from '@/modules/rank/infrastructure/controllers/userSurvey/userSurveyFlow'
-import { saveUserSurveyResult } from '@/modules/rank/infrastructure/controllers/userSurvey/userSurveyResults'
 import { useFlowStore } from '@/modules/rank/infrastructure/controllers/stores/flow'
+import { saveUserSurveyResult } from '@/modules/rank/infrastructure/controllers/userSurvey/userSurveyResults'
 import type { DataSurvey } from '@/type/dataStepSurvey.type'
 import { ProjectStatus } from '@/type/project.type'
 import { getRankingScore } from '@/utils/greenscore'
 import { PATH } from '@/utils/path'
 import { WORDING } from '@/utils/wording'
-import {
-  buildDataFlowWithDraftUserSurvey,
-  buildResultMapping,
-  buildUserSurvey
-} from '@/views/Flow/utils/flow'
+
+import { outputs } from '@/config/outputs'
+import type { userSurveyDraft } from '@/modules/rank/domain/userSurveyFlow'
+import { deleteUserSurveyFlowData, getUserSurveyDraft } from '@/modules/rank/domain/userSurveyFlow.actions'
 import { v4 as uuidv4 } from 'uuid'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import StepView from './StepView.vue'
+import { buildDataFlowWithDraftUserSurvey, buildResultMapping, buildUserSurvey } from './utils/flow'
 
 const currentStep = ref(0)
 const router = useRouter()
@@ -31,12 +30,17 @@ onMounted(async () => {
 
 const getData = () => {
   const responseDataSurvey = getDataSurvey()
-  const draftUserSurvey = getUserSurveyDraft()
+
+  const draftUserSurvey: userSurveyDraft = getUserSurveyDraft(
+    outputs.userSurveyFlow
+  )
 
   if (draftUserSurvey?.project.status === ProjectStatus.DRAFT && draftUserSurvey.flowData.id && responseDataSurvey) {
     const value = buildDataFlowWithDraftUserSurvey(draftUserSurvey?.flowData.steps, responseDataSurvey)
     dataSurvey.value = value
-    currentStep.value = draftUserSurvey.flowData.steps.length - 1
+    if (draftUserSurvey.flowData.steps.length) {
+      currentStep.value = draftUserSurvey.flowData.steps.length - 1
+    }
   }
   if (!draftUserSurvey.flowData.id && responseDataSurvey) {
     const draft = {
@@ -87,7 +91,7 @@ const handleFinalClick = () => {
     }
 
     saveUserSurveyResult({ result, project })
-    deleteUserSurveyFlowData()
+    deleteUserSurveyFlowData(outputs.userSurveyFlow)
 
     setTimeout(() => {
       router.push({ path: `${PATH.result}/${projectFlowStore.id}` })
@@ -111,7 +115,7 @@ const handleToggleChanged = (pointIndex: number, value: boolean) => {
   addToFlowStore()
 }
 
-const handleInputChanged = (pointIndex: number, value: string) => {
+const handleInputChanged = (pointIndex: number, value: number) => {
   dataSurvey.value[currentStep.value].rules[pointIndex].value = Number(value)
   addToFlowStore()
 }

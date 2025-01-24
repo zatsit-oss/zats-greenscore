@@ -1,6 +1,15 @@
 import { useFlowStore } from '@/modules/rank/infrastructure/controllers/stores/flow'
 import { useResultsStore } from '@/modules/rank/infrastructure/controllers/stores/results'
 
+// export class UserSurveyFlowStore implements UserSurveyOutput {
+//   getUserSurveyDraft() {
+//     return useFlowStore().get
+//   }
+//   deleteUserSurveyFlowData() {
+//     useFlowStore().reset()
+//   }
+// }
+
 function getProjectsResultFromStore() {
   return useResultsStore().get
 }

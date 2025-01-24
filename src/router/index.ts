@@ -12,18 +12,18 @@ const routes = [
       {
         path: PATH.home,
         name: 'home',
-        component: () => import('../views/HomeView.vue')
+        component: () => import('../modules/rank/application/views/HomeView.vue')
       },
       {
         path: PATH.flow,
         name: 'flow',
-        component: () => import('../views/Flow/FlowView.vue')
+        component: () => import('../modules/rank/application/views/Flow/FlowView.vue')
       },
       {
         path: `${PATH.result}/:id`,
         name: 'result',
         props: true,
-        component: () => import('../views/Result/ResultView.vue')
+        component: () => import('../modules/rank/application/views/Result/ResultView.vue')
       },
       { path: '/:pathMatch(.*)', name: 'notFoundComponent', component: NotFoundComponent }
     ]
