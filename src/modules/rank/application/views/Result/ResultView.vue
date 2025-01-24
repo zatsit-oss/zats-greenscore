@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import { type ToastProvid } from '@/components/CoreUiToast.vue'
+import { outputs } from '@/config/outputs'
+import { getCurrentProjectResult } from '@/modules/rank/domain/userSurveyResult/userSurveyResult.actions'
 import { getDataSurvey } from '@/modules/rank/infrastructure/controllers/dataSurvey/dataSurvey'
-import { getCurrentProjectResult } from '@/modules/rank/infrastructure/controllers/userSurvey/userSurveyResults.store'
 import type { DataSurvey } from '@/type/dataStepSurvey.type'
 import type { ProjectResult } from '@/type/result.type'
+import { ToastType } from '@/type/toast.type'
+import { ERROR_MESSAGE } from '@/utils/errorHandler'
 import { getIconResult } from '@/utils/iconResult'
 import { PATH } from '@/utils/path'
 import { WORDING } from '@/utils/wording'
@@ -11,9 +15,6 @@ import { DateTime } from 'luxon'
 import { inject, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import RankPanel from './RankPanel.vue'
-import { type ToastProvid } from '@/components/CoreUiToast.vue'
-import { ToastType } from '@/type/toast.type'
-import { ERROR_MESSAGE } from '@/utils/errorHandler'
 
 const router = useRouter()
 const route = useRoute()
@@ -30,7 +31,7 @@ const getData = () => {
 const getResult = () => {
   if (currentProjectUuid.value) {
 
-    const response = getCurrentProjectResult(currentProjectUuid.value)
+    const response = getCurrentProjectResult(outputs.userSurveyResult, currentProjectUuid.value)
     if (response) {
       projectResult.value = response
     } else {
