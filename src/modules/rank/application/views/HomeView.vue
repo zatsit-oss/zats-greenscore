@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import { outputs } from '@/config/outputs'
 import { getProjectsResult } from '@/modules/rank/infrastructure/controllers/userSurvey/userSurveyHome'
-import { deleteProjectResult } from '@/modules/rank/infrastructure/controllers/userSurvey/userSurveyResults.store'
 import type { ProjectsResults } from '@/type/result.type'
 import { PATH } from '@/utils/path'
 import { WORDING } from '@/utils/wording'
 import { DateTime } from 'luxon'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { deleteProjectResult } from '../../domain/userSurveyResult/userSurveyResult.actions'
 import CardComponent from './Home/CardComponent.vue'
 
 const router = useRouter()
@@ -66,7 +67,7 @@ const handleLastResultClick = (projectUuid: string) => {
 }
 
 const handleDeleteResultClick = async (projectId: string, resultId: string) => {
-  deleteProjectResult(projectId, resultId)
+  deleteProjectResult(outputs.userSurveyResult, projectId, resultId)
   getUserSurvey()
 }
 
