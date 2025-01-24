@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { type ToastProvid } from '@/components/CoreUiToast.vue'
 import { outputs } from '@/config/outputs'
+import { getDataSurvey } from '@/modules/rank/domain/dataSurvey/dataSurvey.actions'
 import { getCurrentProjectResult } from '@/modules/rank/domain/userSurveyResult/userSurveyResult.actions'
-import { getDataSurvey } from '@/modules/rank/infrastructure/controllers/dataSurvey/dataSurvey.local'
 import type { DataSurvey } from '@/type/dataStepSurvey.type'
 import type { ProjectResult } from '@/type/result.type'
 import { ToastType } from '@/type/toast.type'
@@ -25,7 +25,7 @@ const toaster = inject<ToastProvid>("toaster")
 const projectResult = ref<null | ProjectResult>(null)
 
 const getData = () => {
-  dataSurvey.value = getDataSurvey()
+  dataSurvey.value = getDataSurvey(outputs.dataSurvey)
 }
 
 const getResult = () => {
