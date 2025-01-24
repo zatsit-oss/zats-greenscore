@@ -1,21 +1,9 @@
-import type { ResultData } from '@/type/result.type'
-import type { userSurveyResult } from './userSurveyHome.output'
+import type { UserSurveyHome } from '../../infrastructure/controllers/userSurvey/userSurveyHome.store'
 
-export function getCurrentProjectResult(
-  userSurveyResult: userSurveyResult,
-  currentProjectUuid: string
-) {
-  return userSurveyResult.getCurrentProjectResult(currentProjectUuid)
+export function getProjectsResult(userSurveyHome: UserSurveyHome) {
+  return userSurveyHome.getProjectsResult()
 }
 
-export function saveUserSurveyResult(userSurveyResult: userSurveyResult, data: ResultData) {
-  return userSurveyResult.saveUserSurveyResult(data)
-}
-
-export function deleteProjectResult(
-  userSurveyResult: userSurveyResult,
-  projectId: string,
-  resultId: string
-) {
-  return userSurveyResult.deleteProjectResult(projectId, resultId)
+export function getDraftProjectsResult(userSurveyHome: UserSurveyHome) {
+  return userSurveyHome.getDraftProjectsResult()
 }
