@@ -1,7 +1,7 @@
-import type { userSurveyResult } from '@/modules/rank/domain/userSurveyResult/userSurveyResult.output'
 import { useResultsStore } from '@/modules/rank/infrastructure/controllers/stores/results'
 import type { ResultData } from '@/type/result.type'
 import { createProjectsResults } from './utils/userSurveyUtils'
+import type { UserSurveyResultOutput } from '@/modules/rank/domain/userSurveyResult/userSurveyResult.output'
 
 function getCurrentProjectResultFromStore(currentProjectUuid: string) {
   const resultsStore = useResultsStore().get
@@ -29,7 +29,7 @@ function updateProjectsResult() {
   }
 }
 
-export class UserSurveyResultsStore implements userSurveyResult {
+export class UserSurveyResultsStore implements UserSurveyResultOutput {
   getCurrentProjectResult(currentProjectUuid: string) {
     return getCurrentProjectResultFromStore(currentProjectUuid)
   }
