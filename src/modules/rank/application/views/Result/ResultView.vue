@@ -2,7 +2,7 @@
 import { type ToastProvid } from '@/components/CoreUiToast.vue'
 import { outputs } from '@/config/outputs'
 import { getCurrentProjectResult } from '@/modules/rank/domain/userSurveyResult/userSurveyResult.actions'
-import { getDataSurvey } from '@/modules/rank/infrastructure/controllers/dataSurvey/dataSurvey'
+import { getDataSurvey } from '@/modules/rank/infrastructure/controllers/dataSurvey/dataSurvey.local'
 import type { DataSurvey } from '@/type/dataStepSurvey.type'
 import type { ProjectResult } from '@/type/result.type'
 import { ToastType } from '@/type/toast.type'

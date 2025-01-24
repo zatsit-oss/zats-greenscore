@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getDataSurvey } from '@/modules/rank/infrastructure/controllers/dataSurvey/dataSurvey'
+import { getDataSurvey } from '@/modules/rank/infrastructure/controllers/dataSurvey/dataSurvey.local'
 import { useFlowStore } from '@/modules/rank/infrastructure/controllers/stores/flow'
 import type { DataSurvey } from '@/type/dataStepSurvey.type'
 import { ProjectStatus } from '@/type/project.type'
