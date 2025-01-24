@@ -1,6 +1,6 @@
-import { DATA_FLOW_STEPS } from '@/utils/steps'
+import type { DataSurveyOutput } from '@/modules/rank/domain/dataSurvey/dataSurvey.output'
 import type { data } from '@/type/dataStepSurvey.type'
-import type { Survey } from '@/modules/rank/domain/userSurveyHome/userSurveyHome.output'
+import { DATA_FLOW_STEPS } from '@/utils/steps'
 
 function buildDataSurvey(response: data[]) {
   return response
@@ -15,7 +15,7 @@ function buildDataSurvey(response: data[]) {
     .sort((stepA, stepB) => stepA.id - stepB.id)
 }
 
-export class UserSurveyResultsStore implements Survey {
+export class DataSurvey implements DataSurveyOutput {
   getDataSurvey() {
     return buildDataSurvey(DATA_FLOW_STEPS)
   }
