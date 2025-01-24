@@ -1,4 +1,4 @@
-import { useResultsStore } from '@/stores/results'
+import { useResultsStore } from '@/modules/rank/infrastructure/controllers/stores/results'
 import type { ResultData } from '@/type/result.type'
 import { createProjectsResults } from './utils/userSurveyUtils'
 

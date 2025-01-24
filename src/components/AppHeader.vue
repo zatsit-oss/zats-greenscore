@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useDataSurvey } from '@/stores/dataSurvey'
-import { useFlowStore } from '@/stores/flow'
+import { useDataSurvey } from '@/modules/rank/infrastructure/controllers/stores/dataSurvey'
+import { useFlowStore } from '@/modules/rank/infrastructure/controllers/stores/flow'
 import { WORDING } from '@/utils/wording'
 import { useColorModes } from '@coreui/vue'
 import { onMounted, ref, watch } from 'vue'
