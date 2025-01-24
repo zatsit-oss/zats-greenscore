@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { getDataSurvey } from '@/modules/rank/infrastructure/controllers/dataSurvey/dataSurvey'
 import { useFlowStore } from '@/modules/rank/infrastructure/controllers/stores/flow'
-import { saveUserSurveyResult } from '@/modules/rank/infrastructure/controllers/userSurvey/userSurveyResults.store'
 import type { DataSurvey } from '@/type/dataStepSurvey.type'
 import { ProjectStatus } from '@/type/project.type'
 import { getRankingScore } from '@/utils/greenscore'
@@ -10,12 +9,13 @@ import { WORDING } from '@/utils/wording'
 
 import { outputs } from '@/config/outputs'
 import type { userSurveyDraft } from '@/modules/rank/domain/userSurveyResult/userSurveyResult'
-import { deleteUserSurveyFlowData, getUserSurveyDraft } from '@/modules/rank/domain/userSurveyResult/userSurveyResult.actions'
 import { v4 as uuidv4 } from 'uuid'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import StepView from './StepView.vue'
 import { buildDataFlowWithDraftUserSurvey, buildResultMapping, buildUserSurvey } from './utils/flow'
+import { deleteUserSurveyFlowData, getUserSurveyDraft } from '@/modules/rank/domain/userSurveyFlow/userSurveyFlow.actions'
+import { saveUserSurveyResult } from '@/modules/rank/domain/userSurveyResult/userSurveyResult.actions'
 
 const currentStep = ref(0)
 const router = useRouter()
@@ -90,7 +90,7 @@ const handleFinalClick = () => {
       status: ProjectStatus.PUBLISH
     }
 
-    saveUserSurveyResult({ result, project })
+    saveUserSurveyResult(outputs.userSurveyResult, { result, project })
     deleteUserSurveyFlowData(outputs.userSurveyFlow)
 
     setTimeout(() => {
