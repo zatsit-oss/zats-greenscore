@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import ProjectView from './ProjectView.vue'
-import SurveyFlowView from './SurveyFlowView.vue'
-import { getUserSurveyDraft } from '@/modules/rank/infrastructure/controllers/userSurvey/userSurveyFlow';
+import { outputs } from '@/config/outputs';
+import type { userSurveyDraft } from '@/modules/rank/domain/userSurveyFlow';
+import { getUserSurveyDraft } from '@/modules/rank/domain/userSurveyFlow.actions';
 import { ProjectStatus } from '@/type/project.type';
+import { onMounted, ref } from 'vue';
+import ProjectView from './ProjectView.vue';
+import SurveyFlowView from './SurveyFlowView.vue';
 
 const SURVEY_FLOW = 'survey'
 const PROJECT_FLOW = 'project'
@@ -15,7 +17,10 @@ const handleCreateProject = () => {
 }
 
 const getData = () => {
-  const draftUserSurvey = getUserSurveyDraft()
+
+  const draftUserSurvey: userSurveyDraft = getUserSurveyDraft(
+    outputs.userSurveyFlow
+  )
 
   if (draftUserSurvey?.project.id && draftUserSurvey?.project.status === ProjectStatus.DRAFT) {
     currentView.value = SURVEY_FLOW
