@@ -2,10 +2,10 @@ import type { UserSurveyOutput } from '@/modules/rank/domain/userSurveyFlow.outp
 import { useFlowStore } from '@/modules/rank/infrastructure/controllers/stores/flow'
 
 export class UserSurveyFlowStore implements UserSurveyOutput {
-  getDraftProjectsFromStore() {
+  getUserSurveyDraft() {
     return useFlowStore().get
   }
-  deleteUserSurveyFlowDataFromStore() {
+  deleteUserSurveyFlowData() {
     useFlowStore().reset()
   }
 }
