@@ -1,3 +1,6 @@
-import type { ProjectResult, ResultData } from '@/type/result.type'
+import type { ProjectsResults } from './userSurveyHome'
 
-export interface Survey {}
+export interface UserSurveyHomeOutput {
+  getProjectsResult(): any
+  getDraftProjectsResult(): any
+}
