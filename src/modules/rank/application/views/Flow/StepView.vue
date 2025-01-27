@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ToggleComponent from '@/components/design/ToggleComponent.vue'
 import type { StepRules } from '@/type/steps.type'
+import { POURCENTAGE_UNIT } from '@/utils/unit';
 import { ref } from 'vue';
 
 const IMAGES_PATH = "/images/"
