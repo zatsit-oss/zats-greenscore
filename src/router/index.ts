@@ -5,7 +5,7 @@ import NotFoundComponent from '../components/errors/NotFoundComponent.vue'
 
 const routes = [
   {
-    path: PATH.home,
+    path: '/',
     component: DefaultLayout,
     redirect: PATH.home,
     children: [
