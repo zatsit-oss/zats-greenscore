@@ -9,7 +9,10 @@ import { WORDING } from '@/utils/wording'
 import { outputs } from '@/config/outputs'
 
 import { getDataSurvey } from '@/modules/rank/domain/dataSurvey/dataSurvey.actions'
-import { deleteUserSurveyFlowData, getUserSurveyDraft } from '@/modules/rank/domain/userSurveyFlow/userSurveyFlow.actions'
+import {
+  deleteUserSurveyFlowData,
+  getUserSurveyDraft
+} from '@/modules/rank/domain/userSurveyFlow/userSurveyFlow.actions'
 import type { userSurveyDraft } from '@/modules/rank/domain/userSurveyResult/userSurveyResult'
 import { saveUserSurveyResult } from '@/modules/rank/domain/userSurveyResult/userSurveyResult.actions'
 import { v4 as uuidv4 } from 'uuid'
@@ -17,7 +20,6 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import StepView from './StepView.vue'
 import { buildDataFlowWithDraftUserSurvey, buildResultMapping, buildUserSurvey } from './utils/flow'
-
 
 const currentStep = ref(0)
 const router = useRouter()
@@ -32,13 +34,19 @@ onMounted(async () => {
 
 const getData = () => {
   const responseDataSurvey = getDataSurvey(outputs.dataSurvey)
+  console.log('responseDataSurvey', responseDataSurvey)
 
-  const draftUserSurvey: userSurveyDraft = getUserSurveyDraft(
-    outputs.userSurveyFlow
-  )
+  const draftUserSurvey: userSurveyDraft = getUserSurveyDraft(outputs.userSurveyFlow)
 
-  if (draftUserSurvey?.project.status === ProjectStatus.DRAFT && draftUserSurvey.flowData.id && responseDataSurvey) {
-    const value = buildDataFlowWithDraftUserSurvey(draftUserSurvey?.flowData.steps, responseDataSurvey)
+  if (
+    draftUserSurvey?.project.status === ProjectStatus.DRAFT &&
+    draftUserSurvey.flowData.id &&
+    responseDataSurvey
+  ) {
+    const value = buildDataFlowWithDraftUserSurvey(
+      draftUserSurvey?.flowData.steps,
+      responseDataSurvey
+    )
     dataSurvey.value = value
     if (draftUserSurvey.flowData.steps.length) {
       currentStep.value = draftUserSurvey.flowData.steps.length - 1
@@ -49,7 +57,7 @@ const getData = () => {
       id: uuidv4(),
       createdAt: new Date().toISOString(),
       projectId: flowStore.get.project.id,
-      steps: [],
+      steps: []
     }
     flowStore.initFlowData(draft)
     dataSurvey.value = responseDataSurvey
@@ -69,12 +77,11 @@ const handlePreviousClick = () => {
 }
 
 const handleFinalClick = () => {
-  if (dataSurvey.value !== undefined && dataSurvey.value.length > 0 && !isLoading.value
-  ) {
+  if (dataSurvey.value !== undefined && dataSurvey.value.length > 0 && !isLoading.value) {
     isLoading.value = true
 
-    const flowData = flowStore.get.flowData;
-    const projectFlowStore = flowStore.get.project;
+    const flowData = flowStore.get.flowData
+    const projectFlowStore = flowStore.get.project
 
     const userSurvey = buildUserSurvey(dataSurvey.value)
     flowStore.addStepData(userSurvey, true)
@@ -135,38 +142,64 @@ const handleSaveFlow = () => {
   <CContainer v-if="dataSurvey.length > 0">
     <CRow>
       <CCol :lg="12" :xs="12">
-        <StepView :title="dataSurvey[currentStep].title" :rules="dataSurvey[currentStep].rules"
-          :isStepSending="isLoading" @onToggleChanged="handleToggleChanged" @onInputChanged="handleInputChanged" />
+        <StepView
+          :title="dataSurvey[currentStep].title"
+          :rules="dataSurvey[currentStep].rules"
+          :isStepSending="isLoading"
+          @onToggleChanged="handleToggleChanged"
+          @onInputChanged="handleInputChanged"
+        />
       </CCol>
     </CRow>
 
     <CRow class="mt-2 mb-2 d-flex justify-content-end">
       <CCol :lg="4" :xs="4">
-        <CButton color="primary" size="sm" :disabled="disabledSaveButton" class="me-1" @click="handleSaveFlow">
+        <CButton
+          color="primary"
+          size="sm"
+          :disabled="disabledSaveButton"
+          class="me-1"
+          @click="handleSaveFlow"
+        >
           <CSpinner as="span" size="sm" variant="grow" aria-hidden="true" v-if="isLoading" />
           {{ WORDING.saveAction }}
         </CButton>
       </CCol>
       <CCol :lg="8" :xs="8" class="d-flex justify-content-end">
-        <CButton color="primary" size="sm" :disabled="isLoading" class="me-1" v-if="currentStep > 0"
-          @click="handlePreviousClick">
+        <CButton
+          color="primary"
+          size="sm"
+          :disabled="isLoading"
+          class="me-1"
+          v-if="currentStep > 0"
+          @click="handlePreviousClick"
+        >
           <CSpinner as="span" size="sm" variant="grow" aria-hidden="true" v-if="isLoading" />
           {{ WORDING.leftAction }}
         </CButton>
 
-        <CButton color="primary" size="sm" v-if="currentStep < dataSurvey.length - 1" @click="handleNextClick">
+        <CButton
+          color="primary"
+          size="sm"
+          v-if="currentStep < dataSurvey.length - 1"
+          @click="handleNextClick"
+        >
           <CSpinner as="span" size="sm" variant="grow" aria-hidden="true" v-if="isLoading" />
           {{ WORDING.nextAction }}
         </CButton>
 
-        <CButton color="primary" size="sm" v-if="currentStep === dataSurvey.length - 1" :isLoading="isLoading"
-          @click="handleFinalClick">
+        <CButton
+          color="primary"
+          size="sm"
+          v-if="currentStep === dataSurvey.length - 1"
+          :isLoading="isLoading"
+          @click="handleFinalClick"
+        >
           <CSpinner as="span" size="sm" variant="grow" aria-hidden="true" v-if="isLoading" />
           {{ WORDING.finalAction }}
         </CButton>
       </CCol>
     </CRow>
-
   </CContainer>
   <CRow v-else>
     <CCol :lg="12">

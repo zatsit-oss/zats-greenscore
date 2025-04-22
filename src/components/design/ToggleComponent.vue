@@ -1,27 +1,34 @@
-<script>
-export default {
-  name: 'ToggleComponent',
-  props: {
-    checked: {
-      type: Boolean,
-      required: true
-    },
-    disabled: {
-      type: Boolean,
-      required: true
-    },
-    label: {
-      type: String,
-      required: true
-    }
-  }
+<script setup lang="ts">
+import { ref } from 'vue'
+import ModalComponent from './modalComponent.vue'
+
+const props = defineProps<{
+  checked: boolean
+  disabled: boolean
+  label: string
+  detail: string | null
+}>()
+
+const showModal = ref(false)
+
+const openModal = () => {
+  showModal.value = true
 }
 </script>
 
 <template>
   <CRow class="d-flex justify-content-center align-items-center">
     <CCol :lg="10" :xs="10">
-      <p>{{ label }}</p>
+      <p>
+        {{ label }}
+        <CIcon
+          icon="cil-info"
+          size="sm"
+          class="text-primary"
+          style="cursor: pointer"
+          @click="openModal"
+        />
+      </p>
     </CCol>
     <CCol :lg="2" :xs="2">
       <CFormSwitch
@@ -34,6 +41,8 @@ export default {
       />
     </CCol>
   </CRow>
+
+  <ModalComponent title="Description" :detail="detail" v-model:modelValue="showModal" />
 </template>
 
 <style>

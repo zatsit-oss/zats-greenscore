@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { WORDING } from '@/utils/wording'
+import { CButton } from '@coreui/vue'
 import { DateTime } from 'luxon'
 import RankPanel from '../Result/RankPanel.vue'
-import { CButton } from '@coreui/vue'
-import { WORDING } from '@/utils/wording';
 
 const props = defineProps<{
   projectName: string
@@ -43,7 +43,9 @@ const handleDeleteClick = () => {
         </CCol>
       </CRow>
       <RankPanel :value="rank" />
-      <CButton color="primary" size="sm" @click="handleButtonClick()"> {{ WORDING.home.card.button }}</CButton>
+      <CButton color="primary" size="sm" @click="handleButtonClick()">
+        {{ WORDING.home.card.button }}</CButton
+      >
     </CCardBody>
   </CCard>
 </template>

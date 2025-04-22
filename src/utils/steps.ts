@@ -168,13 +168,15 @@ export const DATA_FLOW_STEPS: Step[] = [step1, step2, step3, step4]
 export type Step = {
   section: string
   title: string
-  rules: {
-    title: string
-    ruleId: string
-    id: number
-    description: string
-    type: string
-    point: number
-  }[]
+  rules: Rules[]
   id: number
+}
+export type Rules = {
+  title: string
+  ruleId: string
+  id: number
+  description: string
+  detail?: string
+  type: string
+  point: number
 }

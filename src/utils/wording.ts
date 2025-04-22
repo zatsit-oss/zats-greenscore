@@ -1,5 +1,3 @@
-import NotFoundComponent from '@/components/errors/NotFoundComponent.vue'
-
 export const WORDING = {
   website: 'zats-greenscore',
   titleFlow: 'zats-greenscore',
