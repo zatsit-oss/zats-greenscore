@@ -24,7 +24,7 @@ export const WORDING = {
   },
   stepProject: {
     title: 'Project',
-    subtitle: 'To get your rank, enter a project name'
+    subtitle: 'Get Your rank'
   },
   step1: {
     title: '🏗  Architecture'

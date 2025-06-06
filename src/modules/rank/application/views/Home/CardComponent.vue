@@ -43,9 +43,13 @@ const handleDeleteClick = () => {
         </CCol>
       </CRow>
       <RankPanel :value="rank" />
-      <CButton color="primary" size="sm" @click="handleButtonClick()">
-        {{ WORDING.home.card.button }}</CButton
-      >
+      <CRow>
+        <CCol class="d-flex justify-content-end pt-5">
+          <CButton color="secondary" size="sm" class="w-auto" @click="handleButtonClick()">
+            {{ WORDING.home.card.button }}
+          </CButton>
+        </CCol>
+      </CRow>
     </CCardBody>
   </CCard>
 </template>

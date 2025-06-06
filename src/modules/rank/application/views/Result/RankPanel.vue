@@ -3,69 +3,44 @@ import { getRankingColor } from '@/utils/greenscore'
 const props = defineProps<{
   value: string
 }>()
+
+const valueList = ["A", "B", "C", "D", "E"]
+
+console.log(props.value)
 </script>
 
 <template>
-  <div>
-    <div class="graph-score-bar">
-      <div
-        :style="{ fontWeight: 'bold', color: `var(${getRankingColor(props.value)})` }"
-        class="graph-score-bar-results part--a"
-      >
-        {{ props.value }}
-      </div>
-      <div
-        id="score_a"
-        :style="{ fontWeight: 'bold', color: `var(${getRankingColor('A')})` }"
-        class="graph-score-bar_part part--a"
-      >
-        A
-      </div>
-      <div
-        id="score_b"
-        :style="{ fontWeight: 'bold', color: `var(${getRankingColor('B')})` }"
-        class="graph-score-bar_part part--b"
-      >
-        B
-      </div>
-      <div
-        id="score_c"
-        :style="{ fontWeight: 'bold', color: `var(${getRankingColor('C')})` }"
-        class="graph-score-bar_part part--c"
-      >
-        C
-      </div>
-      <div
-        id="score_d"
-        :style="{ fontWeight: 'bold', color: `var(${getRankingColor('D')})` }"
-        class="graph-score-bar_part part--d"
-      >
-        D
-      </div>
-      <div
-        id="score_e"
-        :style="{ fontWeight: 'bold', color: `var(${getRankingColor('E')})` }"
-        class="graph-score-bar_part part--e"
-      >
-        E
-      </div>
-    </div>
+  <div class="circle-container">
+    <div v-for="v in valueList" class="circle" :class="{ highlighted: v === props.value }"
+      :style="{ backgroundColor: `var(${getRankingColor(v)})` }">{{ v }}</div>
   </div>
 </template>
 
-<style>
-.graph-score-bar {
+<style scoped>
+.circle-container {
   display: flex;
-  flex-direction: row;
+  gap: 2px;
+  justify-content: center;
   align-items: center;
+  position: relative;
 }
-.graph-score-bar-results {
-  font-size: 4rem;
-  padding-right: 1rem;
+
+.circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  transition: transform 0.3s ease, z-index 0.3s ease;
+  position: relative;
+  z-index: 1;
+  color: white;
 }
-.graph-score-bar_part {
-  font-size: 1.5rem;
-  padding: 0.75rem;
-  border: black 1px solid;
+
+.highlighted {
+  transform: scale(1.5);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
 }
 </style>
