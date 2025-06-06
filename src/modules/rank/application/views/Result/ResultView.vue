@@ -14,7 +14,7 @@ import { CContainer } from '@coreui/vue'
 import { DateTime } from 'luxon'
 import { inject, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import RankPanel from './RankPanel.vue'
+import RankPanel from '../../../../../components/design/RankPanel.vue'
 
 const router = useRouter()
 const route = useRoute()

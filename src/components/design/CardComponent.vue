@@ -2,7 +2,7 @@
 import { WORDING } from '@/utils/wording'
 import { CButton } from '@coreui/vue'
 import { DateTime } from 'luxon'
-import RankPanel from '../Result/RankPanel.vue'
+import RankPanel from './RankPanel.vue'
 
 const props = defineProps<{
   projectName: string
@@ -45,7 +45,7 @@ const handleDeleteClick = () => {
       <RankPanel :value="rank" />
       <CRow>
         <CCol class="d-flex justify-content-end pt-5">
-          <CButton color="secondary" size="sm" class="w-auto" @click="handleButtonClick()">
+          <CButton color="primary" size="sm" class="w-auto" @click="handleButtonClick()">
             {{ WORDING.home.card.button }}
           </CButton>
         </CCol>

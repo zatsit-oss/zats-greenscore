@@ -7,7 +7,7 @@ import { DateTime } from 'luxon'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { deleteProjectResult } from '../../domain/userSurveyResult/userSurveyResult.actions'
-import CardComponent from './Home/CardComponent.vue'
+import CardComponent from '../../../../components/design/CardComponent.vue'
 import { getProjectsResult } from '../../domain/userSurveyHome/userSurveyHome.actions'
 
 const router = useRouter()
@@ -54,9 +54,10 @@ const handleStartSurveyClick = () => {
           <CRow class="d-flex">
             <CCol :lg="6" :xs="6">
               <h4>{{ WORDING.home.title }} 👋</h4>
+              <h6>{{ WORDING.home.subtitle }}</h6>
             </CCol>
             <CCol :lg="6" :xs="6" class="d-flex justify-content-end align-items-center">
-              <CButton color="secondary" size="sm" @click="handleStartSurveyClick()">{{
+              <CButton color="primary" size="sm" @click="handleStartSurveyClick()">{{
                 WORDING.home.mainButton }}</CButton>
             </CCol>
           </CRow>

@@ -36,11 +36,13 @@ console.log(props.value)
   transition: transform 0.3s ease, z-index 0.3s ease;
   position: relative;
   z-index: 1;
-  color: white;
+  color: black;
+  border: 1px solid rgba(179, 168, 168, 0.388)
 }
 
 .highlighted {
   transform: scale(1.5);
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  z-index: 10;
 }
 </style>

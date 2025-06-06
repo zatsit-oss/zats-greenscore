@@ -16,7 +16,7 @@ function buildRules(rules: Rules[]) {
   return rules.map((rule) => ({
     ...rule,
     checked: rule.type === 'toggle' ? false : null,
-    value: rule.type === 'input' ? 0 : null,
+    value: rule.type === 'number' ? 0 : null,
     detail: DETAILS[rule.ruleId as keyof typeof DETAILS] ?? ''
   }))
 }

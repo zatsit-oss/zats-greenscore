@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import ModalComponent from './modalComponent.vue'
 
 const props = defineProps<{
@@ -10,6 +10,17 @@ const props = defineProps<{
 }>()
 
 const showModal = ref(false)
+let value = ref(0)
+
+const emit = defineEmits<{
+  (e: 'update:number', value: number): void
+}>()
+
+const onChange = ((v: number) => {
+  if (v <= 0) value.value = 0
+  else if (v > 100) value.value = 100
+  emit('update:number', value.value)
+})
 
 const openModal = () => {
   showModal.value = true
@@ -25,8 +36,8 @@ const openModal = () => {
       </p>
     </CCol>
     <CCol :lg="2" :xs="2">
-      <CFormSwitch size="xl" v-bind="$attrs" type="checkbox" :disabled="disabled" :checked="checked"
-        @change="$emit('update:checked', $event.target.checked)" />
+      <CFormInput id="numberInput" type="number" v-model="value" :min="0" :max="100" :step="1" class="mt-2 test"
+        @blur="onChange(value)" />
     </CCol>
   </CRow>
 
@@ -34,7 +45,8 @@ const openModal = () => {
 </template>
 
 <style>
-.form-switch-xl .form-check-input {
-  width: 3rem;
+.test {
+  width: 6rem;
+  /* ajustable */
 }
 </style>
