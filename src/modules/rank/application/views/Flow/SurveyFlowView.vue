@@ -89,8 +89,8 @@ const handleFinalClick = () => {
       status: ProjectStatus.PUBLISH
     }
 
-    // saveUserSurveyResult(outputs.userSurveyResult, { result, project })
-    // deleteUserSurveyFlowData(outputs.userSurveyFlow)
+    saveUserSurveyResult(outputs.userSurveyResult, { result, project })
+    deleteUserSurveyFlowData(outputs.userSurveyFlow)
 
     setTimeout(() => {
       router.push({ path: `${PATH.result}/${projectFlowStore.id}` })

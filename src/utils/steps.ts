@@ -133,7 +133,7 @@ const step3 = {
       id: 6,
       description:
         'Deploy an API well designed and documented to increase the reuse rate. Rate based on number of different consumers',
-      type: 'toggle',
+      type: 'number',
       ruleId: 'US06'
     },
     {
