@@ -1,5 +1,3 @@
-import NotFoundComponent from '@/components/errors/NotFoundComponent.vue'
-
 export const WORDING = {
   website: 'zats-greenscore',
   titleFlow: 'zats-greenscore',
@@ -18,7 +16,9 @@ export const WORDING = {
   },
   home: {
     title: 'Welcome',
+    subtitle: 'Test your api\'s green score',
     mainButton: 'Start new survey',
+    draft: 'Continue draft',
     card: {
       title: 'last score',
       button: 'See details'
@@ -26,7 +26,7 @@ export const WORDING = {
   },
   stepProject: {
     title: 'Project',
-    subtitle: 'To get your rank, enter a project name'
+    subtitle: 'Get Your rank'
   },
   step1: {
     title: '🏗  Architecture'

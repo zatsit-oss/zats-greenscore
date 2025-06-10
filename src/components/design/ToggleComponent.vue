@@ -1,49 +1,40 @@
-<script>
-export default {
-  name: 'ToggleComponent',
-  props: {
-    checked: {
-      type: Boolean,
-      required: true
-    },
-    disabled: {
-      type: Boolean,
-      required: true
-    },
-    label: {
-      type: String,
-      required: true
-    }
-  }
+<script setup lang="ts">
+import { ref } from 'vue'
+import ModalComponent from './modalComponent.vue'
+
+const props = defineProps<{
+  checked: boolean
+  disabled: boolean
+  label: string
+  detail: string | null
+}>()
+
+const showModal = ref(false)
+
+const openModal = () => {
+  showModal.value = true
 }
 </script>
 
 <template>
   <CRow class="d-flex justify-content-center align-items-center">
     <CCol :lg="10" :xs="10">
-      <p>{{ label }}</p>
+      <p class="d-flex align-items-center gap-3">
+        <CIcon icon="cil-info" size="xl" class="text-primary" style="cursor: pointer" @click="openModal" />
+        {{ label }}
+      </p>
     </CCol>
     <CCol :lg="2" :xs="2">
-      <CFormSwitch
-        size="xl"
-        v-bind="$attrs"
-        type="checkbox"
-        :disabled="disabled"
-        :checked="checked"
-        @change="$emit('update:checked', $event.target.checked)"
-      />
+      <CFormSwitch size="xl" v-bind="$attrs" type="checkbox" :disabled="disabled" :checked="checked"
+        @change="$emit('update:checked', $event.target.checked)" />
     </CCol>
   </CRow>
+
+  <ModalComponent title="Description" :detail="detail" v-model:modelValue="showModal" />
 </template>
 
 <style>
-.custom-card {
-  box-shadow: none;
-}
-
-@media (min-width: 769px) {
-  .form-switch-xl .form-check-input {
-    width: 3rem;
-  }
+.form-switch-xl .form-check-input {
+  width: 3rem;
 }
 </style>

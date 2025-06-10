@@ -23,6 +23,7 @@ export type DataSurveyRules = {
   type: string
   checked: boolean | null
   value: number | null
+  detail : string | null
 }
 
 export type DataSurvey = {

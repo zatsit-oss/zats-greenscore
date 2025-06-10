@@ -33,13 +33,10 @@ onBeforeMount(() => {
 
 <template>
   <CoreUiToast>
-    <GlobalErrorHandler>
-      <router-view />
-    </GlobalErrorHandler>
+    <router-view />
   </CoreUiToast>
 </template>
 
 <style lang="scss">
-// Import Main styles for this application
 @import 'styles/style';
 </style>

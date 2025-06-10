@@ -1,12 +1,13 @@
 export type StepRules = {
-  description: string;
-  id: number;
-  point: number;
-  ruleId: string;
-  title: string;
-  type: string;
-  checked: boolean | null;
-  value: number | null;
+  description: string
+  id: number
+  point: number
+  ruleId: string
+  title: string
+  type: string
+  checked: boolean | null
+  value: number | null
+  detail: string | null
 }
 
 export type Step = {
@@ -15,5 +16,3 @@ export type Step = {
   title: string
   rules: StepRules[]
 }
-
- 

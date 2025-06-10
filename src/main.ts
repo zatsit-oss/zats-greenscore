@@ -7,7 +7,6 @@ import { iconsSet as icons } from '@/assets/icons'
 import CIcon from '@coreui/icons-vue'
 import CoreuiVue from '@coreui/vue'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
-import validateDigits from './directives/validateDigits'
 import router from './router'
 
 const app = createApp(App)
@@ -18,6 +17,5 @@ app.use(router)
 app.use(CoreuiVue)
 app.provide('icons', icons)
 app.component('CIcon', CIcon)
-app.directive('validate-digits', validateDigits)
 app.mount('#app')
 app.provide('global', 'hello injections')
