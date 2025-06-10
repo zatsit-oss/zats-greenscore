@@ -73,7 +73,7 @@ onMounted(() => {
           <CRow class="mt-3" v-if="projectResult">
             <CCol :lg="6" :xs="12" class="mb-2" v-for="(step, currentStep) in projectResult.result.steps"
               :key="step.id">
-              <CCard class="custom-card">
+              <CCard class="custom-card h-100">
                 <CCardBody>
                   <CRow class="mb-2">
                     <h4>{{ dataSurvey[currentStep].title }}</h4>
