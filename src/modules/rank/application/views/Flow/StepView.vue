@@ -9,17 +9,15 @@ const props = defineProps<{
   isStepSending?: boolean
 }>()
 
-console.log(props.rules)
-
 const emit = defineEmits<{
   (e: 'onToggleChanged', pointIndex: number, value: boolean): void
-  (e: 'onInputChanged', pointIndex: number, value: number): void
+  (e: 'onInputChanged', pointIndex: number, value: number | null): void
 }>()
 
 const handleToggleChanged = (pointIndex: number, value: boolean) => {
   emit('onToggleChanged', pointIndex, value)
 }
-const handleInputChanged = (pointIndex: number, value: number) => {
+const handleInputChanged = (pointIndex: number, value: number | null) => {
   emit('onInputChanged', pointIndex, value)
 }
 </script>
@@ -39,9 +37,9 @@ const handleInputChanged = (pointIndex: number, value: number) => {
                 @update:checked="(value: boolean) => handleToggleChanged(index, value)" />
             </CContainer>
             <CContainer v-if="rule.type === 'number'">
-              <InputNumberComponent :label="rule.title" :checked="rule.checked ?? false" :detail="rule.detail"
+              <InputNumberComponent :label="rule.title" :value="rule.value" :detail="rule.detail"
                 :disabled="props.isStepSending || false"
-                @update:number="(value: number) => handleInputChanged(index, value)" />
+                @update:number="(value: number | null) => handleInputChanged(index, value)" />
             </CContainer>
           </CRow>
         </CCardBody>

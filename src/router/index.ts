@@ -12,7 +12,7 @@ const routes = [
       {
         path: PATH.home,
         name: 'home',
-        component: () => import('../modules/rank/application/views/HomeView.vue')
+        component: () => import('../modules/rank/application/views/Home/HomeView.vue')
       },
       {
         path: PATH.flow,

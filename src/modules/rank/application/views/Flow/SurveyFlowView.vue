@@ -22,6 +22,7 @@ import { buildDataFlowWithDraftUserSurvey, buildResultMapping, buildUserSurvey }
 const currentStep = ref(0)
 const router = useRouter()
 const dataSurvey = ref<DataSurvey[]>([])
+
 const flowStore = useFlowStore()
 const isLoading = ref(false)
 
@@ -47,7 +48,7 @@ const getData = () => {
       id: uuidv4(),
       createdAt: new Date().toISOString(),
       projectId: flowStore.get.project.id,
-      steps: []
+      steps: [],
     }
     flowStore.initFlowData(draft)
     dataSurvey.value = responseDataSurvey
@@ -67,7 +68,7 @@ const handlePreviousClick = () => {
 }
 
 const handleFinalClick = () => {
-  if (dataSurvey.value !== undefined && dataSurvey.value.length > 0 && !isLoading.value) {
+  if (!isLoading.value) {
     isLoading.value = true
 
     const flowData = flowStore.get.flowData
@@ -94,11 +95,7 @@ const handleFinalClick = () => {
 
     setTimeout(() => {
       router.push({ path: `${PATH.result}/${projectFlowStore.id}` })
-    }, 2500)
-  } else {
-    setTimeout(() => {
-      router.push(PATH.flow)
-    }, 2500)
+    }, 500)
   }
 }
 
@@ -114,7 +111,7 @@ const handleToggleChanged = (pointIndex: number, value: boolean) => {
   addToFlowStore()
 }
 
-const handleInputChanged = (pointIndex: number, value: number) => {
+const handleInputChanged = (pointIndex: number, value: number | null) => {
   dataSurvey.value[currentStep.value].rules[pointIndex].value = Number(value)
   addToFlowStore()
 }
@@ -126,7 +123,7 @@ const handleInputChanged = (pointIndex: number, value: number) => {
   <CContainer v-if="dataSurvey.length > 0">
     <CRow>
       <CCol :lg="12" :xs="12">
-        <StepView :title="dataSurvey[currentStep].title" :rules="dataSurvey[currentStep].rules"
+        <StepView :title="dataSurvey[currentStep].title" :rules="(dataSurvey[currentStep].rules)"
           :isStepSending="isLoading" @onToggleChanged="handleToggleChanged" @onInputChanged="handleInputChanged" />
       </CCol>
     </CRow>
@@ -155,10 +152,4 @@ const handleInputChanged = (pointIndex: number, value: number) => {
     </CRow>
   </CContainer>
 
-  <CRow v-else>
-    <CCol :lg="12">
-      <CSpinner variant="grow" />
-      <h4>Getting the survey</h4>
-    </CCol>
-  </CRow>
 </template>

@@ -1,19 +1,19 @@
 import type { ResultData } from '@/type/result.type'
-import type { userSurveyResult } from './userSurveyResult.output'
+import type { UserSurveyResultOutput } from './userSurveyResult.output'
 
 export function getCurrentProjectResult(
-  userSurveyResult: userSurveyResult,
+  userSurveyResult: UserSurveyResultOutput,
   currentProjectUuid: string
 ) {
   return userSurveyResult.getCurrentProjectResult(currentProjectUuid)
 }
 
-export function saveUserSurveyResult(userSurveyResult: userSurveyResult, data: ResultData) {
+export function saveUserSurveyResult(userSurveyResult: UserSurveyResultOutput, data: ResultData) {
   return userSurveyResult.saveUserSurveyResult(data)
 }
 
 export function deleteProjectResult(
-  userSurveyResult: userSurveyResult,
+  userSurveyResult: UserSurveyResultOutput,
   projectId: string,
   resultId: string
 ) {

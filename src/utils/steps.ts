@@ -134,7 +134,8 @@ const step3 = {
       description:
         'Deploy an API well designed and documented to increase the reuse rate. Rate based on number of different consumers',
       type: 'number',
-      ruleId: 'US06'
+      ruleId: 'US06',
+      formula: '(x * 50) - 50'
     },
     {
       id: 7,
@@ -142,7 +143,8 @@ const step3 = {
       ruleId: 'US07',
       point: 300,
       description: 'Monitor and decrease the error rate to avoid over processing',
-      type: 'number'
+      type: 'number',
+      formula: '(1 - (x / 100)) * 100'
     }
   ]
 }

@@ -18,6 +18,7 @@ export const WORDING = {
     title: 'Welcome',
     subtitle: 'Test your api\'s green score',
     mainButton: 'Start new survey',
+    draft: 'Continue draft',
     card: {
       title: 'last score',
       button: 'See details'

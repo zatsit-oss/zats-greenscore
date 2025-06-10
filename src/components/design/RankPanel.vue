@@ -6,7 +6,6 @@ const props = defineProps<{
 
 const valueList = ["A", "B", "C", "D", "E"]
 
-console.log(props.value)
 </script>
 
 <template>
@@ -19,7 +18,7 @@ console.log(props.value)
 <style scoped>
 .circle-container {
   display: flex;
-  gap: 2px;
+  gap: 0px;
   justify-content: center;
   align-items: center;
   position: relative;
@@ -36,12 +35,11 @@ console.log(props.value)
   transition: transform 0.3s ease, z-index 0.3s ease;
   position: relative;
   z-index: 1;
-  color: black;
-  border: 1px solid rgba(179, 168, 168, 0.388)
+  color: white;
 }
 
 .highlighted {
-  transform: scale(1.5);
+  transform: scale(1.4);
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
   z-index: 10;
 }
