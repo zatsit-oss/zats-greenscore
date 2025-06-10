@@ -1,11 +1,14 @@
 import type { DataSurvey } from '@/type/dataStepSurvey.type'
 import type { FlowStep, FlowStepRules } from '@/type/flow.type'
-function getFlowPoint(ruleType: string, rulePoint: number, flowValue: boolean | number) {
-  if (ruleType === 'toggle') {
-    return flowValue ? rulePoint : 0
-  } else {
-    return flowValue === 0 ? 0 : rulePoint
-  }
+
+
+function getFlowPoint(ruleType: string, rulePoint: number, flowValue: boolean | number, formula: string | undefined) {
+  if (ruleType === 'toggle') return flowValue ? rulePoint : 0
+  else if (typeof flowValue === 'number' && formula) {
+    const x = flowValue
+    const percent = Math.max(0, Math.min(100, eval(formula)))
+    return (rulePoint * percent) / 100;
+  } else return 0
 }
 
 function computeTotalPoints(dataSurvey: DataSurvey[], resultsFlow: FlowStep[]) {
@@ -13,7 +16,8 @@ function computeTotalPoints(dataSurvey: DataSurvey[], resultsFlow: FlowStep[]) {
     const d = step.rules.reduce((acc: number, rule: FlowStepRules, stepPointsIndex: number) => {
       const rulePoint = dataSurvey[flowIndex].rules[stepPointsIndex].point
       const ruleType = dataSurvey[flowIndex].rules[stepPointsIndex].type
-      const point = getFlowPoint(ruleType, rulePoint, rule.value)
+      const formula = dataSurvey[flowIndex].rules[stepPointsIndex].formula
+      const point = getFlowPoint(ruleType, rulePoint, rule.value, formula)
       return point + acc
     }, 0)
     return acc + d

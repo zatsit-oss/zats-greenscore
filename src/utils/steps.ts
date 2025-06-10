@@ -133,8 +133,9 @@ const step3 = {
       id: 6,
       description:
         'Deploy an API well designed and documented to increase the reuse rate. Rate based on number of different consumers',
-      type: 'toggle',
-      ruleId: 'US06'
+      type: 'number',
+      ruleId: 'US06',
+      formula: '(x * 50) - 50'
     },
     {
       id: 7,
@@ -142,7 +143,8 @@ const step3 = {
       ruleId: 'US07',
       point: 300,
       description: 'Monitor and decrease the error rate to avoid over processing',
-      type: 'input'
+      type: 'number',
+      formula: '(1 - (x / 100)) * 100'
     }
   ]
 }
@@ -168,13 +170,15 @@ export const DATA_FLOW_STEPS: Step[] = [step1, step2, step3, step4]
 export type Step = {
   section: string
   title: string
-  rules: {
-    title: string
-    ruleId: string
-    id: number
-    description: string
-    type: string
-    point: number
-  }[]
+  rules: Rules[]
   id: number
+}
+export type Rules = {
+  title: string
+  ruleId: string
+  id: number
+  description: string
+  detail?: string
+  type: string
+  point: number
 }

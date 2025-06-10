@@ -1,13 +1,13 @@
 type rules = {
-    description: string;
-    id: number;
-    point: number;
-    ruleId: string;
-    title: string;
-    type: string
-  }
-  
- export type data = {
+  description: string;
+  id: number;
+  point: number;
+  ruleId: string;
+  title: string;
+  type: string
+}
+
+export type data = {
   section: string;
   id: number;
   title: string;
@@ -23,6 +23,8 @@ export type DataSurveyRules = {
   type: string;
   checked: boolean | null;
   value: number | null;
+  detail: string | null;
+  formula? : string
 }
 
 export type DataSurvey = {

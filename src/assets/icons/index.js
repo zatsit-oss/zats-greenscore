@@ -1,4 +1,12 @@
-import { cilArrowLeft, cilArrowRight, cilContrast, cilMoon, cilSun, cilTrash } from '@coreui/icons'
+import {
+  cilArrowLeft,
+  cilArrowRight,
+  cilContrast,
+  cilInfo,
+  cilMoon,
+  cilSun,
+  cilTrash
+} from '@coreui/icons'
 
 export const iconsSet = Object.assign(
   {},
@@ -8,6 +16,7 @@ export const iconsSet = Object.assign(
     cilSun,
     cilTrash,
     cilArrowLeft,
-    cilArrowRight
+    cilArrowRight,
+    cilInfo
   }
 )
