@@ -31,7 +31,7 @@ describe('getRankingScore', () => {
         }
     ]
 
-    it('should return A for high score', () => {
+    it('should return C for high score', () => {
         const results: FlowStep[] = [{ id: 0, rules: [{ id: 0, value: true }, { id: 1, value: 100 }] }]
         expect(getRankingScore(mockDataSurvey, results)).toBe('C')
     })

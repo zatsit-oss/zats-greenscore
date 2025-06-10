@@ -26,7 +26,8 @@ function computeTotalPoints(dataSurvey: DataSurvey[], resultsFlow: FlowStep[]) {
 
 export function getRankingScore(dataSurvey: DataSurvey[], value: any) {
   const totalPoint = computeTotalPoints(dataSurvey, value)
-  if (totalPoint > 6000) {
+
+  if (totalPoint >= 6000) {
     return 'A'
   }
   if (totalPoint >= 3000 && totalPoint < 6000) {
