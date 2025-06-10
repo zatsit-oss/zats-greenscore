@@ -2,7 +2,7 @@ import type { DataSurvey } from '@/type/dataStepSurvey.type'
 import type { FlowStep, FlowStepRules } from '@/type/flow.type'
 
 
-function getFlowPoint(ruleType: string, rulePoint: number, flowValue: boolean | number, formula: string | undefined) {
+export function getFlowPoint(ruleType: string, rulePoint: number, flowValue: boolean | number, formula: string | undefined) {
   if (ruleType === 'toggle') return flowValue ? rulePoint : 0
   else if (typeof flowValue === 'number' && formula) {
     const x = flowValue
