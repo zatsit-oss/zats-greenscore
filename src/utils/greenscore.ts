@@ -5,8 +5,8 @@ import type { FlowStep, FlowStepRules } from '@/type/flow.type'
 export function getFlowPoint(ruleType: string, rulePoint: number, flowValue: boolean | number, formula: string | undefined) {
   if (ruleType === 'toggle') return flowValue ? rulePoint : 0
   else if (typeof flowValue === 'number' && formula) {
-    const x = flowValue
-    const percent = Math.max(0, Math.min(100, eval(formula)))
+    const func = new Function('x', `return ${formula}`);
+    const percent = Math.max(0, Math.min(100, func(flowValue)));
     return (rulePoint * percent) / 100;
   } else return 0
 }
