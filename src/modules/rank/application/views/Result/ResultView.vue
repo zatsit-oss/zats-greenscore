@@ -94,6 +94,13 @@ onMounted(() => {
               </CCard>
             </CCol>
           </CRow>
+          <CRow>
+            <div class="d-flex justfy-content-end mt-3 mb-3">
+              <CButton class="w-100" color="primary" size="sm" :href="`${PATH.home}`">{{
+                WORDING.finalStep.button }}</CButton>
+            </div>
+
+          </CRow>
         </CCardBody>
       </CCard>
     </CCol>
