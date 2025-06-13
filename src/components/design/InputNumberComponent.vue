@@ -45,6 +45,7 @@ const openModal = () => {
 
 <style>
 .input {
+  max-width: 100%;
   width: 5rem;
 }
 </style>
