@@ -3,7 +3,7 @@ import type { data } from '@/type/dataStepSurvey.type'
 import { DATA_FLOW_STEPS, type Rules } from '@/utils/steps'
 import DETAILS from '../../../../../config/fields-detail.json'
 
-function buildDataSurvey(response: data[]) {
+export function buildDataSurvey(response: data[]) {
   return response
     .map((step) => ({
       ...step,
@@ -12,7 +12,7 @@ function buildDataSurvey(response: data[]) {
     .sort((stepA, stepB) => stepA.id - stepB.id)
 }
 
-function buildRules(rules: Rules[]) {
+export function buildRules(rules: Rules[]) {
   return rules.map((rule) => ({
     ...rule,
     checked: rule.type === 'toggle' ? false : null,

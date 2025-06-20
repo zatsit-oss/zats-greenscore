@@ -18,13 +18,12 @@ const openModal = () => {
 
 <template>
   <CRow class="d-flex justify-content-center align-items-center">
-    <CCol :lg="10" :xs="10">
-      <p class="d-flex align-items-center gap-3">
-        <CIcon icon="cil-info" size="xl" class="text-primary" style="cursor: pointer" @click="openModal" />
-        {{ label }}
+    <CCol :lg="10" :xs="9">
+      <p>
+        {{ label }} <span @click="openModal">ℹ️</span>
       </p>
     </CCol>
-    <CCol :lg="2" :xs="2">
+    <CCol :lg="2" :xs="3">
       <CFormSwitch size="xl" v-bind="$attrs" type="checkbox" :disabled="disabled" :checked="checked"
         @change="$emit('update:checked', $event.target.checked)" />
     </CCol>

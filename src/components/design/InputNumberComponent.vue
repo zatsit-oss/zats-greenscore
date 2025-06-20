@@ -29,14 +29,13 @@ const openModal = () => {
 
 <template>
   <CRow class="d-flex justify-content-center align-items-center">
-    <CCol :lg="10" :xs="10">
-      <p class="d-flex align-items-center gap-3">
-        <CIcon icon="cil-info" size="xl" class="text-primary" style="cursor: pointer" @click="openModal" />
-        {{ label }}
+    <CCol :lg="10" :xs="9">
+      <p>
+        {{ label }} <span @click="openModal">ℹ️</span>
       </p>
     </CCol>
-    <CCol :lg="2" :xs="2">
-      <CFormInput id="numberInput" type="number" v-model="valueRef" :min="0" :max="100" :step="1" class="mt-2 test"
+    <CCol :lg="2" :xs="3">
+      <CFormInput id="numberInput" type="number" v-model="valueRef" :min="0" :max="100" :step="1" class="mt-2 input"
         @blur="onChange(valueRef)" />
     </CCol>
   </CRow>
@@ -45,8 +44,8 @@ const openModal = () => {
 </template>
 
 <style>
-.test {
-  width: 6rem;
-  /* ajustable */
+.input {
+  max-width: 100%;
+  width: 5rem;
 }
 </style>
