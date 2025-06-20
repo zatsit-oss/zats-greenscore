@@ -73,7 +73,7 @@ onMounted(() => {
           <CRow class="mt-3" v-if="projectResult">
             <CCol :lg="6" :xs="12" class="mb-2" v-for="(step, currentStep) in projectResult.result.steps"
               :key="step.id">
-              <CCard class="custom-card">
+              <CCard class="custom-card h-100">
                 <CCardBody>
                   <CRow class="mb-2">
                     <h4>{{ dataSurvey[currentStep].title }}</h4>
@@ -93,6 +93,13 @@ onMounted(() => {
                 </CCardBody>
               </CCard>
             </CCol>
+          </CRow>
+          <CRow>
+            <div class="d-flex justfy-content-end mt-3 mb-3">
+              <CButton class="w-100" color="primary" size="sm" :href="`${PATH.home}`">{{
+                WORDING.finalStep.button }}</CButton>
+            </div>
+
           </CRow>
         </CCardBody>
       </CCard>

@@ -74,7 +74,65 @@ const step2 = {
       description: 'Prefer opaque token usage prior to JWT',
       ruleId: 'DE04',
       id: 4
-    }
+    },
+    {
+      title: 'Align cache resfresh strategy with the data source',
+      type: 'toggle',
+      point: 96,
+      description: 'Align cache resfresh strategy with the data source',
+      ruleId: 'DE05',
+      id: 5
+    },
+    {
+      title: 'Allow a part cache refresh',
+      type: 'toggle',
+      point: 96,
+      description: 'Allow a part cache refresh',
+      ruleId: 'DE06',
+      id: 6
+    },
+    {
+      title: 'Use business & Cx APIs closer to the business need',
+      type: 'toggle',
+      point: 240,
+      description: 'Use business & Cx APIs closer to the business need',
+      ruleId: 'DE07',
+      id: 7
+    },
+    {
+      title: 'Implement filtering mechanism to limit the payload size',
+      type: 'toggle',
+      point: 60,
+      description: 'Implement filtering mechanism to limit the payload size',
+      ruleId: 'DE08',
+      id: 8
+    },
+    {
+      title: 'Leverage OData or GraphQL when relevant',
+      type: 'toggle',
+      point: 240,
+      description: 'Leverage OData or GraphQL when relevant',
+      ruleId: 'DE09',
+      id: 9
+    },
+    {
+      title: 'Avoid redundant data information in the same API',
+      type: 'toggle',
+      point: 120,
+      description: 'Avoid redundant data information in the same API',
+      ruleId: 'DE10',
+      id: 10
+    },
+    {
+      title: 'Implement pagination mechanism to limit the payload size',
+      type: 'toggle',
+      point: 60,
+      description: 'Implement pagination mechanism to limit the payload size',
+      ruleId: 'DE11',
+      id: 11
+    },
+
+
   ]
 }
 

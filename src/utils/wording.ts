@@ -41,10 +41,7 @@ export const WORDING = {
     title: '📋  Logs'
   },
   finalStep: {
-    title: '📊 Rank result',
-    scoreTitle: 'My score',
-    resumeTitle: 'Resume',
-    button: 'Start new survey'
+    button: 'Back Home'
   },
   theme: {
     light: 'Light',
