@@ -62,7 +62,7 @@ const step2 = {
     {
       point: 480,
       type: 'toggle',
-      description: 'Use the cache efficiently to avoid useless resources consumtion.',
+      description: 'Use the cache efficiently to avoid useless resources consumption.',
       ruleId: 'DE03',
       title: 'Existing API --> cache usage efficiency',
       id: 3
@@ -76,10 +76,10 @@ const step2 = {
       id: 4
     },
     {
-      title: 'Align cache resfresh strategy with the data source',
+      title: 'Align cache refresh strategy with the data source',
       type: 'toggle',
       point: 96,
-      description: 'Align cache resfresh strategy with the data source',
+      description: 'Align cache refresh strategy with the data source',
       ruleId: 'DE05',
       id: 5
     },
@@ -154,9 +154,9 @@ const step3 = {
       id: 2,
       point: 150,
       type: 'toggle',
-      description: 'Decomission end of life or not used APIs',
+      description: 'Decommission end of life or not used APIs',
       ruleId: 'US02',
-      title: 'Decomission end of life or not used APIs'
+      title: 'Decommission end of life or not used APIs'
     },
     {
       description: 'Compute resources saved & Network impact reduced',

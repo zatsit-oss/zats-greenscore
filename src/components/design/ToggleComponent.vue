@@ -18,9 +18,11 @@ const openModal = () => {
 
 <template>
   <CRow class="d-flex justify-content-center align-items-center">
+    <ModalComponent title="Description" :detail="detail" v-model:modelValue="showModal" />
+
     <CCol :lg="10" :xs="9">
       <p>
-        {{ label }} <span @click="openModal">ℹ️</span>
+        <span @click="openModal">ℹ️</span> {{ label }}
       </p>
     </CCol>
     <CCol :lg="2" :xs="3">
@@ -28,8 +30,6 @@ const openModal = () => {
         @change="$emit('update:checked', $event.target.checked)" />
     </CCol>
   </CRow>
-
-  <ModalComponent title="Description" :detail="detail" v-model:modelValue="showModal" />
 </template>
 
 <style>
