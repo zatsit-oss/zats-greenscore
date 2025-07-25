@@ -37,7 +37,9 @@ const openModal = () => {
         >
           ℹ️
         </span>
-        <span class="fw-medium">{{ props.label }}</span>
+        <p>
+          {{ label }}
+        </p>
       </div>
     </CCol>
 
@@ -61,12 +63,21 @@ const openModal = () => {
 }
 
 .info-icon {
-  margin-top: 2px; /* décale légèrement vers le bas pour un meilleur alignement */
-  font-size: 1.1rem;
-  color: #5a5a5a;
+  cursor: pointer;
+  color: var(--cui-body-color, #adb5bd);
+  font-weight: bold;
 }
 
-.info-icon:hover {
-  opacity: 1;
+p {
+  margin-bottom: 0;
+  font-size: 0.95rem;
+}
+
+.text-light {
+  color: #f8f9fa !important;
+}
+
+.text-muted {
+  color: #6c757d !important;
 }
 </style>

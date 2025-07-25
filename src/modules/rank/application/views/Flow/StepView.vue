@@ -33,7 +33,6 @@ const handleInputChanged = (pointIndex: number, value: number | null) => {
           <CRow
               v-for="(rule, index) in props.rules"
               :key="index"
-              :class="['rule-row', index % 2 === 0 ? 'bg-light' : '', 'align-items-center']"
           >
             <CCol class="d-flex justify-content-between align-items-center">
               <div class="w-100">
@@ -81,6 +80,8 @@ const handleInputChanged = (pointIndex: number, value: number | null) => {
 .custom-card {
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.04);
+  width: 100%;
+
 }
 
 .input {
