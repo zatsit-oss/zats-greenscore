@@ -29,23 +29,52 @@ const openModal = () => {
 
 <template>
   <CRow class="d-flex justify-content-center align-items-center">
+  <ModalComponent
+      title="Description" :detail="detail"
+      v-model:modelValue="showModal" />
     <CCol :lg="10" :xs="9">
-      <p>
-        {{ label }} <span @click="openModal">ℹ️</span>
-      </p>
+      <div class="d-flex align-items-center gap-3">
+              <span
+                  v-if="props.detail"
+                  @click="openModal"
+                  class="info-icon"
+                  title="Voir plus d'infos"
+              >
+          ℹ️
+        </span>
+        <p>
+          {{ label }}
+        </p>
+      </div>
     </CCol>
     <CCol :lg="2" :xs="3">
       <CFormInput id="numberInput" type="number" v-model="valueRef" :min="0" :max="100" :step="1" class="mt-2 input"
         @blur="onChange(valueRef)" />
     </CCol>
   </CRow>
-
-  <ModalComponent title="Description" :detail="detail" v-model:modelValue="showModal" />
 </template>
 
 <style>
 .input {
   max-width: 100%;
   width: 5rem;
+}
+.info-icon {
+  cursor: pointer;
+  color: var(--cui-body-color, #adb5bd);
+  font-weight: bold;
+}
+
+p {
+  margin-bottom: 0;
+  font-size: 0.95rem;
+}
+
+.text-light {
+  color: #f8f9fa !important;
+}
+
+.text-muted {
+  color: #6c757d !important;
 }
 </style>
