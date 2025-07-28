@@ -18,15 +18,12 @@ const openModal = () => {
 
 <template>
   <CRow class="align-items-center py-3">
-    <!-- Modale -->
     <ModalComponent
         v-if="props.detail"
         title="Description"
         :detail="props.detail"
         v-model:modelValue="showModal"
     />
-
-    <!-- Label + Info -->
     <CCol :lg="10" :xs="9">
       <div class="d-flex align-items-center gap-3">
         <span
