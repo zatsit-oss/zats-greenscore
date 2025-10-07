@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { getRankingColor } from '@/utils/greenscore'
+import RankingLeafs from './RankingLeafs.vue'
+
 const props = defineProps<{
   value: string
 }>()
@@ -10,15 +11,14 @@ const valueList = ["A", "B", "C", "D", "E"]
 
 <template>
   <div class="circle-container">
-    <div v-for="v in valueList" class="circle" :class="{ highlighted: v === props.value }"
-      :style="{ backgroundColor: `var(${getRankingColor(v)})` }">{{ v }}</div>
+    <RankingLeafs :value="props.value" />
   </div>
 </template>
 
 <style scoped>
 .circle-container {
   display: flex;
-  gap: 0px;
+  gap: 5px;
   justify-content: center;
   align-items: center;
   position: relative;
