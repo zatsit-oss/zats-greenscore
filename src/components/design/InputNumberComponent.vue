@@ -28,10 +28,10 @@ const openModal = () => {
 </script>
 
 <template>
-  <CRow class="d-flex justify-content-center align-items-center">
   <ModalComponent
       title="Description" :detail="detail"
       v-model:modelValue="showModal" />
+  <CRow class="d-flex justify-content-center align-items-center">
     <CCol :lg="10" :xs="9">
       <div class="d-flex align-items-center gap-3">
               <span
