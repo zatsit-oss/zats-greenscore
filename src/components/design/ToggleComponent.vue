@@ -17,13 +17,13 @@ const openModal = () => {
 </script>
 
 <template>
+  <ModalComponent
+      v-if="props.detail"
+      title="Description"
+      :detail="props.detail"
+      v-model:modelValue="showModal"
+  />
   <CRow class="align-items-center py-3">
-    <ModalComponent
-        v-if="props.detail"
-        title="Description"
-        :detail="props.detail"
-        v-model:modelValue="showModal"
-    />
     <CCol :lg="10" :xs="9">
       <div class="d-flex align-items-center gap-3">
         <span
