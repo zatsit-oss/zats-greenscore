@@ -25,7 +25,7 @@ const close = () => emit('update:modelValue', false)
     </CModalBody>
 
     <CModalFooter>
-      <CButton color="primary" @click="close">Fermer</CButton>
+      <CButton color="primary" @click="close">Close</CButton>
     </CModalFooter>
   </CModal>
 </template>
