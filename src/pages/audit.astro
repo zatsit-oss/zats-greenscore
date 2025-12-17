@@ -11,6 +11,7 @@ interface Question {
 	id: string;
 	question: string;
 	description: string;
+	tooltip?: string;
 }
 
 const sections = (questions as Question[]).reduce(

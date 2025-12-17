@@ -4,6 +4,7 @@ interface Props {
         id: string;
         question: string;
         description: string;
+        tooltip?: string;
     };
 }
 
@@ -19,9 +20,35 @@ const { question: q } = Astro.props;
         >
             {q.id}
         </span>
-        <h3 class="text-base font-semibold text-[var(--color-text)]">
-            {q.question}
-        </h3>
+        <div class="flex items-center gap-2 flex-1">
+            <h3 class="text-base font-semibold text-[var(--color-text)]">
+                {q.question}
+            </h3>
+            {q.tooltip && (
+                <button
+                    type="button"
+                    class="info-icon-btn flex-shrink-0 w-5 h-5 rounded-full bg-slate-600/20 hover:bg-slate-600/40 border border-slate-600/40 hover:border-[var(--color-primary)] flex items-center justify-center transition-colors cursor-pointer group"
+                    data-tooltip={q.tooltip}
+                    data-question-id={q.id}
+                    aria-label="Afficher plus d'informations"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        class="w-3.5 h-3.5 text-slate-400 group-hover:text-[var(--color-primary)] transition-colors"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"
+                        />
+                    </svg>
+                </button>
+            )}
+        </div>
     </div>
     <p class="text-sm text-slate-400 mb-4 ml-14">
         {q.description}
@@ -57,3 +84,172 @@ const { question: q } = Astro.props;
         }
     </div>
 </div>
+
+<!-- Tooltip Modal -->
+<div
+    id={`tooltip-modal-${q.id}`}
+    class="tooltip-modal fixed inset-0 z-[9999] hidden items-center justify-center p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby={`tooltip-title-${q.id}`}
+    style="position: fixed; top: 0; left: 0; right: 0; bottom: 0;"
+>
+    <div
+        class="modal-overlay fixed inset-0 bg-black/60 backdrop-blur-lg transition-opacity"
+        data-modal-close={`tooltip-modal-${q.id}`}
+        style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9998;"
+    ></div>
+    <div
+        class="modal-content relative z-[10000] max-w-2xl w-full max-h-[90vh] overflow-y-auto bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg shadow-xl p-6 transform transition-all"
+    >
+        <div class="flex items-start justify-between mb-4">
+            <h2
+                id={`tooltip-title-${q.id}`}
+                class="text-xl font-semibold text-[var(--color-text)] pr-4"
+            >
+                {q.question}
+            </h2>
+            <button
+                type="button"
+                class="modal-close flex-shrink-0 w-8 h-8 rounded-full bg-slate-600/20 hover:bg-slate-600/40 border border-slate-600/40 hover:border-[var(--color-primary)] flex items-center justify-center transition-colors cursor-pointer"
+                data-modal-close={`tooltip-modal-${q.id}`}
+                aria-label="Fermer"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    class="w-5 h-5 text-slate-400 hover:text-[var(--color-primary)] transition-colors"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                    />
+                </svg>
+            </button>
+        </div>
+        <div
+            class="tooltip-content text-[var(--color-text)] whitespace-pre-line text-sm leading-relaxed"
+            data-tooltip-content={q.id}
+        >
+            {q.tooltip || ""}
+        </div>
+    </div>
+</div>
+
+<style>
+    .tooltip-modal {
+        display: none;
+    }
+
+    .tooltip-modal.show {
+        display: flex;
+    }
+
+    .modal-content {
+        animation: modalFadeIn 0.2s ease-out;
+    }
+
+    /* Apply blur to entire page when modal is open */
+    body.modal-open {
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* Ensure modal overlay covers everything and blurs the entire page */
+    .modal-overlay {
+        backdrop-filter: blur(8px) !important;
+        -webkit-backdrop-filter: blur(8px) !important;
+    }
+
+    /* Ensure modal and its content are not blurred */
+    .tooltip-modal,
+    .tooltip-modal * {
+        filter: none !important;
+        pointer-events: auto;
+    }
+
+    @keyframes modalFadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95) translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+</style>
+
+<script define:vars={{ questionId: q.id }}>
+    if (typeof document !== "undefined") {
+        const infoBtn = document.querySelector(
+            `.info-icon-btn[data-question-id="${questionId}"]`,
+        );
+        let modal = document.getElementById(`tooltip-modal-${questionId}`);
+        let modalMovedToBody = false;
+
+        if (infoBtn && modal) {
+            // Close modal function
+            const closeModal = () => {
+                if (modal) {
+                    modal.classList.remove("show");
+                    document.body.style.overflow = "";
+                    document.body.classList.remove("modal-open");
+                }
+            };
+
+            // Move modal to body on first open to ensure backdrop-blur works on entire page
+            const moveModalToBody = () => {
+                if (!modalMovedToBody && modal && modal.parentElement !== document.body) {
+                    document.body.appendChild(modal);
+                    modalMovedToBody = true;
+                    
+                    // Re-attach close handlers after moving
+                    const closeButtons = document.querySelectorAll(
+                        `[data-modal-close="tooltip-modal-${questionId}"]`,
+                    );
+                    closeButtons.forEach((btn) => {
+                        btn.addEventListener("click", closeModal);
+                    });
+                }
+            };
+
+            // Open modal
+            infoBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Move modal to body if not already moved
+                moveModalToBody();
+                
+                // Re-query modal after moving
+                modal = document.getElementById(`tooltip-modal-${questionId}`);
+
+                if (modal) {
+                    modal.classList.add("show");
+                    document.body.style.overflow = "hidden";
+                    document.body.classList.add("modal-open");
+                }
+            });
+
+            // Attach close handlers initially
+            const closeButtons = document.querySelectorAll(
+                `[data-modal-close="tooltip-modal-${questionId}"]`,
+            );
+            closeButtons.forEach((btn) => {
+                btn.addEventListener("click", closeModal);
+            });
+
+            // Close on Escape key
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && modal && modal.classList.contains("show")) {
+                    closeModal();
+                }
+            });
+        }
+    }
+</script>
