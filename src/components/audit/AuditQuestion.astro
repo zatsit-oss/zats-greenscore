@@ -1,0 +1,59 @@
+---
+interface Props {
+    question: {
+        id: string;
+        question: string;
+        description: string;
+    };
+}
+
+const { question: q } = Astro.props;
+---
+
+<div
+    class="p-4 rounded-lg bg-white/5 border border-transparent hover:border-[var(--color-border)] transition-colors"
+>
+    <div class="flex gap-4 items-baseline mb-2">
+        <span
+            class="font-mono text-sm text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded"
+        >
+            {q.id}
+        </span>
+        <h3 class="text-base font-semibold text-[var(--color-text)]">
+            {q.question}
+        </h3>
+    </div>
+    <p class="text-sm text-slate-400 mb-4 ml-14">
+        {q.description}
+    </p>
+
+    <div class="flex gap-6 ml-14 flex-wrap">
+        {
+            ["US06", "US07"].includes(q.id) ? (
+                <div class="flex items-center gap-2">
+                    <input
+                        type="number"
+                        name={q.id}
+                        class="bg-slate-900/50 border border-[var(--color-border)] rounded-lg p-2 text-[var(--color-text)] w-24 focus:outline-none focus:border-[var(--color-primary)]"
+                        placeholder="0"
+                        min="0"
+                    />
+                    <span class="text-sm text-slate-400">hours/year</span>
+                </div>
+            ) : (
+                <label class="relative inline-flex items-center gap-4 cursor-pointer group">
+                    <input
+                        type="checkbox"
+                        name={q.id}
+                        value="yes"
+                        class="peer sr-only"
+                    />
+                    <span class="relative inline-block w-14 h-7 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full transition-all duration-300 group-hover:border-[var(--color-primary)] peer-checked:bg-emerald-500/20 peer-checked:border-[var(--color-primary)] after:content-[''] after:absolute after:h-5 after:w-5 after:left-1 after:bottom-0.5 after:bg-slate-400 after:rounded-full after:transition-all after:duration-300 peer-checked:after:translate-x-7 peer-checked:after:bg-[var(--color-primary)]" />
+                    <span class="text-sm font-medium text-[var(--color-text)]">
+                        Compliant
+                    </span>
+                </label>
+            )
+        }
+    </div>
+</div>

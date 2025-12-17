@@ -1,0 +1,165 @@
+[
+  {
+    "section": "Architecture",
+    "id": "AR01",
+    "question": "Use Event Driven Architecture to avoid polling madness and inform subscribers of an update",
+    "description": "Use Event Driven Architecture to avoid polling madness.",
+    "points": 375
+  },
+  {
+    "section": "Architecture",
+    "id": "AR02",
+    "question": "API runtime close to the Consumer",
+    "description": "Deploy the API near the consumer",
+    "points": 375
+  },
+  {
+    "section": "Architecture",
+    "id": "AR03",
+    "question": "Ensure the same API does not exist *",
+    "description": "Ensure only one API fit the same need",
+    "points": 375
+  },
+  {
+    "section": "Architecture",
+    "id": "AR04",
+    "question": "Use scalable infrastructure to avoid over-provisioning",
+    "description": "Use scalable infrastructure to avoid over-provisioning",
+    "points": 375
+  },
+  {
+    "section": "Design",
+    "id": "DE01",
+    "question": "Choose an exchange format with the smallest size (JSON is smallest than XML)",
+    "description": "Prefer an exchange format with the smallest size (JSON is smaller than XML).",
+    "points": 600
+  },
+  {
+    "section": "Design",
+    "id": "DE02",
+    "question": "new API --> cache usage",
+    "description": "Use cache to avoid useless requests and preserve compute resources.",
+    "points": 360
+  },
+  {
+    "section": "Design",
+    "id": "DE03",
+    "question": "Existing API --> cache usage efficiency",
+    "description": "Use the cache efficiently to avoid useless resources consumtion.",
+    "points": 480
+  },
+  {
+    "section": "Design",
+    "id": "DE04",
+    "question": "Opaque token usage",
+    "description": "Prefer opaque token usage prior to JWT",
+    "points": 48
+  },
+  {
+    "section": "Design",
+    "id": "DE05",
+    "question": "Align the cache refresh with the datasource **",
+    "description": "Align cache refresh strategy with the data source ",
+    "points": 96
+  },
+  {
+    "section": "Design",
+    "id": "DE06",
+    "question": "Allow part refresh of cache",
+    "description": "Allow a part cache refresh",
+    "points": 96
+  },
+  {
+    "section": "Design",
+    "id": "DE07",
+    "question": "Is System,  Business or cx API ?",
+    "description": "Use Business & Cx APIs closer to the business need",
+    "points": 240
+  },
+  {
+    "section": "Design",
+    "id": "DE08",
+    "question": "Possibility to filter results",
+    "description": "Implement filtering mechanism to limit the payload size",
+    "points": 60
+  },
+  {
+    "section": "Design",
+    "id": "DE09",
+    "question": "Leverage OData or GraphQL for your databases APIs",
+    "description": "Leverage OData or GraphQL when relevant",
+    "points": 240
+  },
+  {
+    "section": "Design",
+    "id": "DE10",
+    "question": "Redundant data information in the same API",
+    "description": "Avoid redundant data information in the same API",
+    "points": 120
+  },
+  {
+    "section": "Design",
+    "id": "DE11",
+    "question": "Possibility to fitler pagination results",
+    "description": "Implement pagination mechanism to limit the payload size",
+    "points": 60
+  },
+  {
+    "section": "Usage",
+    "id": "US01",
+    "question": "Use query parameters for GET Methods",
+    "description": "Implement filters to limit which data are returned by the API (send just the data the consumer need).",
+    "points": 75
+  },
+  {
+    "section": "Usage",
+    "id": "US02",
+    "question": "Decomission end of life or not used APIs",
+    "description": "Decomission end of life or not used APIs",
+    "points": 150
+  },
+  {
+    "section": "Usage",
+    "id": "US03",
+    "question": "Number of API version <=2 ",
+    "description": "Compute resources saved & Network impact reduced",
+    "points": 150
+  },
+  {
+    "section": "Usage",
+    "id": "US04",
+    "question": "Usage of Pagination of results available",
+    "description": "Optimize queries to limit the information returned to what is strictly necessary.",
+    "points": 150
+  },
+  {
+    "section": "Usage",
+    "id": "US05",
+    "question": "Choosing relevant data representation (user don’t need to do multiple calls) is Cx API ?",
+    "description": "Choose the correct API based on use case to avoid requests on multiple systems or large number of requests. Refer to the data catalog to validate the data source.",
+    "points": 300
+  },
+  {
+    "section": "Usage",
+    "id": "US06",
+    "question": "Number of Consumers",
+    "description": "Deploy an API well designed and documented to increase the reuse rate. Rate based on number of different consumers",
+    "points": 375,
+    "formula": "(x * 50) - 50"
+  },
+  {
+    "section": "Usage",
+    "id": "US07",
+    "question": "Error rate",
+    "description": "Monitor and decrease the error rate to avoid over processing",
+    "points": 300,
+    "formula": "(1 - (x / 100)) * 100"
+  },
+  {
+    "section": "Logs",
+    "id": "LO01",
+    "question": "Logs retention",
+    "description": "Align log retention period to the business need (ops and Legal)",
+    "points": 600
+  }
+]

@@ -1,0 +1,296 @@
+---
+import Layout from "../layouts/Layout.astro";
+import questions from "../data/surveyQuestions.json";
+import AuditStepper from "../components/audit/AuditStepper.astro";
+import AuditSection from "../components/audit/AuditSection.astro";
+import AuditNavigation from "../components/audit/AuditNavigation.astro";
+
+// Group questions by section
+interface Question {
+	section: string;
+	id: string;
+	question: string;
+	description: string;
+}
+
+const sections = (questions as Question[]).reduce(
+	(acc: Record<string, Question[]>, q: Question) => {
+		if (!acc[q.section]) {
+			acc[q.section] = [];
+		}
+		acc[q.section].push(q);
+		return acc;
+	},
+	{},
+);
+const urlParams = new URLSearchParams(Astro.url.search);
+const projectId = urlParams.get("projectId");
+const projectName = urlParams.get("projectName") || "New Project";
+const projectDesc = urlParams.get("projectDesc");
+---
+
+<Layout title={`Audit: ${projectName}`}>
+	<div class="max-w-4xl mx-auto">
+		<div class="mb-8">
+			<a
+				href="/"
+				class="text-slate-400 text-sm inline-flex items-center gap-2 mb-4 hover:text-[var(--color-primary)] transition-colors"
+			>
+				&larr; Back to Dashboard
+			</a>
+			<h1 class="text-3xl font-bold text-[var(--color-text)] mb-2">
+				Audit: {projectName}
+			</h1>
+			<p class="text-slate-400">
+				{
+					projectDesc ||
+						"Complete the survey to calculate the GreenScore."
+				}
+			</p>
+		</div>
+
+		<!-- Stepper -->
+		<AuditStepper sections={sections} />
+
+		<form class="flex flex-col gap-8 pb-24" id="auditForm">
+			{
+				Object.entries(sections).map(
+					([sectionName, sectionQuestions], index) => (
+						<AuditSection
+							sectionName={sectionName}
+							questions={sectionQuestions}
+							index={index}
+						/>
+					),
+				)
+			}
+
+			<AuditNavigation />
+		</form>
+	</div>
+</Layout>
+
+<script>
+	import { getRankingScore, calculateProjectScore } from "../utils/scoring";
+
+	let currentStep = 0;
+	const steps = document.querySelectorAll(".step-content");
+	const stepItems = document.querySelectorAll(".step-item");
+	const prevBtn = document.getElementById("prevBtn");
+	const nextBtn = document.getElementById("nextBtn");
+	const submitBtn = document.getElementById("submitBtn");
+	const totalSteps = steps.length;
+
+	function updateUI() {
+		// Show/Hide steps
+		steps.forEach((step, index) => {
+			if (index === currentStep) {
+				(step as HTMLElement).style.display = "block";
+			} else {
+				(step as HTMLElement).style.display = "none";
+			}
+		});
+
+		// Update Stepper
+		stepItems.forEach((item, index) => {
+			item.classList.remove("active", "completed");
+			if (index === currentStep) {
+				item.classList.add("active");
+			} else if (index < currentStep) {
+				item.classList.add("completed");
+			}
+		});
+
+		// Update Buttons
+		if (prevBtn)
+			prevBtn.style.display = currentStep === 0 ? "none" : "block";
+
+		if (currentStep === totalSteps - 1) {
+			if (nextBtn) nextBtn.style.display = "none";
+			if (submitBtn) submitBtn.style.display = "block";
+		} else {
+			if (nextBtn) nextBtn.style.display = "block";
+			if (submitBtn) submitBtn.style.display = "none";
+		}
+
+		// Scroll to top
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	}
+
+	nextBtn?.addEventListener("click", () => {
+		if (currentStep < totalSteps - 1) {
+			currentStep++;
+			updateUI();
+		}
+	});
+
+	prevBtn?.addEventListener("click", () => {
+		if (currentStep > 0) {
+			currentStep--;
+			updateUI();
+		}
+	});
+
+	// Initialize
+	updateUI();
+
+	const auditForm = document.getElementById("auditForm");
+
+	// Auto-save logic
+	const saveAnswers = () => {
+		const urlParams = new URLSearchParams(window.location.search);
+		const projectId = urlParams.get("projectId");
+		if (!projectId) return;
+
+		const inProgress = JSON.parse(
+			localStorage.getItem("inProgress") || "[]",
+		);
+		const projectIndex = inProgress.findIndex(
+			(p: any) => p.id === projectId,
+		);
+
+		if (projectIndex !== -1) {
+			const checkboxes = auditForm?.querySelectorAll(
+				'input[type="checkbox"]',
+			);
+			const numberInputs = auditForm?.querySelectorAll(
+				'input[type="number"]',
+			);
+			const answers: Record<string, any> = {};
+
+			checkboxes?.forEach((cb) => {
+				const input = cb as HTMLInputElement;
+				answers[input.name] = input.checked;
+			});
+
+			numberInputs?.forEach((num) => {
+				const input = num as HTMLInputElement;
+				answers[input.name] = input.value;
+			});
+
+			inProgress[projectIndex].answers = answers;
+			inProgress[projectIndex].updatedAt = new Date().toISOString();
+			localStorage.setItem("inProgress", JSON.stringify(inProgress));
+		}
+	};
+
+	// Load answers logic
+	const loadAnswers = () => {
+		const urlParams = new URLSearchParams(window.location.search);
+		const projectId = urlParams.get("projectId");
+		if (!projectId) return;
+
+		const inProgress = JSON.parse(
+			localStorage.getItem("inProgress") || "[]",
+		);
+		const project = inProgress.find((p: any) => p.id === projectId);
+
+		if (project && project.answers) {
+			Object.entries(project.answers).forEach(([key, value]) => {
+				const input = document.querySelector(
+					`input[name="${key}"]`,
+				) as HTMLInputElement;
+				if (input) {
+					if (input.type === "checkbox") {
+						input.checked = value as boolean;
+					} else if (input.type === "number") {
+						input.value = value as string;
+					}
+				}
+			});
+		}
+	};
+
+	// Attach change listeners for auto-save
+	auditForm?.querySelectorAll("input").forEach((input) => {
+		input.addEventListener("change", saveAnswers);
+	});
+
+	// Load answers on init
+	loadAnswers();
+
+	// Import questions for scoring
+	// We need these on the client side for the calculation
+	import surveyQuestions from "../data/surveyQuestions.json";
+
+	// Import toast
+	import { showToast } from "../utils/toast";
+
+	auditForm?.addEventListener("submit", (e) => {
+		e.preventDefault();
+
+		// Collect Answers
+		const checkboxes = auditForm.querySelectorAll('input[type="checkbox"]');
+		const numberInputs = auditForm.querySelectorAll('input[type="number"]');
+		const answers: Record<string, any> = {};
+
+		checkboxes.forEach((cb) => {
+			const input = cb as HTMLInputElement;
+			answers[input.name] = input.checked;
+		});
+
+		numberInputs.forEach((num) => {
+			const input = num as HTMLInputElement;
+			answers[input.name] = input.value;
+		});
+
+		// Calculate Score
+		const { avg: finalScore } = calculateProjectScore(
+			answers,
+			surveyQuestions as any[],
+		);
+		const finalRankingScore = getRankingScore(
+			answers,
+			surveyQuestions as any[],
+		);
+
+		// Update LocalStorage
+		const urlParams = new URLSearchParams(window.location.search);
+		const projectId = urlParams.get("projectId");
+
+		if (projectId) {
+			const inProgress = JSON.parse(
+				localStorage.getItem("inProgress") || "[]",
+			);
+			const projectIndex = inProgress.findIndex(
+				(p: any) => p.id === projectId,
+			);
+
+			if (projectIndex !== -1) {
+				const project = inProgress[projectIndex];
+				project.score = finalScore;
+				project.ranking = finalRankingScore;
+				project.status = "Completed";
+				project.updatedAt = new Date().toISOString();
+				// Keep answers for review or recalculation
+				project.answers = answers;
+
+				// Remove from inProgress
+				inProgress.splice(projectIndex, 1);
+				localStorage.setItem("inProgress", JSON.stringify(inProgress));
+
+				// Add to Completed
+				const completed = JSON.parse(
+					localStorage.getItem("Completed") || "[]",
+				);
+				completed.push(project);
+				localStorage.setItem("Completed", JSON.stringify(completed));
+
+				showToast(
+					`Audit Completed! Score: ${finalScore}/100`,
+					"success",
+				);
+				setTimeout(() => {
+					window.location.href = `/projects/view?id=${projectId}`; // Redirect to project view
+				}, 1500);
+			} else {
+				showToast(
+					"Project not found in progress list. Cannot save.",
+					"error",
+				);
+			}
+		} else {
+			showToast("No project ID found. Cannot save.", "error");
+		}
+	});
+</script>

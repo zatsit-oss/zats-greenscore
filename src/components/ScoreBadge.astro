@@ -1,0 +1,22 @@
+---
+interface Props {
+	score: number;
+}
+
+const { score } = Astro.props;
+
+let colorClass = "bg-slate-500/20 text-slate-400 border-slate-500/30";
+if (score >= 80)
+	colorClass =
+		"bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+else if (score >= 60)
+	colorClass = "bg-amber-500/20 text-amber-400 border border-amber-500/30";
+else colorClass = "bg-red-500/20 text-red-400 border border-red-500/30";
+---
+
+<div
+	class={`inline-flex items-baseline px-3 py-1 rounded-full font-bold text-xl ${colorClass}`}
+>
+	<span class="mr-0.5">{score}</span>
+	<span class="text-xs opacity-80 font-medium">/100</span>
+</div>
