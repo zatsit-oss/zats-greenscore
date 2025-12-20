@@ -1,0 +1,187 @@
+---
+import { getEcoLabel, getScoreColor, formatDate } from "../utils/ui";
+
+interface Props {
+    project?: any;
+}
+
+const { project = {} } = Astro.props;
+
+// Compute values for Server Side Rendering (or basic template structure)
+const isCompleted = project.status === "Completed";
+const score = project.score || 0;
+const ranking = project.ranking || "E";
+const label = getEcoLabel(score);
+const scoreColor = getScoreColor(score);
+const date = formatDate(project.updatedAt);
+
+// Dynamic Classes
+let statusClasses =
+    "status-badge text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider border";
+if (project.status === "Completed") {
+    statusClasses +=
+        " bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+} else if (project.status === "InProgress") {
+    statusClasses += " bg-amber-500/10 text-amber-400 border-amber-500/20";
+} else {
+    statusClasses += " bg-slate-500/10 text-slate-400 border-slate-500/20";
+}
+
+const linkHref = isCompleted
+    ? `/projects/view?id=${project.id}`
+    : `/audit?projectId=${project.id}&projectName=${encodeURIComponent(project.name || "")}&projectDesc=${encodeURIComponent(project.description || "")}`;
+---
+
+<a
+    href={linkHref}
+    class="project-card flex flex-col h-full p-6 rounded-xl bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border border-white/50 dark:border-white/10 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:border-[var(--color-primary)] no-underline"
+    data-project-id={project.id}
+>
+    <div class="flex justify-between items-start mb-4">
+        <div class={statusClasses}>
+            {project.status || "Status"}
+        </div>
+        <div class="text-right">
+            {
+                isCompleted ? (
+                    <>
+                        <div class="flex flex-col items-center gap-2">
+                            <div
+                                class="score-badge-completed inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border-2 text-lg font-bold"
+                                style={`border-color: ${scoreColor}; color: ${scoreColor};`}
+                            >
+                                {score}
+                            </div>
+                            <div
+                                class={`inline-flex items-center justify-center font-semibold mt-1 ${label.class}`}
+                            >
+                                <div class="leaf leaf-A">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="96"
+                                        height="96"
+                                        viewBox="0 0 96 96"
+                                        fill="none"
+                                    >
+                                        <path
+                                            d="M92.8326 0.00905925C94.5468 -0.134606 96.1367 1.45302 95.9907 3.16726C95.7788 5.60957 92.7401 61.1058 74.98 78.8667C57.9601 95.8874 37.9039 91.894 24.8067 82.4778C24.6484 82.3634 24.4706 82.227 24.2758 82.0712L12.4691 93.8615C9.61538 96.7128 4.99152 96.7128 2.14027 93.8615C-0.713423 91.0076 -0.713423 86.3835 2.14027 83.5322L13.9324 71.7273C13.7742 71.53 13.6378 71.3523 13.5234 71.194C4.11009 58.0985 0.114439 38.0414 17.1343 21.0183C34.8944 3.25736 90.388 0.216035 92.8326 0.00905925Z"
+                                            fill="#1E8F4E"
+                                        />
+                                        <path
+                                            fill-rule="evenodd"
+                                            clip-rule="evenodd"
+                                            d="M66.7122 63.8518C66.7122 66.2651 64.8805 67.9806 62.3219 67.9806C59.8506 67.9806 58.5422 66.8466 57.7572 64.1135L55.5475 57.4842H40.3997L38.19 64.0263C37.3759 66.8176 36.0675 67.9806 33.7416 67.9806C31.0086 67.9806 29.2932 66.3814 29.2932 63.8518C29.2932 63.1249 29.4967 62.1363 29.8746 61.0605L41.33 29.862C42.5512 26.4601 44.6155 24.89 47.93 24.89C51.3608 24.89 53.396 26.4019 54.6462 29.8329L66.1598 61.0605C66.5668 62.1945 66.7122 62.9795 66.7122 63.8518ZM42.3186 50.6804H53.5123L47.9591 33.4965H47.7556L42.3186 50.6804Z"
+                                            fill="white"
+                                        />
+                                    </svg>
+                                </div>
+                                <div class="leaf leaf-B">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="96"
+                                        height="96"
+                                        viewBox="0 0 96 96"
+                                        fill="none"
+                                    >
+                                        <path
+                                            d="M92.8326 0.00905925C94.5468 -0.134606 96.1367 1.45302 95.9907 3.16726C95.7788 5.60957 92.7401 61.1058 74.98 78.8667C57.9601 95.8874 37.9039 91.894 24.8067 82.4778C24.6484 82.3634 24.4706 82.227 24.2758 82.0712L12.4691 93.8615C9.61538 96.7128 4.99152 96.7128 2.14027 93.8615C-0.713423 91.0076 -0.713423 86.3835 2.14027 83.5322L13.9324 71.7273C13.7742 71.53 13.6378 71.3523 13.5234 71.194C4.11009 58.0985 0.114439 38.0414 17.1343 21.0183C34.8944 3.25736 90.3904 0.216035 92.8326 0.00905925Z"
+                                            fill="#2ECC71"
+                                        />
+                                        <path
+                                            fill-rule="evenodd"
+                                            clip-rule="evenodd"
+                                            d="M52.2042 67.4282C61.1592 67.4282 66.7124 62.8051 66.7124 55.4198C66.7124 49.8663 62.5257 45.7084 56.827 45.2723V45.0396C61.2755 44.3709 64.7063 40.5329 64.7063 35.9389C64.7063 29.5131 59.7636 25.4715 51.8844 25.4715H38.0158C35.2537 25.4715 33.6255 27.1579 33.6255 30.0364V62.8342C33.6255 65.7418 35.2537 67.4282 38.0158 67.4282H52.2042ZM48.7152 42.9171H42.406V32.0136H49.6165C53.716 32.0136 56.0711 33.9326 56.0711 37.3054C56.0711 40.8527 53.3962 42.9171 48.7152 42.9171ZM42.406 60.8861H49.9654C55.0244 60.8861 57.7574 58.7345 57.7574 54.722C57.7574 50.7967 54.9372 48.7032 49.7619 48.7032H42.406V60.8861Z"
+                                            fill="white"
+                                        />
+                                    </svg>
+                                </div>
+                                <div class="leaf leaf-C">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="96"
+                                        height="96"
+                                        viewBox="0 0 96 96"
+                                        fill="none"
+                                    >
+                                        <path
+                                            d="M92.8325 0.00905925C94.5467 -0.134606 96.1367 1.45302 95.9906 3.16726C95.7788 5.60957 92.74 61.1058 74.9795 78.8667C57.9567 95.8874 37.9025 91.894 24.8048 82.4778C24.6466 82.3634 24.4688 82.227 24.274 82.0712L12.4694 93.8615C9.61562 96.7128 4.99165 96.7128 2.14032 93.8615C-0.713441 91.0076 -0.713441 86.3835 2.14032 83.5322L13.9328 71.7273C13.7745 71.53 13.6382 71.3523 13.5237 71.194C4.1102 58.0985 0.114442 38.0414 17.1348 21.0183C34.8929 3.25736 90.3878 0.216035 92.8325 0.00905925Z"
+                                            fill="#F5C100"
+                                        />
+                                        <path
+                                            d="M49.2624 68.126C57.2 68.126 63.4512 64.5496 66.068 58.7344C66.5041 57.7168 66.7367 56.7863 66.7367 55.7978C66.7367 53.4717 65.1085 51.9016 62.6371 51.9016C60.7762 51.9016 59.6714 52.6866 58.77 54.6638C56.8801 58.8798 53.5656 60.8861 49.1461 60.8861C42.4297 60.8861 38.2138 55.3616 38.2138 46.4062C38.2138 37.5671 42.4878 32.0136 49.117 32.0136C53.3039 32.0136 56.7348 34.1652 58.6537 38.4394C59.6132 40.4747 60.8635 41.347 62.8406 41.347C65.1666 41.347 66.7076 39.8641 66.7076 37.5671C66.7076 36.5204 66.4169 35.3864 65.8354 34.2815C62.9569 28.2337 56.8801 24.7446 49.0298 24.7446C36.9635 24.7446 29.2585 32.9149 29.2585 46.4353C29.2585 59.9847 36.8181 68.126 49.2624 68.126Z"
+                                            fill="white"
+                                        />
+                                    </svg>
+                                </div>
+                                <div class="leaf leaf-D">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="96"
+                                        height="96"
+                                        viewBox="0 0 96 96"
+                                        fill="none"
+                                    >
+                                        <path
+                                            d="M92.8325 0.00905925C94.5467 -0.134606 96.1367 1.45302 95.9906 3.16726C95.7788 5.60957 92.74 61.1058 74.9795 78.8667C57.9591 95.8874 37.9025 91.894 24.8048 82.4778C24.6466 82.3634 24.4688 82.227 24.274 82.0712L12.4694 93.8615C9.61562 96.7128 4.99165 96.7128 2.14032 93.8615C-0.713441 91.0076 -0.713441 86.3835 2.14032 83.5322L13.9328 71.7273C13.7745 71.53 13.6382 71.3523 13.5237 71.194C4.1102 58.0985 0.114442 38.0414 17.1348 21.0183C34.8929 3.25736 90.3878 0.216035 92.8325 0.00905925Z"
+                                            fill="#EF7E1A"
+                                        />
+                                        <path
+                                            fill-rule="evenodd"
+                                            clip-rule="evenodd"
+                                            d="M68.9126 46.2899C68.9126 59.6067 61.4984 67.4282 48.9087 67.4282H37.2786C34.5164 67.4282 32.8882 65.7418 32.8882 62.8342V30.0364C32.8882 27.1579 34.5164 25.4715 37.2786 25.4715H48.9087C61.4984 25.4715 68.9126 32.9731 68.9126 46.2899ZM41.6689 60.1592H47.862C55.7124 60.1592 59.9574 55.3907 59.9574 46.319C59.9574 37.538 55.5961 32.7114 47.862 32.7114H41.6689V60.1592Z"
+                                            fill="white"
+                                        />
+                                    </svg>
+                                </div>
+                                <div class="leaf leaf-E">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="96"
+                                        height="96"
+                                        viewBox="0 0 96 96"
+                                        fill="none"
+                                    >
+                                        <path
+                                            d="M92.8325 0.00905925C94.5467 -0.134606 96.1367 1.45302 95.9906 3.16726C95.7788 5.60957 92.74 61.1058 74.9795 78.8667C57.9567 95.8874 37.9025 91.894 24.8048 82.4778C24.6466 82.3634 24.4688 82.227 24.274 82.0712L12.4694 93.8615C9.61562 96.7128 4.99165 96.7128 2.14032 93.8615C-0.713441 91.0076 -0.713441 86.3835 2.14032 83.5322L13.9328 71.7273C13.7745 71.53 13.6382 71.3523 13.5237 71.194C4.1102 58.0985 0.114442 38.0414 17.1348 21.0183C34.8904 3.25736 90.3878 0.216035 92.8325 0.00905925Z"
+                                            fill="#DE4523"
+                                        />
+                                        <path
+                                            d="M60.0678 67.4282C62.481 67.4282 64.0511 66.0616 64.0511 63.7937C64.0511 61.5257 62.452 60.1592 60.0678 60.1592H44.5125V49.5755H59.3118C61.5215 49.5755 62.9753 48.2962 62.9753 46.2027C62.9753 44.1092 61.4925 42.8299 59.3118 42.8299H44.5125V32.7405H60.0678C62.452 32.7405 64.0511 31.3739 64.0511 29.106C64.0511 26.8381 62.481 25.4715 60.0678 25.4715H40.1221C37.3599 25.4715 35.7317 27.1579 35.7317 30.0364V62.8342C35.7317 65.7418 37.3599 67.4282 40.1221 67.4282H60.0678Z"
+                                            fill="white"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    <div class="score-badge-pending inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border-2 border-dashed border-slate-400 text-slate-400 text-sm font-bold">
+                        --
+                    </div>
+                )
+            }
+        </div>
+    </div>
+    <h3
+        class="project-name text-xl font-semibold mb-2 text-[var(--color-text)]"
+    >
+        {project.name || "Project Name"}
+    </h3>
+    <p
+        class="project-desc text-sm text-slate-400 leading-relaxed mb-6 line-clamp-2 overflow-hidden"
+    >
+        {project.description || "Description"}
+    </p>
+    <div
+        class="mt-auto pt-4 border-t border-[var(--color-border)] flex justify-between items-center"
+    >
+        <span class="text-xs text-slate-500">
+            Updated <span class="project-date">{date}</span>
+        </span>
+        <span
+            class="action-text text-sm font-medium text-[var(--color-primary)]"
+        >
+            {isCompleted ? "View Details →" : "Continue Audit →"}
+        </span>
+    </div>
+</a>

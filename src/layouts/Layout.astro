@@ -1,0 +1,83 @@
+---
+import "../styles/global.css";
+import ThemeToggle from "../components/ThemeToggle.astro";
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="GreenScore Project Dashboard" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title} | API GreenScore</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<script is:inline>
+			// Immediate theme application to prevent flash
+			const theme = (() => {
+				if (
+					typeof localStorage !== "undefined" &&
+					localStorage.getItem("theme")
+				) {
+					return localStorage.getItem("theme");
+				}
+				if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+					return "dark";
+				}
+				return "light";
+			})();
+			if (theme === "light") {
+				document.documentElement.setAttribute("data-theme", "light");
+			} else {
+				document.documentElement.setAttribute("data-theme", "dark");
+			}
+			window.localStorage.setItem("theme", theme);
+		</script>
+	</head>
+	<body>
+		<nav class="glass sticky top-0 z-50 py-4 mb-8">
+			<div
+				class="container mx-auto px-4 flex justify-between items-center"
+			>
+				<a href="/" class="text-2xl font-bold flex items-center gap-2">
+					<span class="text-gradient">API GreenScore</span>
+				</a>
+				<div class="flex gap-6 items-center">
+					<a
+						href="/"
+						class="font-medium text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors"
+						>Projects</a
+					>
+					<a
+						href="/projects/new"
+						class="inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition-all hover:-translate-y-px text-sm"
+						>+ New Project</a
+					>
+					<ThemeToggle />
+				</div>
+			</div>
+		</nav>
+		<main class="container mx-auto px-4">
+			<slot />
+		</main>
+		<footer
+			class="mt-16 py-8 text-center text-slate-500 border-t border-[var(--color-border)]"
+		>
+			<p>
+				&copy; {new Date().getFullYear()} GreenScore. All rights reserved.
+			</p>
+		</footer>
+	</body>
+</html>

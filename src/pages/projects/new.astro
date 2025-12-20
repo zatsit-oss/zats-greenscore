@@ -1,0 +1,112 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="New Project">
+	<div class="max-w-2xl mx-auto">
+		<div class="mb-8">
+			<a
+				href="/"
+				class="text-slate-400 text-sm inline-flex items-center gap-2 mb-4 hover:text-[var(--color-primary)] transition-colors"
+			>
+				&larr; Back to Dashboard
+			</a>
+			<h1 class="text-3xl font-bold text-[var(--color-text)] mb-2">
+				Add New Project
+			</h1>
+			<p class="text-slate-400">
+				Enter the details of the new sustainability initiative.
+			</p>
+		</div>
+
+		<form
+			class="p-6 sm:p-8 rounded-xl bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border border-white/50 dark:border-white/10 flex flex-col gap-6"
+			id="createProjectForm"
+		>
+			<div class="flex flex-col gap-2">
+				<label for="name" class="text-sm font-medium text-slate-400"
+					>Project Name</label
+				>
+				<input
+					type="text"
+					id="name"
+					name="name"
+					class="bg-slate-900/50 border border-[var(--color-border)] rounded-lg p-3 text-[var(--color-text)] text-base focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-emerald-500/20 transition-colors placeholder:text-slate-500"
+					placeholder="e.g. Solar Panel Installation"
+					required
+				/>
+			</div>
+
+			<div class="flex flex-col gap-2">
+				<label
+					for="description"
+					class="text-sm font-medium text-slate-400"
+					>Description</label
+				>
+				<textarea
+					id="description"
+					name="description"
+					rows="4"
+					class="bg-slate-900/50 border border-[var(--color-border)] rounded-lg p-3 text-[var(--color-text)] text-base focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-emerald-500/20 transition-colors placeholder:text-slate-500"
+					placeholder="Describe the project goals and impact..."
+					required></textarea>
+			</div>
+
+			<div class="mt-4 flex justify-end gap-4">
+				<a
+					href="/"
+					class="px-4 py-2 rounded-lg font-medium border border-[var(--color-border)] text-[var(--color-text)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors"
+					>Cancel</a
+				>
+				<button
+					type="submit"
+					class="px-4 py-2 rounded-lg font-medium bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition-all hover:-translate-y-px"
+					>Start Audit</button
+				>
+			</div>
+		</form>
+
+		<script>
+			const form = document.getElementById("createProjectForm");
+			form?.addEventListener("submit", (e) => {
+				e.preventDefault();
+				const formData = new FormData(e.target as HTMLFormElement);
+				const name = formData.get("name");
+				const description = formData.get("description");
+
+				if (name && description) {
+					const id = crypto.randomUUID();
+					const now = new Date().toISOString();
+
+					const newProject = {
+						id,
+						name: name.toString(),
+						description: description.toString(),
+						status: "inProgress",
+						createdAt: now,
+						updatedAt: now,
+						score: null,
+					};
+
+					// Save to localStorage
+					const inProgress = JSON.parse(
+						localStorage.getItem("inProgress") || "[]",
+					);
+					inProgress.push(newProject);
+					localStorage.setItem(
+						"inProgress",
+						JSON.stringify(inProgress),
+					);
+
+					// Redirect to audit page with project details
+					const params = new URLSearchParams();
+					params.append("projectId", id);
+					params.append("projectName", name.toString());
+					params.append("projectDesc", description.toString());
+
+					window.location.href = `/audit?${params.toString()}`;
+				}
+			});
+		</script>
+	</div>
+</Layout>

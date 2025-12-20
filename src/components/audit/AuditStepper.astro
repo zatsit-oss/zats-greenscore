@@ -1,0 +1,56 @@
+---
+interface Props {
+    sections: Record<string, any[]>;
+}
+
+const { sections } = Astro.props;
+---
+
+<div class="flex justify-between mb-12 relative">
+    <div
+        class="absolute top-6 left-0 right-0 h-0.5 bg-[var(--color-border)] z-0 -translate-y-1/2"
+    >
+    </div>
+    {
+        Object.keys(sections).map((sectionName, index) => (
+            <div
+                class="step-item relative z-10 flex flex-col items-center gap-2 bg-[var(--color-bg)] px-2"
+                data-step={index}
+            >
+                <div class="step-circle w-12 h-12 rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex items-center justify-center font-bold text-slate-400 transition-all duration-300">
+                    {index + 1}
+                </div>
+                <span class="step-label text-sm font-medium text-slate-400 mt-2 transition-colors duration-300">
+                    {sectionName}
+                </span>
+            </div>
+        ))
+    }
+</div>
+
+<style>
+    /* Active State */
+    .step-item.active .step-circle {
+        border-color: var(--color-primary);
+        background-color: var(--color-primary);
+        color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+        transform: scale(1.1);
+    }
+
+    .step-item.active .step-label {
+        color: var(--color-primary);
+        font-weight: 700;
+    }
+
+    /* Completed State */
+    .step-item.completed .step-circle {
+        background-color: var(--color-primary);
+        border-color: var(--color-primary);
+        color: #ffffff;
+    }
+
+    .step-item.completed .step-label {
+        color: var(--color-text);
+    }
+</style>

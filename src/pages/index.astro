@@ -1,0 +1,79 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+---
+
+<Layout title="Dashboard">
+	<div class="flex flex-wrap justify-between items-end gap-8 mb-12">
+		<div>
+			<h1
+				class="text-4xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)]"
+			>
+				Dashboard
+			</h1>
+			<p class="text-lg text-slate-400">
+				Overview of all sustainability initiatives.
+			</p>
+		</div>
+		<div class="flex gap-4">
+			<div
+				class="count-card p-4 sm:p-6 rounded-lg min-w-[140px] bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border border-white/50 dark:border-white/10"
+			>
+				<span class="block text-sm text-slate-400 mb-1"
+					>Total Projects</span
+				>
+				<span
+					class="text-2xl font-bold text-[var(--color-text)]"
+					id="totalProjects">0</span
+				>
+			</div>
+			<div
+				class="count-card p-4 sm:p-6 rounded-lg min-w-[140px] bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border border-white/50 dark:border-white/10"
+			>
+				<span class="block text-sm text-slate-400 mb-1">Avg Score</span>
+				<span
+					class="text-2xl font-bold text-[var(--color-text)]"
+					id="avgScore">0</span
+				>
+			</div>
+		</div>
+	</div>
+
+	<div
+		class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+		id="projectsGrid"
+	>
+		<!-- Projects will be loaded here -->
+	</div>
+
+	<!-- Hidden Templates used by the script -->
+	<div class="hidden">
+		<template id="card-template-completed">
+			<ProjectCard
+				project={{
+					status: "Completed",
+					score: 0,
+					name: "Tpl",
+					updatedAt: new Date().toISOString(),
+				}}
+			/>
+		</template>
+		<template id="card-template-pending">
+			<ProjectCard
+				project={{
+					status: "InProgress",
+					score: 0,
+					name: "Tpl",
+					updatedAt: new Date().toISOString(),
+				}}
+			/>
+		</template>
+	</div>
+
+	<script>
+		import { loadProjects } from "../utils/ui";
+
+		// Load on mount
+		loadProjects();
+	</script>
+</Layout>
