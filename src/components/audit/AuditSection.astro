@@ -11,7 +11,7 @@ const { sectionName, questions, index } = Astro.props;
 ---
 
 <div
-    class="step-content p-4 sm:p-8 rounded-xl bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border border-white/50 dark:border-white/10 animate-[fadeIn_0.3s_ease]"
+    class="step-content p-4 sm:p-8 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] animate-[fadeIn_0.3s_ease]"
     data-step={index}
     style={index === 0 ? "" : "display: none;"}
 >

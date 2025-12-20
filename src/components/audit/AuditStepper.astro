@@ -17,10 +17,10 @@ const { sections } = Astro.props;
                 class="step-item relative z-10 flex flex-col items-center gap-2 bg-[var(--color-bg)] px-2"
                 data-step={index}
             >
-                <div class="step-circle w-12 h-12 rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex items-center justify-center font-bold text-slate-400 transition-all duration-300">
+                <div class="step-circle w-12 h-12 rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex items-center justify-center font-bold text-[var(--color-text-muted)] transition-all duration-300">
                     {index + 1}
                 </div>
-                <span class="step-label text-sm font-medium text-slate-400 mt-2 transition-colors duration-300">
+                <span class="step-label text-sm font-medium text-[var(--color-text-muted)] mt-2 transition-colors duration-300">
                     {sectionName}
                 </span>
             </div>

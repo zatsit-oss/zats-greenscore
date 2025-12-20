@@ -16,7 +16,7 @@ const { question: q } = Astro.props;
 >
     <div class="flex gap-4 items-baseline mb-2 pr-16">
         <span
-            class="font-mono text-sm text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded flex-shrink-0"
+            class="font-mono text-sm text-[var(--color-status-inprogress)] bg-amber-500/10 px-1.5 py-0.5 rounded flex-shrink-0"
         >
             {q.id}
         </span>
@@ -39,7 +39,7 @@ const { question: q } = Astro.props;
                 viewBox="0 0 24 24"
                 stroke-width="2"
                 stroke="currentColor"
-                class="w-3.5 h-3.5 text-slate-400 group-hover:text-[var(--color-primary)] transition-colors"
+                class="w-3.5 h-3.5 text-[var(--color-text-muted)] group-hover:text-[var(--color-primary)] transition-colors"
             >
                 <path
                     stroke-linecap="round"
@@ -49,7 +49,7 @@ const { question: q } = Astro.props;
             </svg>
         </button>
     )}
-    <p class="text-sm text-slate-400 mb-4 ml-14">
+    <p class="text-sm text-[var(--color-text-muted)] mb-4 ml-14">
         {q.description}
     </p>
 
@@ -64,7 +64,7 @@ const { question: q } = Astro.props;
                         placeholder="0"
                         min="0"
                     />
-                    <span class="text-sm text-slate-400">
+                    <span class="text-sm text-[var(--color-text-muted)]">
                         {q.id === "US06" ? "consumers" : "%"}
                     </span>
                 </div>
@@ -122,7 +122,7 @@ const { question: q } = Astro.props;
                     viewBox="0 0 24 24"
                     stroke-width="2"
                     stroke="currentColor"
-                    class="w-5 h-5 text-slate-400 hover:text-[var(--color-primary)] transition-colors"
+                    class="w-5 h-5 text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors"
                 >
                     <path
                         stroke-linecap="round"
