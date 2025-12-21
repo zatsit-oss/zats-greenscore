@@ -49,9 +49,9 @@
     --color-on-primary: #0f172a;
     --glass-bg: rgba(30, 41, 59, 0.7);
     --glass-border: rgba(255, 255, 255, 0.1);
-    --color-primary: #0f15fd;
-    --color-primary-hover: #3b82f6;
-    --color-secondary: #524acd;
+    --color-primary: #f59e0b;
+    --color-primary-hover: #f3b851;
+    --color-secondary: #E1601F;
     --color-secondary-hover: #3d31ec;
   }
 }
@@ -94,6 +94,9 @@
   --glass-bg: rgba(255, 255, 255, 0.8);
   --glass-border: rgba(255, 255, 255, 0.5);
   --card-bg: #f3f4f6;
+  --color-primary: #10b981;
+  --color-primary-hover: #059669;
+  --color-secondary: #3b82f6;
 }
 
 body {
