@@ -7,7 +7,7 @@ import Layout from "../../layouts/Layout.astro";
         <div class="mb-8">
             <a
                 href="/"
-                class="text-slate-400 text-sm inline-flex items-center gap-2 mb-4 hover:text-[var(--color-primary)] transition-colors"
+                class="text-[var(--color-text-muted)] text-sm inline-flex items-center gap-2 mb-4 hover:text-[var(--color-primary)] transition-colors"
             >
                 &larr; Back to Dashboard
             </a>
@@ -34,7 +34,7 @@ import Layout from "../../layouts/Layout.astro";
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="md:col-span-2 space-y-8">
                 <div
-                    class="p-6 rounded-xl bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border border-white/50 dark:border-white/10"
+                    class="p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)]"
                 >
                     <h2
                         class="text-xl font-semibold mb-4 text-[var(--color-text)]"
@@ -42,7 +42,7 @@ import Layout from "../../layouts/Layout.astro";
                         About this Project
                     </h2>
                     <p
-                        class="text-slate-400 leading-relaxed"
+                        class="text-[var(--color-text-muted)] leading-relaxed"
                         id="projectDescription"
                     >
                         Description...
@@ -50,7 +50,7 @@ import Layout from "../../layouts/Layout.astro";
                 </div>
 
                 <div
-                    class="p-6 rounded-xl bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border border-white/50 dark:border-white/10"
+                    class="p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)]"
                 >
                     <h2
                         class="text-xl font-semibold mb-4 text-[var(--color-text)]"
@@ -60,7 +60,7 @@ import Layout from "../../layouts/Layout.astro";
                     <div class="flex gap-8 mt-6">
                         <div class="flex flex-col">
                             <span
-                                class="text-xs text-slate-500 uppercase tracking-wider mb-1"
+                                class="text-xs text-[var(--color-text-muted)] uppercase tracking-wider mb-1"
                                 >Created</span
                             >
                             <span
@@ -70,7 +70,7 @@ import Layout from "../../layouts/Layout.astro";
                         </div>
                         <div class="flex flex-col">
                             <span
-                                class="text-xs text-slate-500 uppercase tracking-wider mb-1"
+                                class="text-xs text-[var(--color-text-muted)] uppercase tracking-wider mb-1"
                                 >Last Updated</span
                             >
                             <span
@@ -84,9 +84,9 @@ import Layout from "../../layouts/Layout.astro";
 
             <div class="md:col-span-1">
                 <div
-                    class="p-6 rounded-xl bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border border-white/50 dark:border-white/10 text-center"
+                    class="p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] text-center"
                 >
-                    <h3 class="text-base font-medium text-slate-400 mb-4">
+                    <h3 class="text-base font-medium text-[var(--color-text-muted)] mb-4">
                         Current GreenScore
                     </h3>
                     <div class="flex justify-center mb-4">
@@ -100,21 +100,21 @@ import Layout from "../../layouts/Layout.astro";
                             >
                         </div>
                     </div>
-                    <p class="text-sm text-slate-500" id="scoreLabel">Level</p>
+                    <p class="text-sm text-[var(--color-text-muted)]" id="scoreLabel">Level</p>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="loadingState" class="text-center py-20">
-        <p class="text-slate-400">Loading project details...</p>
+        <p class="text-[var(--color-text-muted)]">Loading project details...</p>
     </div>
 
     <div id="errorState" class="hidden text-center py-20">
         <h1 class="text-2xl font-bold text-[var(--color-text)] mb-4">
             Project Not Found
         </h1>
-        <p class="text-slate-400 mb-8">
+        <p class="text-[var(--color-text-muted)] mb-8">
             The project you are looking for does not exist or has been removed.
         </p>
         <a
@@ -199,13 +199,13 @@ import Layout from "../../layouts/Layout.astro";
                     "text-sm px-3 py-1 rounded-full font-semibold uppercase tracking-wider border";
                 if (project.status === "Completed") {
                     statusClasses +=
-                        " bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+                        " bg-emerald-500/10 text-[var(--color-status-completed)] border-emerald-500/20";
                 } else if (project.status === "InProgress") {
                     statusClasses +=
-                        " bg-amber-500/10 text-amber-400 border-amber-500/20";
+                        " bg-amber-500/10 text-[var(--color-status-inprogress)] border-amber-500/20";
                 } else {
                     statusClasses +=
-                        " bg-slate-500/10 text-slate-400 border-slate-500/20";
+                        " bg-slate-500/10 text-[var(--color-status-pending)] border-slate-500/20";
                 }
                 statusEl.className = statusClasses;
             }

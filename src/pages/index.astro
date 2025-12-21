@@ -11,15 +11,15 @@ import ProjectCard from "../components/ProjectCard.astro";
 			>
 				Dashboard
 			</h1>
-			<p class="text-lg text-slate-400">
+			<p class="text-lg text-[var(--color-text-muted)]">
 				Overview of all sustainability initiatives.
 			</p>
 		</div>
 		<div class="flex gap-4">
 			<div
-				class="count-card p-4 sm:p-6 rounded-lg min-w-[140px] bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border border-white/50 dark:border-white/10"
+				class="count-card p-4 sm:p-6 rounded-lg min-w-[140px] bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)]"
 			>
-				<span class="block text-sm text-slate-400 mb-1"
+				<span class="block text-sm text-[var(--color-text-muted)] mb-1"
 					>Total Projects</span
 				>
 				<span
@@ -28,9 +28,9 @@ import ProjectCard from "../components/ProjectCard.astro";
 				>
 			</div>
 			<div
-				class="count-card p-4 sm:p-6 rounded-lg min-w-[140px] bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border border-white/50 dark:border-white/10"
+				class="count-card p-4 sm:p-6 rounded-lg min-w-[140px] bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)]"
 			>
-				<span class="block text-sm text-slate-400 mb-1">Avg Score</span>
+				<span class="block text-sm text-[var(--color-text-muted)] mb-1">Avg Score</span>
 				<span
 					class="text-2xl font-bold text-[var(--color-text)]"
 					id="avgScore">0</span

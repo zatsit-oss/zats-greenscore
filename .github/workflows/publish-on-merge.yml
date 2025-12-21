@@ -1,0 +1,46 @@
+---
+name: Publish API GreenScore UI
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Environment (production, staging)'
+        required: true
+        default: production
+
+permissions:
+  checks: write
+  contents: read
+
+concurrency:
+  group: ${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  environment: ${{ github.event.inputs.env || 'production' }}
+
+jobs:
+  build_and_publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: kanga333/variable-mapper@master
+        with:
+          key: "${{ env.environment }}"
+          map: |
+            {
+              "production": {
+                "google_project_id": "${{ vars.GOOGLE_PROJECT_ID_PROD }}",
+                "bucket_name": "${{ vars.GCS_BUCKET_NAME_PROD }}",
+                "service_account__secret_name": "GOOGLE_STORAGE_SERVICE_ACCOUNT_ZATSIT_SUSTAINABILITY_PROD"
+              },
+              "staging": {
+                "google_project_id": "${{ vars.GOOGLE_PROJECT_ID_DEV }}",
+                "bucket_name": "${{ vars.GCS_BUCKET_NAME_STAGING }}",
+                "service_account__secret_name": "GOOGLE_STORAGE_SERVICE_ACCOUNT_ZATSIT_SUSTAINABILITY_STAGING"
+              }
+            }

@@ -35,18 +35,15 @@ const projectDesc = urlParams.get("projectDesc");
 		<div class="mb-8">
 			<a
 				href="/"
-				class="text-slate-400 text-sm inline-flex items-center gap-2 mb-4 hover:text-[var(--color-primary)] transition-colors"
+				class="text-[var(--color-text-muted)] text-sm inline-flex items-center gap-2 mb-4 hover:text-[var(--color-primary)] transition-colors"
 			>
 				&larr; Back to Dashboard
 			</a>
 			<h1 class="text-3xl font-bold text-[var(--color-text)] mb-2">
 				Audit: {projectName}
 			</h1>
-			<p class="text-slate-400">
-				{
-					projectDesc ||
-						"Complete the survey to calculate the GreenScore."
-				}
+			<p class="text-[var(--color-text-muted)]">
+				Complete the audit questions below. Your progress is saved automatically.
 			</p>
 		</div>
 
