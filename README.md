@@ -2,7 +2,7 @@
 
 # zats-greenscore 🌱
 
-A dynamic, Vue.js-based web application designed to assess the eco-conception score of digital projects.  
+A dynamic, **Astro**-based web application designed to assess the eco-conception score of digital projects.  
 
 This project is inspired by the [API Green Score](https://github.com/API-Green-Score/APIGreenScore) initiative, leveraging their questionnaire from the provided Excel file to create an interactive and user-friendly experience. Please read their README file to understand the project philosphy.
 
@@ -12,14 +12,14 @@ This project is inspired by the [API Green Score](https://github.com/API-Green-S
 
 - **Interactive Questionnaire:** A dynamic web interface based on the original questionnaire from the API Green Score Excel file.
 - **Real-Time Scoring:** Instantly calculates the eco-conception score based on user inputs.
-- **User-Friendly Design:** A modern, responsive UI powered by Vue.js for optimal usability.
+- **User-Friendly Design:** A modern, responsive UI powered by **Astro** for optimal usability.
 - **Foundation for Future Enhancements:** Built to support additional features and integrations in future updates. For example, the initial version proposes local storage in your browser to record multiple projects. Some additionnal storage backend will come soon ⏭️.
 
 ---
 
 ## 🛠️ Technology Stack
 
-- **Framework:** [Vue.js](https://vuejs.org/) for a reactive and maintainable front-end.
+- **Framework:** [Astro](https://astro.build) for a fast and content-focused website.
 - **Data Source:** The eco-conception questionnaire is derived from the Excel file in the [API Green Score repository](https://github.com/API-Green-Score/APIGreenScore).
 - **Styling:** Responsive design with CSS for cross-device compatibility.
 - **Deployment:** Open-source and hosted on GitHub under the **zatsit** organization.
@@ -59,23 +59,54 @@ cd zats-greenscore
 npm install
 ```
 
-3. Compile and Hot-Reload for Development
+3. Start the development server
 ```sh
 npm run dev
 ```
 
-4. Type-Check, Compile and Minify for Production
+4. Build for Production
 ```sh
 npm run build
 ```
 
-## Type Support for `.vue` Imports in TS
+5. Preview the build
+```sh
+npm run preview
+```
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## 🧞 Commands
 
-## Customize configuration
+| Command                   | Action                                           |
+| :------------------------ | :----------------------------------------------- |
+| `npm install`             | Installs dependencies                            |
+| `npm run dev`             | Starts local dev server at `localhost:4321`      |
+| `npm run build`           | Build your production site to `./dist/`          |
+| `npm run preview`         | Preview your build locally, before deploying     |
+| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `npm run astro -- --help` | Get help using the Astro CLI                     |
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+## 🚀 Project Structure
+
+Inside of your Astro project, you'll see the following folders and files:
+
+```text
+/
+├── public/
+├── src/
+│   └── pages/
+│       └── index.astro
+└── package.json
+```
+
+Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+
+There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+
+Any static assets, like images, can be placed in the `public/` directory.
+
+## 👀 Want to learn more?
+
+Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
 
 ## 🚧 Roadmap
 

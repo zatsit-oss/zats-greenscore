@@ -7,32 +7,32 @@ import Layout from "../../layouts/Layout.astro";
 		<div class="mb-8">
 			<a
 				href="/"
-				class="text-slate-400 text-sm inline-flex items-center gap-2 mb-4 hover:text-[var(--color-primary)] transition-colors"
+				class="text-[var(--color-text-muted)] text-sm inline-flex items-center gap-2 mb-4 hover:text-[var(--color-primary)] transition-colors"
 			>
 				&larr; Back to Dashboard
 			</a>
 			<h1 class="text-3xl font-bold text-[var(--color-text)] mb-2">
 				Add New Project
 			</h1>
-			<p class="text-slate-400">
-				Enter the details of the new sustainability initiative.
+			<p class="text-[var(--color-text-muted)]">
+				Enter the details of the API to be audited.
 			</p>
 		</div>
 
 		<form
-			class="p-6 sm:p-8 rounded-xl bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border border-white/50 dark:border-white/10 flex flex-col gap-6"
+			class="p-6 sm:p-8 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] flex flex-col gap-6"
 			id="createProjectForm"
 		>
 			<div class="flex flex-col gap-2">
-				<label for="name" class="text-sm font-medium text-slate-400"
+				<label for="name" class="text-sm font-medium text-[var(--color-text-muted)]"
 					>Project Name</label
 				>
 				<input
 					type="text"
 					id="name"
 					name="name"
-					class="bg-slate-900/50 border border-[var(--color-border)] rounded-lg p-3 text-[var(--color-text)] text-base focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-emerald-500/20 transition-colors placeholder:text-slate-500"
-					placeholder="e.g. Solar Panel Installation"
+					class="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-3 text-[var(--color-text)] text-base focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-emerald-500/20 transition-colors placeholder:text-[var(--color-text-muted)]"
+					placeholder="e.g. Customers API"
 					required
 				/>
 			</div>
@@ -40,14 +40,14 @@ import Layout from "../../layouts/Layout.astro";
 			<div class="flex flex-col gap-2">
 				<label
 					for="description"
-					class="text-sm font-medium text-slate-400"
+					class="text-sm font-medium text-[var(--color-text-muted)]"
 					>Description</label
 				>
 				<textarea
 					id="description"
 					name="description"
 					rows="4"
-					class="bg-slate-900/50 border border-[var(--color-border)] rounded-lg p-3 text-[var(--color-text)] text-base focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-emerald-500/20 transition-colors placeholder:text-slate-500"
+					class="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-3 text-[var(--color-text)] text-base focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-emerald-500/20 transition-colors placeholder:text-[var(--color-text-muted)]"
 					placeholder="Describe the project goals and impact..."
 					required></textarea>
 			</div>
@@ -60,7 +60,7 @@ import Layout from "../../layouts/Layout.astro";
 				>
 				<button
 					type="submit"
-					class="px-4 py-2 rounded-lg font-medium bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition-all hover:-translate-y-px"
+					class="px-4 py-2 rounded-lg font-medium bg-[var(--color-primary)] text-[var(--color-on-primary)] hover:bg-[var(--color-primary-hover)] transition-all hover:-translate-y-px"
 					>Start Audit</button
 				>
 			</div>

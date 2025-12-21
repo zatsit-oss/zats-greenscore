@@ -9,10 +9,10 @@ export const getEcoLabel = (score: number) => {
 };
 
 export const getScoreColor = (score: number) => {
-    if (score >= 90) return "#10b981"; // emerald-500
-    if (score >= 75) return "#84cc16"; // lime-500
-    if (score >= 50) return "#f59e0b"; // amber-500
-    return "#ef4444"; // red-500
+    if (score >= 90) return "var(--color-score-excellent)";
+    if (score >= 75) return "var(--color-score-good)";
+    if (score >= 50) return "var(--color-score-average)";
+    return "var(--color-score-poor)";
 };
 
 export const formatDate = (dateString: string) => {
@@ -122,7 +122,7 @@ export const loadProjects = () => {
 
     if (allProjects.length === 0) {
         grid.innerHTML =
-            '<p class="col-span-full text-center text-slate-400">No projects found. Start a new one!</p>';
+            '<p class="col-span-full text-center text-[var(--color-text-muted)]">No projects found. Start a new one!</p>';
         return;
     }
 
