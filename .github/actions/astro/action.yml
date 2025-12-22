@@ -1,0 +1,33 @@
+---
+name: Fetch and build Greenscore
+description: Fetch and build the greenscore
+inputs:
+  token:
+    description: 'The token to use for fetching the repository'
+    required: true
+  branch:
+    description: 'The branch to fetch for greenscore content'
+    required: false
+    default: 'main'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        npm install
+
+    - name: Build project
+      shell: bash
+      run: |
+        npm run build
