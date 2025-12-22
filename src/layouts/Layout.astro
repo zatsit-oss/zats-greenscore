@@ -72,7 +72,9 @@ const { title } = Astro.props;
 		<main class="container mx-auto px-4">
 			<slot />
 		</main>
-<footer class="mt-16 text-sm text-[var(--color-text)] opacity-80 border-t border-[var(--color-border)]">
+		<footer
+			class="mt-16 text-sm text-[var(--color-text)] opacity-80 border-t border-[var(--color-border)]"
+		>
 			<div
 				class="container mx-auto px-4 flex flex-col sm:flex-row justify-center items-center gap-y-4 sm:gap-y-0 sm:gap-x-16 mb-8 mt-8"
 			>
@@ -82,7 +84,7 @@ const { title } = Astro.props;
 						target="_blank"
 						rel="noopener noreferrer"
 						aria-label="Notre blog"
-						class="relative flex items-center justify-center h-[34px] w-[34px] rounded-full bg-[var(--color-primary)] text-white transition-colors duration-300 overflow-hidden hover:opacity-90"
+						class="flex items-center justify-center h-[34px] w-[34px] rounded-full bg-[var(--color-primary)] p-1.5 text-white transition-colors duration-300 overflow-hidden hover:opacity-90"
 					>
 						<svg
 							viewBox="0 0 640 512"
@@ -101,7 +103,7 @@ const { title } = Astro.props;
 						target="_blank"
 						rel="noopener noreferrer"
 						aria-label="Notre page LinkedIn"
-						class="flex items-center justify-center h-[34px] w-[34px] rounded-full bg-[var(--color-primary)] text-white transition-colors duration-300 hover:opacity-90"
+						class="flex items-center justify-center h-[34px] w-[34px] rounded-full bg-[var(--color-primary)] p-1.5 text-white transition-colors duration-300 hover:opacity-90"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -119,7 +121,7 @@ const { title } = Astro.props;
 						target="_blank"
 						rel="noopener noreferrer"
 						aria-label="Notre page Github"
-						class="flex items-center justify-center h-[34px] w-[34px] rounded-full bg-[var(--color-primary)] text-white transition-colors duration-300 hover:opacity-90"
+						class="flex items-center justify-center h-[34px] w-[34px] rounded-full bg-[var(--color-primary)] p-1.5 text-white transition-colors duration-300 hover:opacity-90"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
