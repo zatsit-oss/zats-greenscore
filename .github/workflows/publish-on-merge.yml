@@ -36,11 +36,47 @@ jobs:
               "production": {
                 "google_project_id": "${{ vars.GOOGLE_PROJECT_ID_PROD }}",
                 "bucket_name": "${{ vars.GCS_BUCKET_NAME_PROD }}",
-                "service_account__secret_name": "GOOGLE_STORAGE_SERVICE_ACCOUNT_ZATSIT_SUSTAINABILITY_PROD"
+                "service_account__secret_name": "GOOGLE_STORAGE_SERVICE_ACCOUNT_ZATSIT_GREENSCORE_PROD"
               },
               "staging": {
                 "google_project_id": "${{ vars.GOOGLE_PROJECT_ID_DEV }}",
                 "bucket_name": "${{ vars.GCS_BUCKET_NAME_STAGING }}",
-                "service_account__secret_name": "GOOGLE_STORAGE_SERVICE_ACCOUNT_ZATSIT_SUSTAINABILITY_STAGING"
+                "service_account__secret_name": "GOOGLE_STORAGE_SERVICE_ACCOUNT_ZATSIT_GREENSCORE_STAGING"
               }
             }
+
+      - name: Fetch and Build blog content
+        uses: ./.github/actions/astro
+        with:
+          token: ${{ secrets.GH_PAT }}
+          branch: ${{ github.head_ref || github.ref_name }}
+
+      - uses: 'google-github-actions/auth@v2'
+        with:
+          project_id: ${{ env.google_project_id }}
+          credentials_json: ${{ secrets[env.service_account__secret_name] }}
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: Clean Google Storage files
+        run: |
+          touch dummy.txt
+          gsutil -q cp dummy.txt gs://${{ env.bucket_name }}/
+          gsutil -q -m rm -r -f gs://${{ env.bucket_name }}/*
+          rm dummy.txt
+
+      - name: Upload to Cloud Storage
+        id: 'upload-folder'
+        uses: 'google-github-actions/upload-cloud-storage@v2'
+        with:
+          path: 'dist/'
+          destination: ${{ env.bucket_name }}
+          parent: false
+          gzip: false
+
+      # needed to avoid the post action error
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
