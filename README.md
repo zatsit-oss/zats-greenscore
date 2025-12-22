@@ -1,5 +1,3 @@
-![project logo with zatsit logo and the name zats-greenscore](project-logo.webp)
-
 # zats-greenscore 🌱
 
 A dynamic, **Astro**-based web application designed to assess the eco-conception score of digital projects.  
