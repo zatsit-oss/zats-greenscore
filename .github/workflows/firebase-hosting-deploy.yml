@@ -14,17 +14,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Fetch and Build blog content
+        uses: ./.github/actions/astro
         with:
-          node-version: '22'
-#          cache: 'npm'
-
-      - shell: bash
-        run: npm ci
-
-      - shell: bash
-        run: npm run build
+          token: ${{ secrets.GH_PAT }}
+          branch: ${{ github.head_ref || github.ref_name }}
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
