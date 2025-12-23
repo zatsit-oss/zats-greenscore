@@ -45,7 +45,7 @@ jobs:
               }
             }
 
-      - name: Fetch and Build blog content
+      - name: Fetch and Build content
         uses: ./.github/actions/astro
         with:
           token: ${{ secrets.GH_PAT }}
