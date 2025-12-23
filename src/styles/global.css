@@ -55,6 +55,7 @@
     --color-on-primary: #1b1b1d;
     --glass-bg: rgba(27, 27, 29, 0.85);
     --glass-border: rgba(241, 190, 81, 0.2);
+    --card-bg: rgba(255, 255, 255, 0.05);
     --color-primary: #f1be51;
     --color-primary-hover: #f3b851;
     --color-secondary: #E1601F;
@@ -79,6 +80,7 @@
   --color-on-primary: #1b1b1d;
   --glass-bg: rgba(27, 27, 29, 0.85);
   --glass-border: rgba(241, 190, 81, 0.2);
+  --card-bg: rgba(255, 255, 255, 0.05);
   --color-primary: #f1be51;
   --color-primary-hover: #f3b851;
   --color-secondary: #E1601F;
