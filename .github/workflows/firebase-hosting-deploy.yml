@@ -14,21 +14,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Fetch and Build content
+        uses: ./.github/actions/astro
         with:
-          node-version: '22'
-#          cache: 'npm'
-
-      - shell: bash
-        run: npm ci
-
-      - shell: bash
-        run: npm run build
+          token: ${{ secrets.GH_PAT }}
+          branch: ${{ github.head_ref || github.ref_name }}
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ZATSIT_DT_APIGREENSCORE_DEV }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ZATSIT_GREENSCORE_STAGING }}
+          projectId: zatsit-dsi-externalsites-dev
+          target: zatsit-greenscore-d9dfb
           expires: 30d
-          projectId: ${{ vars.FIREBASE_PROJECT_ID }}

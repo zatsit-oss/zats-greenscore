@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "zatsit-dsi-externalsites-dev"
+  },
+  "targets": {
+    "zatsit-dsi-externalsites-dev": {
+      "hosting": {
+        "zatsit-greenscore-d9dfb": [
+          "zatsit-greenscore-d9dfb"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
