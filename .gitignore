@@ -29,3 +29,6 @@ parse_survey.mjs
 .idea/
 # vscode setting folder
 .vscode/
+# Tauri
+src-tauri/target/
+src-tauri/gen/

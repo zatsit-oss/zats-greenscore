@@ -102,6 +102,26 @@ There's nothing special about `src/components/`, but that's where we like to put
 
 Any static assets, like images, can be placed in the `public/` directory.
 
+## 🖥️ Desktop Application (Tauri)
+
+This project is a hybrid **Web + Desktop** application. It uses [Tauri](https://tauri.app/) to wrap the Astro static build into a lightweight native executable.
+
+### Why in the same repo?
+We follow the **Integrated Repo** pattern. The benefits are:
+- **Shared Codebase**: One source of truth for UI/logic.
+- **Unified Versioning**: Web and Desktop versions evolve together.
+- **Simplified CI/CD**: A single pipeline tests and builds all targets.
+
+### Desktop Commands
+
+| Command | Action |
+| :--- | :--- |
+| `npm run tauri` | Run Tauri CLI |
+| `npm run dev:desktop` | Start App in **Development Mode** (Hot Reload) |
+| `npm run build:desktop` | specific **Production Build** (DMG, EXE, DEB) |
+
+> **Note**: The desktop build process automatically triggers `npm run build` (Astro) before packaging the native app.
+
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
@@ -110,7 +130,7 @@ Feel free to check [our documentation](https://docs.astro.build) or jump into ou
 
 ### Short-Term Goals
 
-- Improve UI and UX for a more seamless experience.
+- Add Desktop support.
 - Add export options (e.g., PDF reports of results).
 - Optimize performance for mobile users.
 
