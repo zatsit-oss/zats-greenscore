@@ -10,15 +10,6 @@
     "beforeBuildCommand": "npm run build"
   },
   "app": {
-    "windows": [
-      {
-        "title": "zats-greenscore App",
-        "width": 800,
-        "height": 600,
-        "resizable": true,
-        "fullscreen": false
-      }
-    ],
     "security": {
       "csp": null
     }
