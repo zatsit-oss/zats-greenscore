@@ -1,19 +1,21 @@
-export const getEcoLabel = (score: number) => {
-    if (score >= 90)
-        return { text: "A", class: "text-emerald-400" };
-    if (score >= 75)
-        return { text: "B", class: "text-lime-400" };
-    if (score >= 50)
-        return { text: "C", class: "text-amber-400" };
-    return { text: "D", class: "text-red-400" };
+import { type Project, ProjectRanking, ProjectStatus } from '../types/project.ts'
+import { StorageKeys } from '../types/storage.ts'
+
+export const RankingResult = {
+    A: { text: ProjectRanking.A, minScore: 90, color: 'var(--color-score-excellent)', ecoLabelClass: 'text-emerald-400' },
+    B: { text: ProjectRanking.B, minScore: 75, color: 'var(--color-score-good)', ecoLabelClass: 'text-lime-400' },
+    C: { text: ProjectRanking.C, minScore: 50, color: 'var(--color-score-average)' , ecoLabelClass: 'text-amber-400' },
+    D: { text: ProjectRanking.D, minScore: 25, color: 'var(--color-score-poor)' , ecoLabelClass: 'text-orange-400' },
+    E: { text: ProjectRanking.E, minScore: 0, color: 'var(--color-score-poor)', ecoLabelClass: 'text-red-400' }
 };
 
-export const getScoreColor = (score: number) => {
-    if (score >= 90) return "var(--color-score-excellent)";
-    if (score >= 75) return "var(--color-score-good)";
-    if (score >= 50) return "var(--color-score-average)";
-    return "var(--color-score-poor)";
-};
+export const getRanking= (score: number) => {
+    if (score >= 90) return RankingResult.A;
+    if (score >= 75) return RankingResult.B;
+    if (score >= 50) return RankingResult.C;
+    if (score >= 25) return RankingResult.D;
+    return RankingResult.E;
+}
 
 export const formatDate = (dateString: string) => {
     if (!dateString) return "N/A";
@@ -24,16 +26,15 @@ export const formatDate = (dateString: string) => {
     });
 };
 
-/* 
+/*
  * Helper to populate a card element with project data.
  */
 export const populateCard = (
     card: HTMLAnchorElement,
-    project: any,
+    project: Project,
     isCompleted: boolean,
 ) => {
     const score = project.score || 0;
-    const ranking = project.ranking || "E";
 
     // Core Attributes
     card.href = isCompleted
@@ -51,6 +52,7 @@ export const populateCard = (
     set(".project-desc", project.description || "");
     set(".project-date", formatDate(project.updatedAt));
 
+    const rankingResult = getRanking(score);
     // Visualization Updates (Score/Colors)
     if (isCompleted) {
         const scoreBadge = card.querySelector(
@@ -58,20 +60,19 @@ export const populateCard = (
         ) as HTMLElement;
         if (scoreBadge) {
             scoreBadge.textContent = score.toString();
-            const color = getScoreColor(score);
+            const color = rankingResult.color;
             scoreBadge.style.borderColor = color;
             scoreBadge.style.color = color;
         }
 
         const ecoLabel = card.querySelector(".eco-label");
         if (ecoLabel) {
-            const labelData = getEcoLabel(score);
-            ecoLabel.textContent = labelData.text;
+            ecoLabel.textContent = rankingResult.text;
             // Preserve base classes, add dynamic one
-            ecoLabel.className = `eco-label text-xs font-semibold mt-1 ${labelData.class}`;
+            ecoLabel.className = `eco-label text-xs font-semibold mt-1 ${rankingResult.ecoLabelClass}`;
         }
 
-        const leafHighlight = card.querySelector(`.leaf.leaf-${ranking}`);
+        const leafHighlight = card.querySelector(`.leaf.leaf-${rankingResult.text}`);
         if (leafHighlight) {
             leafHighlight.classList.add("highlighted");
         }
@@ -80,10 +81,10 @@ export const populateCard = (
 
 export const loadProjects = () => {
     const inProgress = JSON.parse(
-        localStorage.getItem("inProgress") || "[]",
+        localStorage.getItem(StorageKeys.IN_PROGRESS) || "[]",
     );
     const completed = JSON.parse(
-        localStorage.getItem("Completed") || "[]",
+        localStorage.getItem(StorageKeys.COMPLETED) || "[]",
     );
     const allProjects = [...inProgress, ...completed];
 
@@ -127,7 +128,7 @@ export const loadProjects = () => {
     }
 
     allProjects.forEach((project: any) => {
-        const isCompleted = project.status === "Completed";
+        const isCompleted = project.status === ProjectStatus.COMPLETED;
         const template = isCompleted ? tplCompleted : tplPending;
 
         const clone = template.content.cloneNode(

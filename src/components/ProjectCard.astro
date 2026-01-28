@@ -1,5 +1,6 @@
 ---
-import { getEcoLabel, getScoreColor, formatDate } from "../utils/ui";
+import { getRanking, formatDate } from "../utils/ui";
+import { ProjectStatus } from '../types/project.ts'
 
 interface Props {
     project?: any;
@@ -8,17 +9,16 @@ interface Props {
 const { project = {} } = Astro.props;
 
 // Compute values for Server Side Rendering (or basic template structure)
-const isCompleted = project.status === "Completed";
+const isCompleted = project.status === ProjectStatus.COMPLETED;
 const score = project.score || 0;
-const ranking = project.ranking || "E";
-const label = getEcoLabel(score);
-const scoreColor = getScoreColor(score);
+const ranking = getRanking(score);
+
 const date = formatDate(project.updatedAt);
 
 // Dynamic Classes
 let statusClasses =
     "status-badge text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider border";
-if (project.status === "Completed") {
+if (project.status === ProjectStatus.COMPLETED) {
     statusClasses +=
         " bg-emerald-500/10 text-[var(--color-status-completed)] border-emerald-500/20";
 } else if (project.status === "InProgress") {
@@ -48,12 +48,12 @@ const linkHref = isCompleted
                         <div class="flex flex-col items-center gap-2">
                             <div
                                 class="score-badge-completed inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border-2 text-lg font-bold"
-                                style={`border-color: ${scoreColor}; color: ${scoreColor};`}
+                                style={`border-color: ${ranking.color}; color: ${ranking.color};`}
                             >
                                 {score}
                             </div>
                             <div
-                                class={`inline-flex items-center justify-center font-semibold mt-1 ${label.class}`}
+                                class={`inline-flex items-center justify-center font-semibold mt-1 ${ranking.ecoLabelClass}`}
                             >
                                 <div class="leaf leaf-A">
                                     <svg

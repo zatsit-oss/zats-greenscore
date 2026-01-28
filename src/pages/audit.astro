@@ -70,6 +70,7 @@ const projectDesc = urlParams.get("projectDesc");
 
 <script>
 	import { getRankingScore, calculateProjectScore } from "../utils/scoring";
+	import { StorageKeys } from "../types/storage";
 
 	let currentStep = 0;
 	const steps = document.querySelectorAll(".step-content");
@@ -141,7 +142,7 @@ const projectDesc = urlParams.get("projectDesc");
 		if (!projectId) return;
 
 		const inProgress = JSON.parse(
-			localStorage.getItem("inProgress") || "[]",
+			localStorage.getItem(StorageKeys.IN_PROGRESS) || "[]",
 		);
 		const projectIndex = inProgress.findIndex(
 			(p: any) => p.id === projectId,
@@ -168,7 +169,7 @@ const projectDesc = urlParams.get("projectDesc");
 
 			inProgress[projectIndex].answers = answers;
 			inProgress[projectIndex].updatedAt = new Date().toISOString();
-			localStorage.setItem("inProgress", JSON.stringify(inProgress));
+			localStorage.setItem(StorageKeys.IN_PROGRESS, JSON.stringify(inProgress));
 		}
 	};
 
@@ -179,7 +180,7 @@ const projectDesc = urlParams.get("projectDesc");
 		if (!projectId) return;
 
 		const inProgress = JSON.parse(
-			localStorage.getItem("inProgress") || "[]",
+			localStorage.getItem(StorageKeys.IN_PROGRESS) || "[]",
 		);
 		const project = inProgress.find((p: any) => p.id === projectId);
 
@@ -213,6 +214,7 @@ const projectDesc = urlParams.get("projectDesc");
 
 	// Import toast
 	import { showToast } from "../utils/toast";
+  import { ProjectStatus } from '../types/project.ts'
 
 	auditForm?.addEventListener("submit", (e) => {
 		e.preventDefault();
@@ -248,7 +250,7 @@ const projectDesc = urlParams.get("projectDesc");
 
 		if (projectId) {
 			const inProgress = JSON.parse(
-				localStorage.getItem("inProgress") || "[]",
+				localStorage.getItem(StorageKeys.IN_PROGRESS) || "[]",
 			);
 			const projectIndex = inProgress.findIndex(
 				(p: any) => p.id === projectId,
@@ -258,21 +260,21 @@ const projectDesc = urlParams.get("projectDesc");
 				const project = inProgress[projectIndex];
 				project.score = finalScore;
 				project.ranking = finalRankingScore;
-				project.status = "Completed";
+				project.status = ProjectStatus.COMPLETED;
 				project.updatedAt = new Date().toISOString();
 				// Keep answers for review or recalculation
 				project.answers = answers;
 
 				// Remove from inProgress
 				inProgress.splice(projectIndex, 1);
-				localStorage.setItem("inProgress", JSON.stringify(inProgress));
+				localStorage.setItem(StorageKeys.IN_PROGRESS, JSON.stringify(inProgress));
 
 				// Add to Completed
 				const completed = JSON.parse(
-					localStorage.getItem("Completed") || "[]",
+					localStorage.getItem(StorageKeys.COMPLETED) || "[]",
 				);
 				completed.push(project);
-				localStorage.setItem("Completed", JSON.stringify(completed));
+				localStorage.setItem(StorageKeys.COMPLETED, JSON.stringify(completed));
 
 				showToast(
 					`Audit Completed! Score: ${finalScore}/100`,

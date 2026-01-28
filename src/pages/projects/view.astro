@@ -1,277 +1,280 @@
 ---
-import Layout from "../../layouts/Layout.astro";
+import Layout from '../../layouts/Layout.astro'
 ---
 
 <Layout title="Project Details">
-    <div class="max-w-4xl mx-auto hidden" id="projectContent">
-        <div class="mb-8">
-            <a
-                href="/"
-                class="text-[var(--color-text-muted)] text-sm inline-flex items-center gap-2 mb-4 hover:text-[var(--color-primary)] transition-colors"
-            >
-                &larr; Back to Dashboard
-            </a>
-            <div class="flex justify-between items-start flex-wrap gap-4">
-                <h1
-                    class="text-4xl font-extrabold text-[var(--color-text)] leading-tight"
-                    id="projectName"
-                >
-                    Project Name
-                </h1>
-                <div class="flex gap-4 items-center">
-                    <span
-                        class="text-sm px-3 py-1 rounded-full font-semibold uppercase tracking-wider border"
-                        id="projectStatus">Status</span
-                    >
-                    <button
-                        class="hidden px-4 py-2 rounded-lg font-medium bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] hover:border-[var(--color-primary)] transition-colors"
-                        id="editBtn">Edit Project</button
-                    >
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="md:col-span-2 space-y-8">
-                <div
-                    class="p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)]"
-                >
-                    <h2
-                        class="text-xl font-semibold mb-4 text-[var(--color-text)]"
-                    >
-                        About this Project
-                    </h2>
-                    <p
-                        class="text-[var(--color-text-muted)] leading-relaxed"
-                        id="projectDescription"
-                    >
-                        Description...
-                    </p>
-                </div>
-
-                <div
-                    class="p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)]"
-                >
-                    <h2
-                        class="text-xl font-semibold mb-4 text-[var(--color-text)]"
-                    >
-                        Timeline
-                    </h2>
-                    <div class="flex gap-8 mt-6">
-                        <div class="flex flex-col">
-                            <span
-                                class="text-xs text-[var(--color-text-muted)] uppercase tracking-wider mb-1"
-                                >Created</span
-                            >
-                            <span
-                                class="font-medium text-[var(--color-text)]"
-                                id="dateCreated">Oct 1, 2023</span
-                            >
-                        </div>
-                        <div class="flex flex-col">
-                            <span
-                                class="text-xs text-[var(--color-text-muted)] uppercase tracking-wider mb-1"
-                                >Last Updated</span
-                            >
-                            <span
-                                class="font-medium text-[var(--color-text)]"
-                                id="dateUpdated">Oct 1, 2023</span
-                            >
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="md:col-span-1">
-                <div
-                    class="p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] text-center"
-                >
-                    <h3 class="text-base font-medium text-[var(--color-text-muted)] mb-4">
-                        Current GreenScore
-                    </h3>
-                    <div class="flex justify-center mb-4">
-                        <div
-                            class="w-32 h-32 rounded-full border-8 flex items-center justify-center bg-white/5 shadow-[0_0_20px_rgba(0,0,0,0.1)]"
-                            id="scoreCircle"
-                        >
-                            <span
-                                class="text-5xl font-extrabold text-[var(--color-text)]"
-                                id="projectScore">--</span
-                            >
-                        </div>
-                    </div>
-                    <p class="text-sm text-[var(--color-text-muted)]" id="scoreLabel">Level</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="loadingState" class="text-center py-20">
-        <p class="text-[var(--color-text-muted)]">Loading project details...</p>
-    </div>
-
-    <div id="errorState" class="hidden text-center py-20">
-        <h1 class="text-2xl font-bold text-[var(--color-text)] mb-4">
-            Project Not Found
-        </h1>
-        <p class="text-[var(--color-text-muted)] mb-8">
-            The project you are looking for does not exist or has been removed.
-        </p>
-        <a
-            href="/"
-            class="px-4 py-2 rounded-lg font-medium bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition-all"
+  <div class="max-w-4xl mx-auto hidden" id="projectContent">
+    <div class="mb-8">
+      <a
+        href="/"
+        class="text-[var(--color-text-muted)] text-sm inline-flex items-center gap-2 mb-4 hover:text-[var(--color-primary)] transition-colors"
+      >
+        &larr; Back to Dashboard
+      </a>
+      <div class="flex justify-between items-start flex-wrap gap-4">
+        <h1
+          class="text-4xl font-extrabold text-[var(--color-text)] leading-tight"
+          id="projectName"
         >
-            Back to Dashboard
-        </a>
+          Project Name
+        </h1>
+        <div class="flex gap-4 items-center">
+                    <span
+                      class="text-sm px-3 py-1 rounded-full font-semibold uppercase tracking-wider border"
+                      id="projectStatus">Status</span
+                    >
+          <button
+            class="hidden px-4 py-2 rounded-lg font-medium bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] hover:border-[var(--color-primary)] transition-colors"
+            id="editBtn">Edit Project
+          </button
+          >
+        </div>
+      </div>
     </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="md:col-span-2 space-y-8">
+        <div
+          class="p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)]"
+        >
+          <h2
+            class="text-xl font-semibold mb-4 text-[var(--color-text)]"
+          >
+            About this Project
+          </h2>
+          <p
+            class="text-[var(--color-text-muted)] leading-relaxed"
+            id="projectDescription"
+          >
+            Description...
+          </p>
+        </div>
+
+        <div
+          class="p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)]"
+        >
+          <h2
+            class="text-xl font-semibold mb-4 text-[var(--color-text)]"
+          >
+            Timeline
+          </h2>
+          <div class="flex gap-8 mt-6">
+            <div class="flex flex-col">
+                            <span
+                              class="text-xs text-[var(--color-text-muted)] uppercase tracking-wider mb-1"
+                            >Created</span
+                            >
+              <span
+                class="font-medium text-[var(--color-text)]"
+                id="dateCreated">Oct 1, 2023</span
+              >
+            </div>
+            <div class="flex flex-col">
+                            <span
+                              class="text-xs text-[var(--color-text-muted)] uppercase tracking-wider mb-1"
+                            >Last Updated</span
+                            >
+              <span
+                class="font-medium text-[var(--color-text)]"
+                id="dateUpdated">Oct 1, 2023</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="md:col-span-1">
+        <div
+          class="p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] text-center"
+        >
+          <h3 class="text-base font-medium text-[var(--color-text-muted)] mb-4">
+            Current GreenScore
+          </h3>
+          <div class="flex justify-center mb-4">
+            <div
+              class="w-32 h-32 rounded-full border-8 flex items-center justify-center bg-white/5 shadow-[0_0_20px_rgba(0,0,0,0.1)]"
+              id="scoreCircle"
+            >
+                            <span
+                              class="text-5xl font-extrabold text-[var(--color-text)]"
+                              id="projectScore">--</span
+                            >
+            </div>
+          </div>
+          <p class="text-sm text-[var(--color-text-muted)]" id="scoreLabel">Level</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="loadingState" class="text-center py-20">
+    <p class="text-[var(--color-text-muted)]">Loading project details...</p>
+  </div>
+
+  <div id="errorState" class="hidden text-center py-20">
+    <h1 class="text-2xl font-bold text-[var(--color-text)] mb-4">
+      Project Not Found
+    </h1>
+    <p class="text-[var(--color-text-muted)] mb-8">
+      The project you are looking for does not exist or has been removed.
+    </p>
+    <a
+      href="/"
+      class="px-4 py-2 rounded-lg font-medium bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition-all"
+    >
+      Back to Dashboard
+    </a>
+  </div>
 </Layout>
 
 <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const projectId = urlParams.get("id");
+  import  { type Project,ProjectStatus } from '../../types/project.ts'
+  import { StorageKeys } from '../../types/storage.ts'
+    const urlParams = new URLSearchParams(window.location.search)
+    const projectId = urlParams.get('id')
 
     const formatDate = (dateString: string) => {
-        if (!dateString) return "N/A";
-        return new Date(dateString).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-        });
-    };
+      if (!dateString) return 'N/A'
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+        })
+      }
 
     const getScoreDetails = (score: number) => {
-        if (score >= 90)
-            return {
-                text: "Excellent",
-                color: "#10b981",
-                shadow: "rgba(16, 185, 129, 0.2)",
-            }; // Emerald
-        if (score >= 75)
-            return {
-                text: "Good",
-                color: "#84cc16",
-                shadow: "rgba(132, 204, 22, 0.2)",
-            }; // Lime
-        if (score >= 50)
-            return {
-                text: "Needs Improvement",
-                color: "#f59e0b",
-                shadow: "rgba(245, 158, 11, 0.2)",
-            }; // Amber
+      if (score >= 90)
         return {
-            text: "Poor",
-            color: "#ef4444",
-            shadow: "rgba(239, 68, 68, 0.2)",
-        }; // Red
-    };
+          text: 'Excellent',
+          color: '#10b981',
+          shadow: 'rgba(16, 185, 129, 0.2)'
+          } // Emerald
+      if (score >= 75)
+        return {
+          text: 'Good',
+          color: '#84cc16',
+          shadow: 'rgba(132, 204, 22, 0.2)'
+          } // Lime
+      if (score >= 50)
+        return {
+          text: 'Needs Improvement',
+          color: '#f59e0b',
+          shadow: 'rgba(245, 158, 11, 0.2)'
+          } // Amber
+      return {
+        text: 'Poor',
+        color: '#ef4444',
+        shadow: 'rgba(239, 68, 68, 0.2)'
+        } // Red
+      }
 
     if (!projectId) {
-        document.getElementById("loadingState")!.style.display = "none";
-        document.getElementById("errorState")!.classList.remove("hidden");
-    } else {
-        // Load from LocalStorage
-        const inProgress = JSON.parse(
-            localStorage.getItem("inProgress") || "[]",
-        );
-        const completed = JSON.parse(localStorage.getItem("Completed") || "[]");
-        const allProjects = [...inProgress, ...completed];
+      document.getElementById('loadingState')!.style.display = 'none'
+      document.getElementById('errorState')!.classList.remove('hidden')
+      } else {
+      // Load from LocalStorage
+      const inProgress = JSON.parse(
+        localStorage.getItem(StorageKeys.IN_PROGRESS) || '[]'
+        )
+      const completed = JSON.parse(localStorage.getItem(StorageKeys.COMPLETED) || '[]')
+      const allProjects: Project[] = [...inProgress, ...completed]
 
-        const project = allProjects.find((p: any) => p.id === projectId);
+      const project = allProjects.find((p: Project) => p.id === projectId)
 
-        if (project) {
-            // Update DOM
-            document.title = `${project.name} - Project Details`;
-            document.getElementById("projectName")!.textContent = project.name;
-            document.getElementById("projectDescription")!.textContent =
-                project.description || "No description provided.";
-            document.getElementById("dateCreated")!.textContent = formatDate(
-                project.createdAt,
-            );
-            document.getElementById("dateUpdated")!.textContent = formatDate(
-                project.updatedAt,
-            );
+      if (project) {
+        // Update DOM
+        document.title = `${project.name} - Project Details`
+        document.getElementById('projectName')!.textContent = project.name
+        document.getElementById('projectDescription')!.textContent =
+          project.description || 'No description provided.'
+        document.getElementById('dateCreated')!.textContent = formatDate(
+          project.createdAt
+          )
+        document.getElementById('dateUpdated')!.textContent = formatDate(
+          project.updatedAt
+          )
 
-            // Status Badge
-            const statusEl = document.getElementById("projectStatus");
-            if (statusEl) {
-                statusEl.textContent = project.status;
-                let statusClasses =
-                    "text-sm px-3 py-1 rounded-full font-semibold uppercase tracking-wider border";
-                if (project.status === "Completed") {
-                    statusClasses +=
-                        " bg-emerald-500/10 text-[var(--color-status-completed)] border-emerald-500/20";
-                } else if (project.status === "InProgress") {
-                    statusClasses +=
-                        " bg-amber-500/10 text-[var(--color-status-inprogress)] border-amber-500/20";
-                } else {
-                    statusClasses +=
-                        " bg-slate-500/10 text-[var(--color-status-pending)] border-slate-500/20";
-                }
-                statusEl.className = statusClasses;
-            }
-
-            // Score
-            const score = project.score !== undefined ? project.score : null;
-            const scoreEl = document.getElementById("projectScore");
-            const scoreLabelEl = document.getElementById("scoreLabel");
-            const scoreCircleEl = document.getElementById("scoreCircle");
-
-            if (score !== null) {
-                scoreEl!.textContent = score.toString();
-                const details = getScoreDetails(score);
-                scoreLabelEl!.textContent = details.text;
-                scoreCircleEl!.style.borderColor = details.color;
-                scoreCircleEl!.style.boxShadow = `0 0 20px ${details.shadow}`;
-                scoreCircleEl!.style.backgroundColor = details.shadow; // light bg
+        // Status Badge
+        const statusEl = document.getElementById('projectStatus')
+        if (statusEl) {
+          statusEl.textContent = project.status
+          let statusClasses =
+            'text-sm px-3 py-1 rounded-full font-semibold uppercase tracking-wider border'
+          if (project.status === ProjectStatus.COMPLETED) {
+            statusClasses +=
+              ' bg-emerald-500/10 text-[var(--color-status-completed)] border-emerald-500/20'
+            } else if (project.status === ProjectStatus.IN_PROGRESS) {
+            statusClasses +=
+              ' bg-amber-500/10 text-[var(--color-status-inprogress)] border-amber-500/20'
             } else {
-                scoreEl!.textContent = "--";
-                scoreLabelEl!.textContent = "Not Calculated";
-                scoreCircleEl!.style.borderColor = "#94a3b8"; // Slate 400
+            statusClasses +=
+              ' bg-slate-500/10 text-[var(--color-status-pending)] border-slate-500/20'
             }
+          statusEl.className = statusClasses
+          }
 
-            // Show Content
-            document.getElementById("loadingState")!.style.display = "none";
-            document
-                .getElementById("projectContent")!
-                .classList.remove("hidden");
+        // Score
+        const score = project.score !== undefined ? project.score : null
+        const scoreEl = document.getElementById('projectScore')
+        const scoreLabelEl = document.getElementById('scoreLabel')
+        const scoreCircleEl = document.getElementById('scoreCircle')
 
-            // Handle Edit
-            const editBtn = document.getElementById("editBtn");
-            if (editBtn) {
-                editBtn.classList.remove("hidden");
-                editBtn.addEventListener("click", () => {
-                    // Move from Completed to inProgress if needed
-                    // If it's already inProgress (e.g. we are viewing a draft), it's fine
-                    const completedIndex = completed.findIndex(
-                        (p: any) => p.id === projectId,
-                    );
+        if (score !== null) {
+          scoreEl!.textContent = score.toString()
+          const details = getScoreDetails(score)
+          scoreLabelEl!.textContent = details.text
+          scoreCircleEl!.style.borderColor = details.color
+          scoreCircleEl!.style.boxShadow = `0 0 20px ${details.shadow}`
+          scoreCircleEl!.style.backgroundColor = details.shadow // light bg
+          } else {
+          scoreEl!.textContent = '--'
+          scoreLabelEl!.textContent = 'Not Calculated'
+          scoreCircleEl!.style.borderColor = '#94a3b8' // Slate 400
+          }
 
-                    if (completedIndex !== -1) {
-                        // Remove from Completed
-                        completed.splice(completedIndex, 1);
-                        localStorage.setItem(
-                            "Completed",
-                            JSON.stringify(completed),
-                        );
+        // Show Content
+        document.getElementById('loadingState')!.style.display = 'none'
+        document
+          .getElementById('projectContent')!
+          .classList.remove('hidden')
 
-                        // Add to inProgress (if not already there? But wait, ids are unique)
-                        // Actually, we should check if it's already there to be safe, but usually it moves strictly between lists
-                        // Update status
-                        project.status = "InProgress";
-                        inProgress.push(project);
-                        localStorage.setItem(
-                            "inProgress",
-                            JSON.stringify(inProgress),
-                        );
-                    }
+        // Handle Edit
+        const editBtn = document.getElementById('editBtn')
+        if (editBtn) {
+          editBtn.classList.remove('hidden')
+          editBtn.addEventListener('click', () => {
+            // Move from Completed to inProgress if needed
+            // If it's already inProgress (e.g. we are viewing a draft), it's fine
+            const completedIndex = completed.findIndex(
+              (p: any) => p.id === projectId
+              )
 
-                    // Redirect to audit
-                    window.location.href = `/audit?projectId=${project.id}&projectName=${encodeURIComponent(project.name)}&projectDesc=${encodeURIComponent(project.description || "")}`;
-                });
-            }
+            if (completedIndex !== -1) {
+              // Remove from Completed
+              completed.splice(completedIndex, 1)
+              localStorage.setItem(
+                'Completed',
+                JSON.stringify(completed)
+                )
+
+              // Add to inProgress (if not already there? But wait, ids are unique)
+              // Actually, we should check if it's already there to be safe, but usually it moves strictly between lists
+              // Update status
+              project.status = ProjectStatus.IN_PROGRESS
+              inProgress.push(project)
+              localStorage.setItem(
+                'inProgress',
+                JSON.stringify(inProgress)
+                )
+              }
+
+            // Redirect to audit
+            window.location.href = `/audit?projectId=${project.id}&projectName=${encodeURIComponent(project.name)}&projectDesc=${encodeURIComponent(project.description || '')}`
+            })
+          }
         } else {
-            document.getElementById("loadingState")!.style.display = "none";
-            document.getElementById("errorState")!.classList.remove("hidden");
+        document.getElementById('loadingState')!.style.display = 'none'
+        document.getElementById('errorState')!.classList.remove('hidden')
         }
-    }
+      }
 </script>
