@@ -3,7 +3,11 @@
     "allow": [
       "Bash(git checkout:*)",
       "Bash(gh pr list:*)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run build:*)",
+      "Bash(git fetch:*)",
+      "Bash(npm run build:desktop:*)"
     ]
   }
 }
