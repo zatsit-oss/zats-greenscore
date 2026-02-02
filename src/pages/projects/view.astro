@@ -257,10 +257,12 @@ import RadarChart from '../../components/RadarChart.astro'
           const chartCard = document.getElementById('chartCard')
           if (chartCard && sectionScores.length > 0) {
             chartCard.classList.remove('hidden')
+            // Map to generic RadarChart format (section -> label)
+            const chartData = sectionScores.map(s => ({ label: s.section, score: s.score }))
             // Wait for DOM to be ready then init chart
             requestAnimationFrame(() => {
               if (typeof (window as any).initRadarChart === 'function') {
-                (window as any).initRadarChart('sectionRadarChart', sectionScores)
+                (window as any).initRadarChart('sectionRadarChart', chartData)
               }
             })
           }

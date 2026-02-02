@@ -1,0 +1,201 @@
+---
+/**
+ * RadarChart component - Pure SVG radar chart
+ * Lightweight and eco-friendly: no external library required
+ *
+ * Supports any number of data points (3+)
+ * Reusable for: section scores, project comparison, custom metrics
+ */
+
+export interface RadarDataPoint {
+  label: string;
+  score: number;  // 0-100
+}
+
+interface Props {
+  id?: string;
+}
+
+const { id = 'radarChart' } = Astro.props;
+
+// Chart dimensions
+const size = 280;
+const center = size / 2;
+const radius = 100;
+const levels = 4; // Concentric circles (25%, 50%, 75%, 100%)
+---
+
+<div class="radar-chart-container" id={`${id}-container`}>
+  <svg
+    id={id}
+    viewBox={`0 0 ${size} ${size}`}
+    class="radar-chart"
+    aria-label="Radar chart showing scores by section"
+  >
+    <!-- Background circles -->
+    {[...Array(levels)].map((_, i) => {
+      const r = (radius / levels) * (i + 1);
+      return (
+        <circle
+          cx={center}
+          cy={center}
+          r={r}
+          fill="none"
+          stroke="var(--glass-border)"
+          stroke-width="1"
+          opacity={0.5}
+        />
+      );
+    })}
+
+    <!-- Axis lines (will be drawn by JS based on data count) -->
+    <g id={`${id}-axes`}></g>
+
+    <!-- Data polygon -->
+    <polygon
+      id={`${id}-polygon`}
+      fill="var(--color-primary)"
+      fill-opacity="0.25"
+      stroke="var(--color-primary)"
+      stroke-width="2"
+      points=""
+    />
+
+    <!-- Data points -->
+    <g id={`${id}-points`}></g>
+
+    <!-- Labels -->
+    <g id={`${id}-labels`}></g>
+  </svg>
+
+  <!-- Legend -->
+  <div id={`${id}-legend`} class="radar-legend"></div>
+</div>
+
+<style>
+  .radar-chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .radar-chart {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+  }
+
+  .radar-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .legend-score {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+</style>
+
+<script define:vars={{ id, center, radius }}>
+  /**
+   * Initialize radar chart with data points
+   * @param {string} chartId - The chart element ID
+   * @param {Array<{label: string, score: number}>} data - Data points (score: 0-100)
+   */
+  window.initRadarChart = function(chartId, data) {
+    if (!data || data.length === 0) return;
+
+    const svg = document.getElementById(chartId);
+    if (!svg) return;
+
+    const axesGroup = document.getElementById(`${chartId}-axes`);
+    const polygon = document.getElementById(`${chartId}-polygon`);
+    const pointsGroup = document.getElementById(`${chartId}-points`);
+    const labelsGroup = document.getElementById(`${chartId}-labels`);
+    const legendContainer = document.getElementById(`${chartId}-legend`);
+
+    const centerX = center;
+    const centerY = center;
+    const maxRadius = radius;
+    const angleStep = (2 * Math.PI) / data.length;
+    const startAngle = -Math.PI / 2; // Start from top
+
+    // Clear previous content
+    axesGroup.innerHTML = '';
+    pointsGroup.innerHTML = '';
+    labelsGroup.innerHTML = '';
+    legendContainer.innerHTML = '';
+
+    // Draw axes and calculate points
+    const polygonPoints = [];
+
+    data.forEach((item, i) => {
+      const angle = startAngle + (i * angleStep);
+      const endX = centerX + maxRadius * Math.cos(angle);
+      const endY = centerY + maxRadius * Math.sin(angle);
+
+      // Draw axis line
+      const axis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      axis.setAttribute('x1', centerX.toString());
+      axis.setAttribute('y1', centerY.toString());
+      axis.setAttribute('x2', endX.toString());
+      axis.setAttribute('y2', endY.toString());
+      axis.setAttribute('stroke', 'var(--glass-border)');
+      axis.setAttribute('stroke-width', '1');
+      axis.setAttribute('opacity', '0.5');
+      axesGroup.appendChild(axis);
+
+      // Calculate data point position
+      const dataRadius = (item.score / 100) * maxRadius;
+      const dataX = centerX + dataRadius * Math.cos(angle);
+      const dataY = centerY + dataRadius * Math.sin(angle);
+      polygonPoints.push(`${dataX},${dataY}`);
+
+      // Draw data point
+      const point = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      point.setAttribute('cx', dataX.toString());
+      point.setAttribute('cy', dataY.toString());
+      point.setAttribute('r', '5');
+      point.setAttribute('fill', 'var(--color-primary)');
+      point.setAttribute('stroke', 'white');
+      point.setAttribute('stroke-width', '2');
+      pointsGroup.appendChild(point);
+
+      // Draw label
+      const labelRadius = maxRadius + 25;
+      const labelX = centerX + labelRadius * Math.cos(angle);
+      const labelY = centerY + labelRadius * Math.sin(angle);
+
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', labelX.toString());
+      label.setAttribute('y', labelY.toString());
+      label.setAttribute('text-anchor', 'middle');
+      label.setAttribute('dominant-baseline', 'middle');
+      label.setAttribute('fill', 'var(--color-text-muted)');
+      label.setAttribute('font-size', '11');
+      label.setAttribute('font-weight', '500');
+      label.textContent = item.label;
+      labelsGroup.appendChild(label);
+
+      // Add legend item
+      const legendItem = document.createElement('span');
+      legendItem.className = 'legend-item';
+      legendItem.innerHTML = `${item.label}: <span class="legend-score">${item.score}%</span>`;
+      legendContainer.appendChild(legendItem);
+    });
+
+    // Set polygon points
+    polygon.setAttribute('points', polygonPoints.join(' '));
+  };
+</script>
