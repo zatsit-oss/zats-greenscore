@@ -5,8 +5,8 @@ description = "the zats-greenscore Tauri App"
 authors = ["Emmanuel Peru <eperu@zatsit.fr>"]
 license = "MIT License"
 repository = "https://github.com/zatsit-oss/zats-greenscore"
-edition = "2025"
-rust-version = "1.77.2"
+edition = "2024"
+rust-version = "1.85.0"
 
 [lib]
 name = "app_lib"

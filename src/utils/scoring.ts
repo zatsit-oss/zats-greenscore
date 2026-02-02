@@ -86,3 +86,55 @@ export const getRankingScore = (answers: Answers, questions: Question[]) => {
   return ProjectRanking.E
 }
 
+export interface SectionScore {
+  section: string;
+  score: number;
+  maxPoints: number;
+  earnedPoints: number;
+}
+
+/**
+ * Calculate scores by section for radar chart visualization
+ */
+export const calculateScoresBySection = (answers: Answers, questions: Question[]): SectionScore[] => {
+  const sectionMap = new Map<string, { earned: number; max: number }>()
+
+  questions.forEach((q) => {
+    if (!sectionMap.has(q.section)) {
+      sectionMap.set(q.section, { earned: 0, max: 0 })
+    }
+
+    const sectionData = sectionMap.get(q.section)!
+    sectionData.max += q.points
+
+    const answer = answers[q.id]
+
+    if (typeof answer === 'boolean' && answer) {
+      sectionData.earned += q.points
+    } else if (q.formula && (typeof answer === 'string' || typeof answer === 'number')) {
+      const x = Number(answer)
+      if (!isNaN(x)) {
+        const calculatedPoints = (q.points * Math.max(0, Math.min(100, safeEvaluate(q.formula, x)))) / 100
+        sectionData.earned += calculatedPoints
+      }
+    }
+  })
+
+  // Convert to array with percentage scores
+  const result: SectionScore[] = []
+  sectionMap.forEach((data, section) => {
+    result.push({
+      section,
+      score: data.max > 0 ? Math.round((data.earned / data.max) * 100) : 0,
+      maxPoints: data.max,
+      earnedPoints: Math.round(data.earned)
+    })
+  })
+
+  // Sort by predefined order
+  const sectionOrder = ['Architecture', 'Design', 'Usage', 'Logs']
+  result.sort((a, b) => sectionOrder.indexOf(a.section) - sectionOrder.indexOf(b.section))
+
+  return result
+}
+

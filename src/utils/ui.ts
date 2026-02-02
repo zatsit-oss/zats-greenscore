@@ -108,6 +108,23 @@ export const loadProjects = () => {
     const avgScoreEl = document.getElementById("avgScore");
     if (avgScoreEl) avgScoreEl.textContent = avgScore.toString();
 
+    // Bar Chart - Show only if there are completed projects
+    const chartSection = document.getElementById("chartSection");
+    if (chartSection && completedProjects.length > 0) {
+        chartSection.classList.remove("hidden");
+        const chartData = completedProjects.map((p: Project) => ({
+            label: p.name,
+            value: p.score || 0,
+            id: p.id
+        }));
+        // Initialize chart after DOM is ready
+        requestAnimationFrame(() => {
+            if (typeof (window as any).initBarChart === "function") {
+                (window as any).initBarChart("projectsBarChart", chartData);
+            }
+        });
+    }
+
     // Render Grid
     const grid = document.getElementById("projectsGrid");
     const tplCompleted = document.getElementById(
