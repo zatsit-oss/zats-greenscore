@@ -11,6 +11,17 @@ Project-specific guidelines for AI assistants working on this codebase.
 | Security | [.claude/rules/security.md](.claude/rules/security.md) |
 | Tauri & Desktop | [.claude/rules/tauri.md](.claude/rules/tauri.md) |
 
+## Specifications
+
+| Topic | File |
+|-------|------|
+| Project overview & goals | [docs/specs/overview.md](docs/specs/overview.md) |
+| Glossary (Green Score terms) | [docs/specs/glossary.md](docs/specs/glossary.md) |
+| Audit questionnaire | [docs/specs/features/audit.md](docs/specs/features/audit.md) |
+| Scoring system | [docs/specs/features/scoring.md](docs/specs/features/scoring.md) |
+| Project management | [docs/specs/features/projects.md](docs/specs/features/projects.md) |
+| ADR: Tauri desktop | [docs/specs/adr/001-tauri-desktop.md](docs/specs/adr/001-tauri-desktop.md) |
+
 ## Commands
 
 | Command | Description |
