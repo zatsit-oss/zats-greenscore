@@ -30,8 +30,12 @@ const levels = 4; // Concentric circles (25%, 50%, 75%, 100%)
     id={id}
     viewBox={`0 0 ${size} ${size}`}
     class="radar-chart"
-    aria-label="Radar chart showing scores by section"
+    role="img"
+    aria-labelledby={`${id}-title`}
+    aria-describedby={`${id}-desc`}
   >
+    <title id={`${id}-title`}>Score by Section</title>
+    <desc id={`${id}-desc`}>Radar chart displaying scores across different categories. Values range from 0 to 100%.</desc>
     <!-- Background circles -->
     {[...Array(levels)].map((_, i) => {
       const r = (radius / levels) * (i + 1);

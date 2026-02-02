@@ -1,0 +1,227 @@
+---
+/**
+ * BarChart component - Pure SVG horizontal bar chart
+ * Lightweight and eco-friendly: no external library required
+ *
+ * Accessibility:
+ * - role="img" with aria-label
+ * - Each bar has aria-label with value
+ * - Supports keyboard focus
+ * - Works with screen readers
+ *
+ * Theming: Uses CSS variables for dark/light mode support
+ */
+
+export interface BarDataPoint {
+  label: string;
+  value: number;  // 0-100
+  id?: string;    // Optional link identifier
+}
+
+interface Props {
+  id?: string;
+  title?: string;
+  maxValue?: number;
+}
+
+const { id = 'barChart', title = 'Score Comparison', maxValue = 100 } = Astro.props;
+---
+
+<div class="bar-chart-container" id={`${id}-container`}>
+  <h3 class="bar-chart-title" id={`${id}-title`}>{title}</h3>
+
+  <div
+    class="bar-chart"
+    id={id}
+    role="img"
+    aria-labelledby={`${id}-title`}
+    aria-describedby={`${id}-desc`}
+  >
+    <p id={`${id}-desc`} class="sr-only">
+      Bar chart comparing project scores. Each bar represents a project's score from 0 to {maxValue}.
+    </p>
+    <!-- Bars will be rendered by JS -->
+  </div>
+
+  <p class="bar-chart-empty hidden" id={`${id}-empty`}>
+    No completed projects yet.
+  </p>
+</div>
+
+<style is:global>
+  .bar-chart-container {
+    width: 100%;
+  }
+
+  .bar-chart-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 1rem;
+  }
+
+  .bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .bar-chart-empty {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .bar-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .bar-label {
+    flex: 0 0 100px;
+    font-size: 0.875rem;
+    color: var(--color-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .bar-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 20px;
+    background: var(--glass-bg);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    background: var(--color-primary);
+  }
+
+  .bar-value {
+    flex-shrink: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text);
+    min-width: 2.5rem;
+    text-align: right;
+  }
+
+  .bar-item:focus-within .bar-track {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  .bar-item a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .bar-item a:hover .bar-label {
+    color: var(--color-primary);
+  }
+
+  .bar-item a:focus {
+    outline: none;
+  }
+
+  /* Screen reader only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
+
+<script>
+  /**
+   * Initialize bar chart with data points
+   * @param chartId - The chart container ID
+   * @param data - Array of {label, value, id?} objects
+   * @param maxValue - Maximum value for the scale (default 100)
+   */
+  (window as any).initBarChart = function(
+    chartId: string,
+    data: Array<{label: string; value: number; id?: string}>,
+    maxValue: number = 100
+  ) {
+    const container = document.getElementById(chartId);
+    const emptyMsg = document.getElementById(`${chartId}-empty`);
+
+    if (!container) return;
+
+    // Clear previous content
+    container.innerHTML = '';
+
+    if (!data || data.length === 0) {
+      container.classList.add('hidden');
+      emptyMsg?.classList.remove('hidden');
+      return;
+    }
+
+    container.classList.remove('hidden');
+    emptyMsg?.classList.add('hidden');
+
+    // Sort by value descending
+    const sortedData = [...data].sort((a, b) => b.value - a.value);
+
+    sortedData.forEach((item) => {
+      const percentage = Math.min(100, (item.value / maxValue) * 100);
+
+      const barItem = document.createElement('div');
+      barItem.className = 'bar-item';
+
+      const labelHtml = item.id
+        ? `<a href="/projects/view?id=${item.id}" class="bar-label" title="${item.label}" aria-label="${item.label}: score ${item.value} sur ${maxValue}">${item.label}</a>`
+        : `<span class="bar-label" title="${item.label}">${item.label}</span>`;
+
+      barItem.innerHTML = `
+        ${labelHtml}
+        <div class="bar-wrapper">
+          <div class="bar-track">
+            <div
+              class="bar-fill"
+              style="width: ${percentage}%;"
+              role="progressbar"
+              aria-valuenow="${item.value}"
+              aria-valuemin="0"
+              aria-valuemax="${maxValue}"
+              aria-label="${item.label}: ${item.value}"
+            ></div>
+          </div>
+          <span class="bar-value">${item.value}</span>
+        </div>
+      `;
+
+      container.appendChild(barItem);
+    });
+
+    // Update aria description with actual count
+    const desc = document.getElementById(`${chartId}-desc`);
+    if (desc) {
+      desc.textContent = `Bar chart comparing ${data.length} project scores. Sorted from highest to lowest.`;
+    }
+  };
+</script>
