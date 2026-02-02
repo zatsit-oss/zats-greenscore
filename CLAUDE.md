@@ -22,16 +22,16 @@ Project-specific guidelines for AI assistants working on this codebase.
 | Project management | [docs/specs/features/projects.md](docs/specs/features/projects.md) |
 | ADR: Tauri desktop | [docs/specs/adr/001-tauri-desktop.md](docs/specs/adr/001-tauri-desktop.md) |
 
-## Commands
+## Skills
 
-| Command | Description |
-|---------|-------------|
+| Skill | Description |
+|-------|-------------|
+| `/dev` | Start Astro dev server |
 | `/build` | Run production build (web) |
-| `/build-desktop` | Build desktop app |
-| `/dev` | Start dev server |
 | `/dev-desktop` | Start desktop dev with hot reload |
-| `/new-component` | Create a new Astro component |
-| `/new-page` | Create a new page |
+| `/build-desktop` | Build Tauri desktop app |
+| `/new-component <Name>` | Create a new Astro component |
+| `/new-page <path>` | Create a new page |
 | `/review` | Perform code review |
 
 ## Project Overview

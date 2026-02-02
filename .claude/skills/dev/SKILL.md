@@ -1,6 +1,11 @@
-# Dev Server
+---
+name: dev
+description: Start the Astro development server for web development
+---
 
-Start the development server for web development.
+Start the development server.
+
+Run this command:
 
 ```bash
 npm run dev

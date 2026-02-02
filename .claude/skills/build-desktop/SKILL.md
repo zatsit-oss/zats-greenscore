@@ -1,4 +1,7 @@
-# Build Desktop
+---
+name: build-desktop
+description: Build the Tauri desktop application for production
+---
 
 Build the desktop application using Tauri.
 

@@ -1,15 +1,16 @@
-# New Page
+---
+name: new-page
+description: Create a new Astro page with the standard layout
+argument-hint: "<page-path>"
+---
 
-Create a new page for the application.
-
-## Arguments
-- `$ARGUMENTS` - The page path (e.g., "results", "projects/edit")
+Create a new page at path `$ARGUMENTS`.
 
 ## Instructions
 
-1. Create the page file at `src/pages/{path}.astro`
+1. Create the page file at `src/pages/$ARGUMENTS.astro`
 
-2. Use the standard page template:
+2. Use this template:
 
 ```astro
 ---
@@ -33,8 +34,8 @@ import Layout from '../layouts/Layout.astro';
 4. Run build to verify: `npm run build`
 
 ## Checklist
-- [ ] Meaningful title and description for SEO
-- [ ] Proper heading hierarchy (h1 > h2 > h3)
-- [ ] Navigation links updated
-- [ ] Responsive layout
-- [ ] Accessible structure
+- Meaningful title and description for SEO
+- Proper heading hierarchy (h1 > h2 > h3)
+- Navigation links updated if needed
+- Responsive layout
+- Accessible structure

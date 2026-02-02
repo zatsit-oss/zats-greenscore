@@ -1,6 +1,9 @@
-# Dev Desktop
+---
+name: dev-desktop
+description: Start the Tauri desktop application in development mode with hot reload
+---
 
-Start the desktop application in development mode with hot reload.
+Start the desktop application in development mode.
 
 ```bash
 npm run dev:desktop

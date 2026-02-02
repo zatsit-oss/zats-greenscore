@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro'
+import RadarChart from '../../components/RadarChart.astro'
 ---
 
 <Layout title="Project Details">
@@ -81,6 +82,19 @@ import Layout from '../../layouts/Layout.astro'
             </div>
           </div>
         </div>
+
+        <!-- Score by Section Chart -->
+        <div
+          class="p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] hidden"
+          id="chartCard"
+        >
+          <h2
+            class="text-xl font-semibold mb-4 text-[var(--color-text)]"
+          >
+            Score by Section
+          </h2>
+          <RadarChart id="sectionRadarChart" />
+        </div>
       </div>
 
       <div class="md:col-span-1">
@@ -130,6 +144,8 @@ import Layout from '../../layouts/Layout.astro'
 <script>
   import  { type Project,ProjectStatus } from '../../types/project.ts'
   import { StorageKeys } from '../../types/storage.ts'
+  import { calculateScoresBySection, type Question } from '../../utils/scoring.ts'
+  import surveyQuestions from '../../data/surveyQuestions.json'
     const urlParams = new URLSearchParams(window.location.search)
     const projectId = urlParams.get('id')
 
@@ -231,6 +247,24 @@ import Layout from '../../layouts/Layout.astro'
           scoreLabelEl!.textContent = 'Not Calculated'
           scoreCircleEl!.style.borderColor = '#94a3b8' // Slate 400
           }
+
+        // Radar Chart - Score by Section
+        if (project.answers && Object.keys(project.answers).length > 0) {
+          const sectionScores = calculateScoresBySection(
+            project.answers,
+            surveyQuestions as Question[]
+          )
+          const chartCard = document.getElementById('chartCard')
+          if (chartCard && sectionScores.length > 0) {
+            chartCard.classList.remove('hidden')
+            // Wait for DOM to be ready then init chart
+            requestAnimationFrame(() => {
+              if (typeof (window as any).initRadarChart === 'function') {
+                (window as any).initRadarChart('sectionRadarChart', sectionScores)
+              }
+            })
+          }
+        }
 
         // Show Content
         document.getElementById('loadingState')!.style.display = 'none'
