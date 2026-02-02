@@ -28,19 +28,15 @@ const { id = 'barChart', title = 'Score Comparison', maxValue = 100 } = Astro.pr
 ---
 
 <div class="bar-chart-container" id={`${id}-container`}>
-  <h3 class="bar-chart-title" id={`${id}-title`}>{title}</h3>
+  <h2 class="bar-chart-title" id={`${id}-title`}>{title}</h2>
 
   <div
     class="bar-chart"
     id={id}
-    role="img"
+    role="list"
     aria-labelledby={`${id}-title`}
-    aria-describedby={`${id}-desc`}
   >
-    <p id={`${id}-desc`} class="bar-chart-sr-only">
-      Bar chart comparing project scores. Each bar represents a project's score from 0 to {maxValue}.
-    </p>
-    <!-- Bars will be rendered by JS -->
+    <!-- Bars will be rendered by JS as list items -->
   </div>
 
   <p class="bar-chart-empty hidden" id={`${id}-empty`}>
@@ -137,18 +133,6 @@ const { id = 'barChart', title = 'Score Comparison', maxValue = 100 } = Astro.pr
     outline: none;
   }
 
-  /* Screen reader only - use Tailwind sr-only if available */
-  .bar-chart-sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
 </style>
 
 <script>
@@ -188,6 +172,7 @@ const { id = 'barChart', title = 'Score Comparison', maxValue = 100 } = Astro.pr
 
       const barItem = document.createElement('div');
       barItem.className = 'bar-item';
+      barItem.setAttribute('role', 'listitem');
 
       const labelHtml = item.id
         ? `<a href="/projects/view?id=${item.id}" class="bar-label" title="${item.label}" aria-label="${item.label}: score ${item.value} sur ${maxValue}">${item.label}</a>`
@@ -213,11 +198,5 @@ const { id = 'barChart', title = 'Score Comparison', maxValue = 100 } = Astro.pr
 
       container.appendChild(barItem);
     });
-
-    // Update aria description with actual count
-    const desc = document.getElementById(`${chartId}-desc`);
-    if (desc) {
-      desc.textContent = `Bar chart comparing ${data.length} project scores. Sorted from highest to lowest.`;
-    }
   };
 </script>
