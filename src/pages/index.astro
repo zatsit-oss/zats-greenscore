@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro'
 import ProjectCard from '../components/ProjectCard.astro'
+import BarChart from '../components/BarChart.astro'
 import { ProjectStatus } from '../types/project.ts'
 ---
 
@@ -38,6 +39,14 @@ import { ProjectStatus } from '../types/project.ts'
         >
       </div>
     </div>
+  </div>
+
+  <!-- Global Chart - Shows only when there are completed projects -->
+  <div
+    class="mb-12 p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] hidden"
+    id="chartSection"
+  >
+    <BarChart id="projectsBarChart" title="Projects Score Comparison" />
   </div>
 
   <div
