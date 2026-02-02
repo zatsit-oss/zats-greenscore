@@ -37,7 +37,7 @@ const { id = 'barChart', title = 'Score Comparison', maxValue = 100 } = Astro.pr
     aria-labelledby={`${id}-title`}
     aria-describedby={`${id}-desc`}
   >
-    <p id={`${id}-desc`} class="sr-only">
+    <p id={`${id}-desc`} class="bar-chart-sr-only">
       Bar chart comparing project scores. Each bar represents a project's score from 0 to {maxValue}.
     </p>
     <!-- Bars will be rendered by JS -->
@@ -137,8 +137,8 @@ const { id = 'barChart', title = 'Score Comparison', maxValue = 100 } = Astro.pr
     outline: none;
   }
 
-  /* Screen reader only */
-  .sr-only {
+  /* Screen reader only - use Tailwind sr-only if available */
+  .bar-chart-sr-only {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -148,10 +148,6 @@ const { id = 'barChart', title = 'Score Comparison', maxValue = 100 } = Astro.pr
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
-  }
-
-  .hidden {
-    display: none;
   }
 </style>
 
