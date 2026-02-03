@@ -9,29 +9,20 @@ const evaluationTypes = getAvailableEvaluationTypes()
 <Layout title="Project Details">
   <div class="max-w-4xl mx-auto hidden" id="projectContent">
     <div class="mb-8">
-      <a
-        href="/"
-        class="text-[var(--color-text-muted)] text-sm inline-flex items-center gap-2 mb-4 hover:text-[var(--color-primary)] transition-colors"
-      >
+      <a href="/" class="link-back mb-4">
         &larr; Back to Dashboard
       </a>
       <div class="flex justify-between items-start flex-wrap gap-4">
         <div>
-          <h1
-            class="text-4xl font-extrabold text-[var(--color-text)] leading-tight mb-3"
-            id="projectName"
-          >
+          <h1 class="text-4xl font-extrabold leading-tight mb-3" id="projectName">
             Project Name
           </h1>
           <!-- Evaluation Type Selector -->
           <div class="flex items-center gap-3">
-            <label for="evaluationTypeSelect" class="text-sm font-medium text-[var(--color-text-muted)]">
+            <label for="evaluationTypeSelect" class="text-sm font-medium text-muted">
               Evaluation:
             </label>
-            <select
-              id="evaluationTypeSelect"
-              class="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-emerald-500/20 transition-colors cursor-pointer"
-            >
+            <select id="evaluationTypeSelect" class="form-select">
               {evaluationTypes.map((evalType) => (
                 <option value={evalType.id}>
                   {evalType.name}
@@ -41,102 +32,54 @@ const evaluationTypes = getAvailableEvaluationTypes()
           </div>
         </div>
         <div class="flex gap-4 items-center">
-          <span
-            class="text-sm px-3 py-1 rounded-full font-semibold uppercase tracking-wider border"
-            id="projectStatus">Status</span
-          >
-          <button
-            class="hidden px-4 py-2 rounded-lg font-medium bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] hover:border-[var(--color-primary)] transition-colors"
-            id="editBtn">Edit Evaluation
-          </button
-          >
+          <span class="status-badge" id="projectStatus">Status</span>
+          <button class="btn btn-secondary hidden" id="editBtn">Edit Evaluation</button>
         </div>
       </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div class="md:col-span-2 space-y-8">
-        <div
-          class="p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)]"
-        >
-          <h2
-            class="text-xl font-semibold mb-4 text-[var(--color-text)]"
-          >
-            About this Project
-          </h2>
-          <p
-            class="text-[var(--color-text-muted)] leading-relaxed"
-            id="projectDescription"
-          >
+        <div class="glass-card">
+          <h2 class="text-xl font-semibold mb-4">About this Project</h2>
+          <p class="text-muted leading-relaxed" id="projectDescription">
             Description...
           </p>
         </div>
 
-        <div
-          class="p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)]"
-        >
-          <h2
-            class="text-xl font-semibold mb-4 text-[var(--color-text)]"
-          >
-            Timeline
-          </h2>
+        <div class="glass-card">
+          <h2 class="text-xl font-semibold mb-4">Timeline</h2>
           <div class="flex gap-8 mt-6">
             <div class="flex flex-col">
-              <span
-                class="text-xs text-[var(--color-text-muted)] uppercase tracking-wider mb-1"
-              >Created</span
-              >
-              <span
-                class="font-medium text-[var(--color-text)]"
-                id="dateCreated">Oct 1, 2023</span
-              >
+              <span class="text-xs text-muted uppercase tracking-wider mb-1">Created</span>
+              <span class="font-medium" id="dateCreated">Oct 1, 2023</span>
             </div>
             <div class="flex flex-col">
-              <span
-                class="text-xs text-[var(--color-text-muted)] uppercase tracking-wider mb-1"
-              >Last Updated</span
-              >
-              <span
-                class="font-medium text-[var(--color-text)]"
-                id="dateUpdated">Oct 1, 2023</span
-              >
+              <span class="text-xs text-muted uppercase tracking-wider mb-1">Last Updated</span>
+              <span class="font-medium" id="dateUpdated">Oct 1, 2023</span>
             </div>
           </div>
         </div>
 
         <!-- Score by Section Chart -->
-        <div
-          class="p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] hidden"
-          id="chartCard"
-        >
-          <h2
-            class="text-xl font-semibold mb-4 text-[var(--color-text)]"
-          >
-            Score by Section
-          </h2>
+        <div class="glass-card hidden" id="chartCard">
+          <h2 class="text-xl font-semibold mb-4">Score by Section</h2>
           <RadarChart id="sectionRadarChart" />
         </div>
       </div>
 
       <div class="md:col-span-1">
-        <div
-          class="p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] text-center"
-        >
-          <h3 class="text-base font-medium text-[var(--color-text-muted)] mb-4">
-            Current GreenScore
-          </h3>
+        <div class="glass-card text-center">
+          <h3 class="text-base font-medium text-muted mb-4">Current GreenScore</h3>
           <div class="flex justify-center mb-4">
             <div
               class="w-32 h-32 rounded-full border-8 flex items-center justify-center bg-white/5 shadow-[0_0_20px_rgba(0,0,0,0.1)]"
               id="scoreCircle"
             >
-              <span
-                class="text-5xl font-extrabold text-[var(--color-text)]"
-                id="projectScore">--</span
-              >
+              <span class="text-5xl font-extrabold" id="projectScore">--</span>
             </div>
           </div>
-          <p class="text-sm text-[var(--color-text-muted)]" id="scoreLabel">Level</p>
+          <p class="text-sm text-muted" id="scoreLabel">Level</p>
         </div>
       </div>
     </div>

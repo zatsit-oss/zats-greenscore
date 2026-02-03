@@ -16,45 +16,30 @@ const defaultEvalType = EvaluationType.API_GREEN_SCORE
       >
         Dashboard
       </h1>
-      <p class="text-lg text-[var(--color-text-muted)]">
+      <p class="text-lg text-muted">
         Overview of all sustainability initiatives.
       </p>
     </div>
     <div class="flex gap-4">
-      <div
-        class="count-card p-4 sm:p-6 rounded-lg min-w-[140px] bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] text-center"
-      >
-				<span class="block text-sm text-[var(--color-text-muted)] mb-1"
-        >Total Projects</span
-        >
-        <span
-          class="block text-2xl font-bold text-[var(--color-text)]"
-          id="totalProjects">0</span
-        >
+      <div class="count-card glass-card p-4 sm:p-6 min-w-[140px] text-center">
+				<span class="block text-sm text-muted mb-1">Total Projects</span>
+        <span class="block text-2xl font-bold" id="totalProjects">0</span>
       </div>
-      <div
-        class="count-card p-4 sm:p-6 rounded-lg min-w-[140px] bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] text-center"
-      >
-        <span class="block text-sm text-[var(--color-text-muted)] mb-1" id="avgScoreLabel">
+      <div class="count-card glass-card p-4 sm:p-6 min-w-[140px] text-center">
+        <span class="block text-sm text-muted mb-1" id="avgScoreLabel">
           Avg {EVALUATION_TYPES[defaultEvalType].name} Score
         </span>
-        <span
-          class="block text-2xl font-bold text-[var(--color-text)]"
-          id="avgScore">0</span
-        >
+        <span class="block text-2xl font-bold" id="avgScore">0</span>
       </div>
     </div>
   </div>
 
   <!-- Evaluation Type Filter -->
   <div class="flex items-center gap-3 mb-8">
-    <label for="evaluationTypeFilter" class="text-sm font-medium text-[var(--color-text-muted)]">
+    <label for="evaluationTypeFilter" class="text-sm font-medium text-muted">
       Filter by evaluation:
     </label>
-    <select
-      id="evaluationTypeFilter"
-      class="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-emerald-500/20 transition-colors cursor-pointer"
-    >
+    <select id="evaluationTypeFilter" class="form-select">
       {evaluationTypes.map((evalType) => (
         <option value={evalType.id} selected={evalType.id === defaultEvalType}>
           {evalType.name}
@@ -64,10 +49,7 @@ const defaultEvalType = EvaluationType.API_GREEN_SCORE
   </div>
 
   <!-- Global Chart - Shows only when there are completed projects -->
-  <div
-    class="mb-12 p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] hidden"
-    id="chartSection"
-  >
+  <div class="glass-card mb-12 hidden" id="chartSection">
     <BarChart id="projectsBarChart" title="Projects Score Comparison" />
   </div>
 
