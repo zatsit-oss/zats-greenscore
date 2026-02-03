@@ -1,5 +1,18 @@
-import { type Project, ProjectRanking, ProjectStatus } from '../types/project.ts'
-import { StorageKeys } from '../types/storage.ts'
+import { type Project, ProjectRanking } from '../types/project'
+import { EvaluationType, EVALUATION_TYPES } from '../types/evaluation'
+import {
+    getDashboardStats,
+    getProjectsWithEvaluation,
+    getChartData,
+    type ProjectWithEvaluation
+} from '../services/dashboard'
+
+/**
+ * Get the display name for an evaluation type
+ */
+export const getEvaluationTypeName = (type: EvaluationType): string => {
+    return EVALUATION_TYPES[type]?.name || type;
+};
 
 export const RankingResult = {
     A: { text: ProjectRanking.A, minScore: 90, color: 'var(--color-score-excellent)', ecoLabelClass: 'text-emerald-400' },
@@ -26,20 +39,24 @@ export const formatDate = (dateString: string) => {
     });
 };
 
+
 /*
  * Helper to populate a card element with project data.
  */
 export const populateCard = (
     card: HTMLAnchorElement,
-    project: Project,
-    isCompleted: boolean,
+    data: ProjectWithEvaluation,
+    evalType: EvaluationType,
 ) => {
-    const score = project.score || 0;
+    const { project, evaluation, isCompleted } = data;
+    const score = evaluation.score || 0;
 
-    // Core Attributes
-    card.href = isCompleted
-        ? `/projects/view?id=${project.id}`
-        : `/audit?projectId=${project.id}&projectName=${encodeURIComponent(project.name)}&projectDesc=${encodeURIComponent(project.description || "")}`;
+    // Core Attributes - link to view if completed, audit if in progress
+    if (isCompleted) {
+        card.href = `/projects/view?id=${project.id}&evaluationType=${evalType}`;
+    } else {
+        card.href = `/audit?projectId=${project.id}&evaluationType=${evalType}`;
+    }
 
     // Text Content Updates
     const set = (selector: string, value: string) => {
@@ -47,7 +64,9 @@ export const populateCard = (
         if (el) el.textContent = value;
     };
 
-    set(".status-badge", project.status);
+    // Status badge - show evaluation status
+    const statusText = isCompleted ? 'Completed' : 'In Progress';
+    set(".status-badge", statusText);
     set(".project-name", project.name);
     set(".project-desc", project.description || "");
     set(".project-date", formatDate(project.updatedAt));
@@ -79,53 +98,46 @@ export const populateCard = (
     }
 };
 
-export const loadProjects = () => {
-    const inProgress = JSON.parse(
-        localStorage.getItem(StorageKeys.IN_PROGRESS) || "[]",
-    );
-    const completed = JSON.parse(
-        localStorage.getItem(StorageKeys.COMPLETED) || "[]",
-    );
-    const allProjects = [...inProgress, ...completed];
+/**
+ * Load and display projects filtered by evaluation type
+ * @param evalType - The evaluation type to filter by (required)
+ */
+export const loadProjects = (evalType: EvaluationType) => {
+    // Get dashboard stats from service
+    const stats = getDashboardStats(evalType);
 
     // Update Stats
     const totalProjectsEl = document.getElementById("totalProjects");
     if (totalProjectsEl)
-        totalProjectsEl.textContent = allProjects.length.toString();
+        totalProjectsEl.textContent = stats.totalProjects.toString();
 
-    const completedProjects = allProjects.filter(
-        (p: any) => p.score !== null,
-    );
-    const avgScore =
-        completedProjects.length > 0
-            ? Math.round(
-                completedProjects.reduce(
-                    (acc: number, p: any) => acc + (p.score || 0),
-                    0,
-                ) / completedProjects.length,
-            )
-            : 0;
     const avgScoreEl = document.getElementById("avgScore");
-    if (avgScoreEl) avgScoreEl.textContent = avgScore.toString();
+    if (avgScoreEl) avgScoreEl.textContent = stats.avgScore.toString();
+
+    // Update Avg Score label
+    const avgScoreLabelEl = document.getElementById("avgScoreLabel");
+    if (avgScoreLabelEl) {
+        avgScoreLabelEl.textContent = `Avg ${getEvaluationTypeName(evalType)} Score`;
+    }
 
     // Bar Chart - Show only if there are completed projects
     const chartSection = document.getElementById("chartSection");
-    if (chartSection && completedProjects.length > 0) {
-        chartSection.classList.remove("hidden");
-        const chartData = completedProjects.map((p: Project) => ({
-            label: p.name,
-            value: p.score || 0,
-            id: p.id
-        }));
-        // Initialize chart after DOM is ready
-        requestAnimationFrame(() => {
-            if (typeof (window as any).initBarChart === "function") {
-                (window as any).initBarChart("projectsBarChart", chartData);
-            }
-        });
+    if (chartSection) {
+        const chartData = getChartData(evalType);
+        if (chartData.length > 0) {
+            chartSection.classList.remove("hidden");
+            // Initialize chart after DOM is ready
+            requestAnimationFrame(() => {
+                if (typeof (window as any).initBarChart === "function") {
+                    (window as any).initBarChart("projectsBarChart", chartData);
+                }
+            });
+        } else {
+            chartSection.classList.add("hidden");
+        }
     }
 
-    // Render Grid
+    // Render Grid - Only projects with the selected evaluation type
     const grid = document.getElementById("projectsGrid");
     const tplCompleted = document.getElementById(
         "card-template-completed",
@@ -138,15 +150,16 @@ export const loadProjects = () => {
 
     grid.innerHTML = "";
 
-    if (allProjects.length === 0) {
+    const projectsWithEval = getProjectsWithEvaluation(evalType);
+
+    if (projectsWithEval.length === 0) {
         grid.innerHTML =
-            '<p class="col-span-full text-center text-[var(--color-text-muted)]">No projects found. Start a new one!</p>';
+            `<p class="col-span-full text-center text-[var(--color-text-muted)]">No ${getEvaluationTypeName(evalType)} projects found. Start a new one!</p>`;
         return;
     }
 
-    allProjects.forEach((project: any) => {
-        const isCompleted = project.status === ProjectStatus.COMPLETED;
-        const template = isCompleted ? tplCompleted : tplPending;
+    projectsWithEval.forEach((data) => {
+        const template = data.isCompleted ? tplCompleted : tplPending;
 
         const clone = template.content.cloneNode(
             true,
@@ -154,7 +167,7 @@ export const loadProjects = () => {
         const card = clone.querySelector("a");
 
         if (card) {
-            populateCard(card, project, isCompleted);
+            populateCard(card, data, evalType);
             grid.appendChild(clone);
         }
     });

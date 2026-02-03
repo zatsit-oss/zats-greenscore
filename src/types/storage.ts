@@ -1,7 +1,15 @@
 // ============================================================================
-// ENUMS
+// STORAGE KEYS
 // ============================================================================
+
 export enum StorageKeys {
-    IN_PROGRESS = "inProgress",
-    COMPLETED = "Completed"
+  // New unified storage
+  PROJECTS = 'projects',
+  STORAGE_VERSION = 'storageVersion',
+
+  // Legacy keys (for migration)
+  LEGACY_IN_PROGRESS = 'inProgress',
+  LEGACY_COMPLETED = 'Completed'
 }
+
+export const CURRENT_STORAGE_VERSION = 2;

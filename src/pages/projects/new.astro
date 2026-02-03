@@ -1,6 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro'
-import type { ProjectInProgress, CreateProjectInput } from '../../types/project'
+import { EvaluationType, EVALUATION_TYPES, getAvailableEvaluationTypes } from '../../types/evaluation'
+
+const evaluationTypes = getAvailableEvaluationTypes()
 ---
 
 <Layout title="New Project">
@@ -53,6 +55,29 @@ import type { ProjectInProgress, CreateProjectInput } from '../../types/project'
           required></textarea>
       </div>
 
+      <div class="flex flex-col gap-2">
+        <label
+          for="evaluationType"
+          class="text-sm font-medium text-[var(--color-text-muted)]"
+        >Evaluation Type</label
+        >
+        <select
+          id="evaluationType"
+          name="evaluationType"
+          class="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-3 text-[var(--color-text)] text-base focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-emerald-500/20 transition-colors"
+          required
+        >
+          {evaluationTypes.map((evalType) => (
+            <option value={evalType.id}>
+              {evalType.name}
+            </option>
+          ))}
+        </select>
+        <p id="evaluationDescription" class="text-xs text-[var(--color-text-muted)] mt-1">
+          {evaluationTypes[0]?.description}
+        </p>
+      </div>
+
       <div class="mt-4 flex justify-end gap-4">
         <a
           href="/"
@@ -69,46 +94,67 @@ import type { ProjectInProgress, CreateProjectInput } from '../../types/project'
     </form>
 
     <script>
-      import type { ProjectInProgress } from '../../types/project'
-      import { ProjectStatus } from '../../types/project.ts'
-      import { StorageKeys } from '../../types/storage.ts'
+      import { EvaluationType, EVALUATION_TYPES, createEmptyEvaluation } from '../../types/evaluation'
+      import type { Project } from '../../types/project'
+      import { saveProject, migrateStorageIfNeeded } from '../../utils/storage'
 
+      // Ensure storage is migrated
+      migrateStorageIfNeeded()
+
+      // Evaluation type descriptions
+      const descriptions: Record<string, string> = {}
+      Object.values(EVALUATION_TYPES).forEach((et) => {
+        descriptions[et.id] = et.description
+      })
+
+      // Update description when evaluation type changes
+      const evalSelect = document.getElementById('evaluationType') as HTMLSelectElement
+      const evalDescription = document.getElementById('evaluationDescription')
+
+      evalSelect?.addEventListener('change', () => {
+        if (evalDescription) {
+          evalDescription.textContent = descriptions[evalSelect.value] || ''
+        }
+      })
+
+      // Form submission
       const form = document.getElementById('createProjectForm')
+      console.log('Form element:', form)
       form?.addEventListener('submit', (e) => {
         e.preventDefault()
+        console.log('Form submitted')
         const formData = new FormData(e.target as HTMLFormElement)
         const name = formData.get('name')
         const description = formData.get('description')
+        const evaluationType = formData.get('evaluationType') as EvaluationType
+        console.log('Form data:', { name, description, evaluationType })
 
-        if (name && description) {
+        if (name && description && evaluationType) {
+          console.log('Creating project...')
           const id = crypto.randomUUID()
           const now = new Date().toISOString()
 
-          const newProject: ProjectInProgress = {
+          // Create project with evaluation
+          const evaluation = createEmptyEvaluation(evaluationType)
+
+          const newProject: Project = {
             id,
             name: name.toString(),
             description: description.toString(),
-            status: ProjectStatus.IN_PROGRESS,
             createdAt: now,
             updatedAt: now,
-            score: null
+            evaluations: {
+              [evaluationType]: evaluation
+            }
           }
 
           // Save to localStorage
-          const inProgress = JSON.parse(
-            localStorage.getItem(StorageKeys.IN_PROGRESS) || '[]'
-          )
-          inProgress.push(newProject)
-          localStorage.setItem(
-            StorageKeys.IN_PROGRESS,
-            JSON.stringify(inProgress)
-          )
+          saveProject(newProject)
 
           // Redirect to audit page with project details
           const params = new URLSearchParams()
           params.append('projectId', newProject.id)
-          params.append('projectName', newProject.name)
-          params.append('projectDesc', newProject.description)
+          params.append('evaluationType', evaluationType)
 
           window.location.href = `/audit?${params.toString()}`
         }
