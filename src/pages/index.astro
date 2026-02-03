@@ -22,24 +22,24 @@ const defaultEvalType = EvaluationType.API_GREEN_SCORE
     </div>
     <div class="flex gap-4">
       <div
-        class="count-card p-4 sm:p-6 rounded-lg min-w-[140px] bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)]"
+        class="count-card p-4 sm:p-6 rounded-lg min-w-[140px] bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] text-center"
       >
 				<span class="block text-sm text-[var(--color-text-muted)] mb-1"
         >Total Projects</span
         >
         <span
-          class="text-2xl font-bold text-[var(--color-text)]"
+          class="block text-2xl font-bold text-[var(--color-text)]"
           id="totalProjects">0</span
         >
       </div>
       <div
-        class="count-card p-4 sm:p-6 rounded-lg min-w-[140px] bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)]"
+        class="count-card p-4 sm:p-6 rounded-lg min-w-[140px] bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] text-center"
       >
         <span class="block text-sm text-[var(--color-text-muted)] mb-1" id="avgScoreLabel">
           Avg {EVALUATION_TYPES[defaultEvalType].name} Score
         </span>
         <span
-          class="text-2xl font-bold text-[var(--color-text)]"
+          class="block text-2xl font-bold text-[var(--color-text)]"
           id="avgScore">0</span
         >
       </div>
