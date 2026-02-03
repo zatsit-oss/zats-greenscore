@@ -2,11 +2,14 @@
 import Layout from '../layouts/Layout.astro'
 import ProjectCard from '../components/ProjectCard.astro'
 import BarChart from '../components/BarChart.astro'
-import { ProjectStatus } from '../types/project.ts'
+import { EvaluationType, EVALUATION_TYPES, getAvailableEvaluationTypes } from '../types/evaluation'
+
+const evaluationTypes = getAvailableEvaluationTypes()
+const defaultEvalType = EvaluationType.API_GREEN_SCORE
 ---
 
 <Layout title="Dashboard">
-  <div class="flex flex-wrap justify-between items-end gap-8 mb-12">
+  <div class="flex flex-wrap justify-between items-end gap-8 mb-8">
     <div>
       <h1
         class="text-4xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)]"
@@ -32,13 +35,32 @@ import { ProjectStatus } from '../types/project.ts'
       <div
         class="count-card p-4 sm:p-6 rounded-lg min-w-[140px] bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)]"
       >
-        <span class="block text-sm text-[var(--color-text-muted)] mb-1">Avg Score</span>
+        <span class="block text-sm text-[var(--color-text-muted)] mb-1" id="avgScoreLabel">
+          Avg {EVALUATION_TYPES[defaultEvalType].name} Score
+        </span>
         <span
           class="text-2xl font-bold text-[var(--color-text)]"
           id="avgScore">0</span
         >
       </div>
     </div>
+  </div>
+
+  <!-- Evaluation Type Filter -->
+  <div class="flex items-center gap-3 mb-8">
+    <label for="evaluationTypeFilter" class="text-sm font-medium text-[var(--color-text-muted)]">
+      Filter by evaluation:
+    </label>
+    <select
+      id="evaluationTypeFilter"
+      class="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-emerald-500/20 transition-colors cursor-pointer"
+    >
+      {evaluationTypes.map((evalType) => (
+        <option value={evalType.id} selected={evalType.id === defaultEvalType}>
+          {evalType.name}
+        </option>
+      ))}
+    </select>
   </div>
 
   <!-- Global Chart - Shows only when there are completed projects -->
@@ -60,30 +82,47 @@ import { ProjectStatus } from '../types/project.ts'
   <div class="hidden">
     <template id="card-template-completed">
       <ProjectCard
-        project={{
-          status: ProjectStatus.COMPLETED,
-          score: 0,
-          name: 'Tpl',
-          updatedAt: new Date().toISOString()
-        }}
+        isCompleted={true}
       />
     </template>
     <template id="card-template-pending">
       <ProjectCard
-        project={{
-          status: ProjectStatus.IN_PROGRESS,
-          score: 0,
-          name: 'Tpl',
-          updatedAt: new Date().toISOString()
-        }}
+        isCompleted={false}
       />
     </template>
   </div>
 
   <script>
-    import { loadProjects } from '../utils/ui'
+    import { loadProjects, getEvaluationTypeName } from '../utils/ui'
+    import { EvaluationType } from '../types/evaluation'
 
-    // Load on mount
-    loadProjects()
+    // Get filter element
+    const filterSelect = document.getElementById('evaluationTypeFilter') as HTMLSelectElement
+
+    // Get selected evaluation type (always required, defaults to API Green Score)
+    const getSelectedEvalType = (): EvaluationType => {
+      return (filterSelect?.value || EvaluationType.API_GREEN_SCORE) as EvaluationType
+    }
+
+    // Update chart title based on selected evaluation type
+    const updateChartTitle = (evalType: EvaluationType) => {
+      const chartTitle = document.getElementById('projectsBarChart-title')
+      if (chartTitle) {
+        chartTitle.textContent = `Projects Score Comparison (${getEvaluationTypeName(evalType)})`
+      }
+    }
+
+    // Load projects with current filter
+    const loadWithFilter = () => {
+      const evalType = getSelectedEvalType()
+      loadProjects(evalType)
+      updateChartTitle(evalType)
+    }
+
+    // Listen for filter changes
+    filterSelect?.addEventListener('change', loadWithFilter)
+
+    // Initial load with default filter
+    loadWithFilter()
   </script>
 </Layout>
