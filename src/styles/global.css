@@ -198,6 +198,18 @@ body {
   border-color: var(--color-primary);
 }
 
+.btn-danger {
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.btn-danger:hover {
+  background-color: #ef4444;
+  border-color: #ef4444;
+  color: white;
+}
+
 /* Text utilities */
 .text-gradient {
   background: var(--color-text-gradient);

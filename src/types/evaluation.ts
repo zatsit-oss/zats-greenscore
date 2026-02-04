@@ -29,6 +29,7 @@ export enum EvaluationStatus {
 export interface EvaluationTypeInfo {
   id: EvaluationType;
   name: string;
+  shortName: string;
   description: string;
   source: string;
   version: string;
@@ -38,6 +39,7 @@ export const EVALUATION_TYPES: Record<EvaluationType, EvaluationTypeInfo> = {
   [EvaluationType.API_GREEN_SCORE]: {
     id: EvaluationType.API_GREEN_SCORE,
     name: 'API Green Score',
+    shortName: 'GreenScore',
     description: 'Evaluate API sustainability based on architecture, design, usage and logs',
     source: 'API Green Score',
     version: '1.0'
@@ -45,6 +47,7 @@ export const EVALUATION_TYPES: Record<EvaluationType, EvaluationTypeInfo> = {
   [EvaluationType.EROOM]: {
     id: EvaluationType.EROOM,
     name: 'EROOM',
+    shortName: 'EROOM Score',
     description: 'EROOM Optimization Framework - Digital service optimization potential assessment',
     source: 'Boavizta',
     version: '1.1'

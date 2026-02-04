@@ -27,7 +27,7 @@ const defaultEvalType = EvaluationType.API_GREEN_SCORE
       </div>
       <div class="count-card glass-card p-4 sm:p-6 min-w-[140px] text-center">
         <span class="block text-sm text-muted mb-1" id="avgScoreLabel">
-          Avg {EVALUATION_TYPES[defaultEvalType].name} Score
+          Avg Score
         </span>
         <span class="block text-2xl font-bold" id="avgScore">0</span>
       </div>
@@ -40,8 +40,9 @@ const defaultEvalType = EvaluationType.API_GREEN_SCORE
       Filter by evaluation:
     </label>
     <select id="evaluationTypeFilter" class="form-select">
+      <option value="">All evaluations</option>
       {evaluationTypes.map((evalType) => (
-        <option value={evalType.id} selected={evalType.id === defaultEvalType}>
+        <option value={evalType.id}>
           {evalType.name}
         </option>
       ))}
@@ -81,16 +82,18 @@ const defaultEvalType = EvaluationType.API_GREEN_SCORE
     // Get filter element
     const filterSelect = document.getElementById('evaluationTypeFilter') as HTMLSelectElement
 
-    // Get selected evaluation type (always required, defaults to API Green Score)
-    const getSelectedEvalType = (): EvaluationType => {
-      return (filterSelect?.value || EvaluationType.API_GREEN_SCORE) as EvaluationType
+    // Get selected evaluation type (null means "all")
+    const getSelectedEvalType = (): EvaluationType | null => {
+      const value = filterSelect?.value
+      return value ? (value as EvaluationType) : null
     }
 
     // Update chart title based on selected evaluation type
-    const updateChartTitle = (evalType: EvaluationType) => {
+    const updateChartTitle = (evalType: EvaluationType | null) => {
       const chartTitle = document.getElementById('projectsBarChart-title')
       if (chartTitle) {
-        chartTitle.textContent = `Projects Score Comparison (${getEvaluationTypeName(evalType)})`
+        const typeName = evalType ? getEvaluationTypeName(evalType) : 'All'
+        chartTitle.textContent = `Projects Score Comparison (${typeName})`
       }
     }
 

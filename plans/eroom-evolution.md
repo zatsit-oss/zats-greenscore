@@ -65,52 +65,38 @@ Ajout d'un second type d'évaluation (EROOM / EOF v1.1 de Boavizta) en plus de l
   - `getScoreDetails()` adapté pour EROOM (score élevé = potentiel d'optimisation)
   - Radar chart avec 6 catégories EROOM ou 4 sections API Green Score
 
-## Prochaines tâches (à reprendre ce soir)
+## Tâches terminées (session 3)
 
-### Bug 1: Score label incorrect pour EROOM
-**Fichier** : `src/pages/projects/view.astro`
+### Bug 1: Score label incorrect pour EROOM ✅
+**Fichiers modifiés** :
+- `src/types/evaluation.ts` - Ajout de `shortName` dans `EvaluationTypeInfo`
+- `src/pages/projects/view.astro` - Ajout de `id="scoreTitle"` et mise à jour dynamique
 
-Le label "Current GreenScore" doit s'adapter au type d'évaluation :
+**Résultat** :
 - API Green Score → "Current GreenScore"
 - EROOM → "Current EROOM Score"
 
-**Solution** : Modifier le HTML pour rendre le label dynamique via JS selon `evalType`.
+### Bug 2: Filtre dashboard - "All evaluations" ✅
+**Fichiers modifiés** :
+- `src/pages/index.astro` - Option "All evaluations" ajoutée, script adapté pour `null`
+- `src/utils/ui.ts` - `loadProjects()` accepte `EvaluationType | null`
+- `src/services/dashboard.ts` - Nouvelle fonction `getAllProjectsWithAnyEvaluation()`, ajout de `evaluationType` dans `ProjectWithEvaluation`
 
-### Bug 2: Filtre dashboard - ajouter "All evaluations"
-**Fichier** : `src/pages/index.astro` + `src/utils/ui.ts`
+**Résultat** :
+- Option "All evaluations" en première position
+- Affiche tous les projets quel que soit leur type d'évaluation
+- Score moyen calculé sur tous les projets complétés
 
-Ajouter l'option "All evaluations" en première position du dropdown pour voir tous les projets.
+### Feature 3: Suppression de projet ✅
+**Fichiers modifiés** :
+- `src/pages/projects/view.astro` - Bouton Delete + modal de confirmation
+- `src/styles/global.css` - Style `btn-danger`
+- `src/utils/storage.ts` - Fonction `deleteProject()` (existait déjà)
 
-**Solution** :
-- Ajouter `<option value="">All evaluations</option>` en premier
-- Modifier `loadProjects()` pour accepter `null` et afficher tous les projets
-- Calculer le score moyen global (tous types confondus)
-
-### Feature 3: Suppression de projet
-**Fichiers** :
-- `src/components/ProjectCard.astro` - Ajouter icône corbeille
-- `src/pages/projects/view.astro` - Ajouter bouton "Delete Project"
-- `src/utils/storage.ts` - Ajouter fonction `deleteProject()`
-
-**Solution** :
-1. Ajouter icône corbeille sur la carte projet (à côté de "Continue Audit" / "View Details")
-2. Ajouter bouton "Delete Project" dans la vue détaillée
-3. Modal de confirmation avant suppression
-4. Fonction `deleteProject(id)` dans storage.ts
-5. Redirection vers dashboard après suppression
-
-**UI Confirmation Modal** :
-```
-┌─────────────────────────────────────┐
-│  Delete Project?                    │
-│                                     │
-│  Are you sure you want to delete    │
-│  "Project Name"?                    │
-│  This action cannot be undone.      │
-│                                     │
-│        [Cancel]    [Delete]         │
-└─────────────────────────────────────┘
-```
+**Résultat** :
+- Bouton corbeille dans la vue détaillée du projet
+- Modal de confirmation avec nom du projet
+- Redirection vers le dashboard après suppression
 
 ---
 

@@ -31,6 +31,7 @@ export interface DashboardStats {
 export interface ProjectWithEvaluation {
   project: Project;
   evaluation: Evaluation;
+  evaluationType: EvaluationType;
   isCompleted: boolean;
 }
 
@@ -45,10 +46,12 @@ export interface ChartDataPoint {
 // ============================================================================
 
 /**
- * Get dashboard statistics for a specific evaluation type
+ * Get dashboard statistics for a specific evaluation type (or all types if null)
  */
-export function getDashboardStats(evalType: EvaluationType): DashboardStats {
-  const projects = getProjectsWithEvaluation(evalType);
+export function getDashboardStats(evalType: EvaluationType | null): DashboardStats {
+  const projects = evalType
+    ? getProjectsWithEvaluation(evalType)
+    : getAllProjectsWithAnyEvaluation();
 
   const completedProjects = projects.filter((p) => p.isCompleted);
 
@@ -80,16 +83,42 @@ export function getProjectsWithEvaluation(evalType: EvaluationType): ProjectWith
       return {
         project,
         evaluation,
+        evaluationType: evalType,
         isCompleted: evaluation.status === EvaluationStatus.COMPLETED
       };
     });
 }
 
 /**
- * Get chart data for completed projects of a specific evaluation type
+ * Get all projects with any evaluation (for "All evaluations" filter)
+ * Returns one entry per project, using the first available evaluation
  */
-export function getChartData(evalType: EvaluationType): ChartDataPoint[] {
-  const projects = getProjectsWithEvaluation(evalType);
+export function getAllProjectsWithAnyEvaluation(): ProjectWithEvaluation[] {
+  const allProjects = getAllProjects();
+
+  return allProjects
+    .filter((project) => Object.keys(project.evaluations).length > 0)
+    .map((project) => {
+      // Get the first evaluation type available
+      const evalTypes = Object.keys(project.evaluations) as EvaluationType[];
+      const evalType = evalTypes[0];
+      const evaluation = project.evaluations[evalType]!;
+      return {
+        project,
+        evaluation,
+        evaluationType: evalType,
+        isCompleted: evaluation.status === EvaluationStatus.COMPLETED
+      };
+    });
+}
+
+/**
+ * Get chart data for completed projects of a specific evaluation type (or all types if null)
+ */
+export function getChartData(evalType: EvaluationType | null): ChartDataPoint[] {
+  const projects = evalType
+    ? getProjectsWithEvaluation(evalType)
+    : getAllProjectsWithAnyEvaluation();
 
   return projects
     .filter((p) => p.isCompleted && p.evaluation.score !== null)
