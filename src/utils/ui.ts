@@ -57,13 +57,8 @@ export const populateCard = (
     const { project, evaluation, evaluationType, isCompleted } = data;
     const score = evaluation.score || 0;
 
-    // Core Attributes - link to view if completed, audit if in progress
-    const auditPage = evaluationType === EvaluationType.EROOM ? '/audit-eroom' : '/audit';
-    if (isCompleted) {
-        card.href = `/projects/view?id=${project.id}&evaluationType=${evaluationType}`;
-    } else {
-        card.href = `${auditPage}?projectId=${project.id}`;
-    }
+    // Always link to project view page (allows switching evaluation types)
+    card.href = `/projects/view?id=${project.id}&evaluationType=${evaluationType}`;
 
     // Text Content Updates
     const set = (selector: string, value: string) => {
