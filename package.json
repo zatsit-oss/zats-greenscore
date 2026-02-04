@@ -1,6 +1,6 @@
 {
   "name": "zats-greenscore",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Outil de calcul d'empreinte digital. La tech au service de l'impact des entreprises. Travailler avec zatsit, c'est aussi améliorer son impact ! Découvrez ce que nous proposons.",
   "private": true,
   "scripts": {
