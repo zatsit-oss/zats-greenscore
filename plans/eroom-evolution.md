@@ -228,9 +228,30 @@ Le radar chart EROOM utilise 6 axes :
 
 ---
 
+### Bug 6: Carte projet redirigeait vers audit au lieu de vue projet ✅
+**Problème** : Cliquer sur un projet non terminé redirigeait vers l'audit, empêchant de démarrer une autre évaluation.
+
+**Fichiers modifiés** :
+- `src/utils/ui.ts` - Toujours rediriger vers `/projects/view`
+
+**Résultat** : Depuis la page projet, on peut voir la synthèse partielle et démarrer une autre évaluation.
+
+---
+
+## À faire (session 5)
+
+### Feature 5: Afficher les deux scores sur la carte projet
+**Objectif** : Sur la carte du dashboard, afficher le score GreenScore ET le score EROOM quand les deux sont complétés.
+
+**Fichiers à modifier** :
+- `src/components/ProjectCard.astro` - Ajouter zone pour second score
+- `src/utils/ui.ts` - Passer les infos de toutes les évaluations du projet
+
+---
+
 ## État actuel (session 4 - terminée)
 
-### ✅ Toutes les tâches prévues sont terminées
+### ✅ Tâches terminées
 
 1. **Bug 1** : Score label adapté ("GreenScore" / "EROOM Score") ✅
 2. **Bug 2** : Filtre "All evaluations" sur le dashboard ✅
@@ -239,3 +260,7 @@ Le radar chart EROOM utilise 6 axes :
 5. **Bug 5** : Bouton "Edit Evaluation" respecte le type sélectionné ✅
 6. **Feature 4** : Validation EROOM - questions obligatoires ✅
 7. **Audit A11y & Responsive** : Application complète ✅
+8. **Bug 6** : Carte projet redirige vers vue projet ✅
+
+### 🔜 À faire
+- **Feature 5** : Afficher les deux scores sur la carte projet
