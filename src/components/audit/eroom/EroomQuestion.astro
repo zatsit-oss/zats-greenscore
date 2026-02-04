@@ -1,0 +1,114 @@
+---
+import type { EroomQuestion, EvaluationScaleType, AnswerOption } from '../../../types/eroom'
+import { STANDARD_ANSWER_OPTIONS, EASE_OF_CHANGE_OPTIONS } from '../../../types/eroom'
+import EroomImpactBadge from './EroomImpactBadge.astro'
+
+interface Props {
+  question: EroomQuestion
+  scaleType: EvaluationScaleType
+}
+
+const { question: q, scaleType } = Astro.props
+
+// Get answer options based on scale type
+const getAnswerOptions = (): AnswerOption[] | null => {
+  switch (scaleType) {
+    case 'standard':
+      return STANDARD_ANSWER_OPTIONS
+    case 'easeOfChange':
+      return EASE_OF_CHANGE_OPTIONS
+    default:
+      return null
+  }
+}
+
+const answerOptions = getAnswerOptions()
+const isQuickDiagnosis = scaleType === 'quickDiagnosis'
+---
+
+<div
+  class="relative p-4 rounded-lg bg-white/5 border border-transparent hover:border-[var(--color-border)] transition-colors"
+>
+  <!-- Header: ID + Impact Badge -->
+  <div class="flex items-center gap-3 mb-3">
+    <span
+      class="font-mono text-sm text-[var(--color-status-inprogress)] bg-amber-500/10 px-1.5 py-0.5 rounded flex-shrink-0"
+    >
+      {q.id}
+    </span>
+    <EroomImpactBadge level={q.impactLevel} />
+  </div>
+
+  <!-- Question Title -->
+  <h3 class="text-base font-semibold text-[var(--color-text)] leading-snug mb-2">
+    {q.criteria}
+  </h3>
+
+  <!-- Additional Explanation -->
+  {q.additionalExplanation && (
+    <p class="text-sm text-[var(--color-text-muted)] mb-3 italic">
+      {q.additionalExplanation}
+    </p>
+  )}
+
+  <!-- Ways of Evaluation (collapsible) -->
+  {q.waysOfEvaluation && (
+    <details class="mb-4 text-sm">
+      <summary class="cursor-pointer text-[var(--color-primary)] hover:underline">
+        How to evaluate?
+      </summary>
+      <p class="mt-2 p-3 rounded bg-[var(--color-primary)]/5 border border-[var(--color-primary)]/20 text-[var(--color-text-muted)]">
+        {q.waysOfEvaluation}
+      </p>
+    </details>
+  )}
+
+  <!-- Answer Input -->
+  <div class="mt-4">
+    {isQuickDiagnosis ? (
+      <!-- Quick Diagnosis: Numeric scale 1-5 -->
+      <div class="flex flex-col gap-2">
+        <div class="flex flex-wrap gap-2">
+          {q.evaluationScale?.map((option) => (
+            <label class="flex-1 min-w-[120px]">
+              <input
+                type="radio"
+                name={q.id}
+                value={option.value}
+                class="peer sr-only"
+              />
+              <div class="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] cursor-pointer transition-all hover:border-[var(--color-primary)] peer-checked:border-[var(--color-primary)] peer-checked:bg-[var(--color-primary)]/10">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="w-6 h-6 rounded-full bg-slate-600/30 flex items-center justify-center text-sm font-bold text-[var(--color-text)]">
+                    {option.value}
+                  </span>
+                </div>
+                <p class="text-xs text-[var(--color-text-muted)] leading-tight">
+                  {option.label}
+                </p>
+              </div>
+            </label>
+          ))}
+        </div>
+      </div>
+    ) : (
+      <!-- Standard / Ease of Change: Qualitative options -->
+      <div class="flex flex-wrap gap-2">
+        {answerOptions?.map((option) => (
+          <label class="group">
+            <input
+              type="radio"
+              name={q.id}
+              value={option.id}
+              class="peer sr-only"
+            />
+            <div class="px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] cursor-pointer transition-all hover:border-[var(--color-primary)] peer-checked:border-[var(--color-primary)] peer-checked:bg-[var(--color-primary)]/10 flex items-center gap-2">
+              <span class="text-lg">{option.emoji}</span>
+              <span class="text-sm text-[var(--color-text)]">{option.label}</span>
+            </div>
+          </label>
+        ))}
+      </div>
+    )}
+  </div>
+</div>

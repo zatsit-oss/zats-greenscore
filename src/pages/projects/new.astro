@@ -119,12 +119,12 @@ const evaluationTypes = getAvailableEvaluationTypes()
           // Save to localStorage
           saveProject(newProject)
 
-          // Redirect to audit page with project details
+          // Redirect to the appropriate audit page based on evaluation type
           const params = new URLSearchParams()
           params.append('projectId', newProject.id)
-          params.append('evaluationType', evaluationType)
 
-          window.location.href = `/audit?${params.toString()}`
+          const auditPage = evaluationType === EvaluationType.EROOM ? '/audit-eroom' : '/audit'
+          window.location.href = `${auditPage}?${params.toString()}`
         }
       })
     </script>

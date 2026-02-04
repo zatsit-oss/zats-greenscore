@@ -1,0 +1,269 @@
+---
+import Layout from "../layouts/Layout.astro";
+import eroomData from "../data/eroom-data-model.json";
+import EroomStepper from "../components/audit/eroom/EroomStepper.astro";
+import EroomSection from "../components/audit/eroom/EroomSection.astro";
+import AuditNavigation from "../components/audit/AuditNavigation.astro";
+import { EvaluationType, EVALUATION_TYPES } from "../types/evaluation";
+import type { EroomCategory } from "../types/eroom";
+
+// Get categories from EROOM data
+const categories = eroomData.categories as EroomCategory[];
+
+const urlParams = new URLSearchParams(Astro.url.search);
+const projectId = urlParams.get("projectId");
+const evaluationType = EvaluationType.EROOM;
+const evaluationInfo = EVALUATION_TYPES[evaluationType];
+---
+
+<Layout title={`Audit - ${evaluationInfo.name}`}>
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-8">
+      <a
+        href="/"
+        class="link-back mb-4"
+      >
+        &larr; Back to Dashboard
+      </a>
+      <div class="flex items-center gap-3 mb-2">
+        <h1 class="text-3xl font-bold text-[var(--color-text)]">
+          Audit
+        </h1>
+        <span class="px-3 py-1 text-sm rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium">
+          {evaluationInfo.name}
+        </span>
+      </div>
+      <p class="text-muted">
+        Evaluate the optimization potential of your digital service. Your progress is saved automatically.
+      </p>
+    </div>
+
+    <!-- Stepper -->
+    <EroomStepper categories={categories} />
+
+    <form class="flex flex-col gap-8 pb-24" id="auditForm" data-project-id={projectId} data-evaluation-type={evaluationType}>
+      {categories.map((category, index) => (
+        <EroomSection
+          category={category}
+          index={index}
+        />
+      ))}
+
+      <AuditNavigation />
+    </form>
+  </div>
+</Layout>
+
+<script>
+  import { EvaluationType, EvaluationStatus } from "../types/evaluation";
+  import { getProjectById, saveProject } from "../utils/storage";
+  import { calculateEroomGlobalScore, getEroomRanking } from "../utils/eroom-scoring";
+  import type { EroomCategory, EroomAnswerValue } from "../types/eroom";
+  import eroomData from "../data/eroom-data-model.json";
+  import { showToast } from "../utils/toast";
+
+  const categories = eroomData.categories as EroomCategory[];
+
+  let currentStep = 0;
+  const steps = document.querySelectorAll(".step-content");
+  const stepItems = document.querySelectorAll(".step-item");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const submitBtn = document.getElementById("submitBtn");
+  const totalSteps = steps.length;
+
+  // Mobile progress elements
+  const stepCurrentLabel = document.querySelector(".step-current-label");
+  const stepProgress = document.querySelector(".step-progress");
+  const stepProgressBar = document.querySelector(".step-progress-bar") as HTMLElement;
+
+  function updateUI() {
+    // Show/Hide steps
+    steps.forEach((step, index) => {
+      (step as HTMLElement).style.display = index === currentStep ? "block" : "none";
+    });
+
+    // Update Stepper (desktop)
+    stepItems.forEach((item, index) => {
+      item.classList.remove("active", "completed");
+      if (index === currentStep) {
+        item.classList.add("active");
+      } else if (index < currentStep) {
+        item.classList.add("completed");
+      }
+    });
+
+    // Update mobile progress
+    if (stepCurrentLabel && categories[currentStep]) {
+      stepCurrentLabel.textContent = `${categories[currentStep].icon} ${categories[currentStep].name}`;
+    }
+    if (stepProgress) {
+      stepProgress.textContent = `${currentStep + 1} / ${totalSteps}`;
+    }
+    if (stepProgressBar) {
+      stepProgressBar.style.width = `${((currentStep + 1) / totalSteps) * 100}%`;
+    }
+
+    // Update Buttons
+    if (prevBtn) prevBtn.style.display = currentStep === 0 ? "none" : "block";
+
+    if (currentStep === totalSteps - 1) {
+      if (nextBtn) nextBtn.style.display = "none";
+      if (submitBtn) submitBtn.style.display = "block";
+    } else {
+      if (nextBtn) nextBtn.style.display = "block";
+      if (submitBtn) submitBtn.style.display = "none";
+    }
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  nextBtn?.addEventListener("click", () => {
+    if (currentStep < totalSteps - 1) {
+      currentStep++;
+      updateUI();
+    }
+  });
+
+  prevBtn?.addEventListener("click", () => {
+    if (currentStep > 0) {
+      currentStep--;
+      updateUI();
+    }
+  });
+
+  // Initialize
+  updateUI();
+
+  const auditForm = document.getElementById("auditForm") as HTMLFormElement;
+
+  // Get params from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const projectId = urlParams.get("projectId");
+  const evaluationType = EvaluationType.EROOM;
+
+  console.log("EROOM Audit page loaded:", { projectId, evaluationType });
+
+  /**
+   * Collect all answers from the form
+   */
+  const collectAnswers = (): Record<string, EroomAnswerValue> => {
+    const answers: Record<string, EroomAnswerValue> = {};
+    const radioInputs = auditForm?.querySelectorAll('input[type="radio"]:checked');
+
+    radioInputs?.forEach((radio) => {
+      const input = radio as HTMLInputElement;
+      // Check if it's a numeric value (Quick Diagnosis)
+      const numValue = parseInt(input.value, 10);
+      if (!isNaN(numValue)) {
+        answers[input.name] = numValue;
+      } else {
+        answers[input.name] = input.value as EroomAnswerValue;
+      }
+    });
+
+    return answers;
+  };
+
+  /**
+   * Auto-save answers
+   */
+  const saveAnswers = () => {
+    if (!projectId) return;
+
+    const project = getProjectById(projectId);
+    if (!project) return;
+
+    const evaluation = project.evaluations[evaluationType];
+    if (!evaluation) return;
+
+    evaluation.answers = collectAnswers();
+    project.updatedAt = new Date().toISOString();
+    saveProject(project);
+  };
+
+  /**
+   * Load saved answers
+   */
+  const loadAnswers = () => {
+    if (!projectId) return;
+
+    const project = getProjectById(projectId);
+    if (!project) return;
+
+    const evaluation = project.evaluations[evaluationType];
+    if (!evaluation || !evaluation.answers) return;
+
+    Object.entries(evaluation.answers).forEach(([key, value]) => {
+      const input = document.querySelector(
+        `input[name="${key}"][value="${value}"]`
+      ) as HTMLInputElement;
+      if (input) {
+        input.checked = true;
+      }
+    });
+  };
+
+  // Attach change listeners for auto-save
+  auditForm?.querySelectorAll("input").forEach((input) => {
+    input.addEventListener("change", saveAnswers);
+  });
+
+  // Load answers on init
+  loadAnswers();
+
+  // Form submission
+  auditForm?.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    if (!projectId) {
+      showToast("No project ID found. Cannot save.", "error");
+      return;
+    }
+
+    const project = getProjectById(projectId);
+    if (!project) {
+      showToast("Project not found. Cannot save.", "error");
+      return;
+    }
+
+    const evaluation = project.evaluations[evaluationType];
+    if (!evaluation) {
+      showToast("Evaluation not found. Cannot save.", "error");
+      return;
+    }
+
+    // Collect Answers
+    const answers = collectAnswers();
+
+    // Calculate Score using EROOM scoring
+    const { globalScore, categoryScores } = calculateEroomGlobalScore(answers, categories);
+    const ranking = getEroomRanking(globalScore);
+
+    // Update evaluation
+    evaluation.answers = answers;
+    evaluation.score = globalScore;
+    evaluation.ranking = ranking;
+    evaluation.status = EvaluationStatus.COMPLETED;
+    evaluation.completedAt = new Date().toISOString();
+
+    // Save project
+    saveProject(project);
+
+    // Show result with EROOM interpretation (high score = more optimization potential)
+    const message = globalScore <= 25
+      ? `Very mature service! Score: ${globalScore}%`
+      : globalScore <= 50
+        ? `Some optimizations possible. Score: ${globalScore}%`
+        : globalScore <= 75
+          ? `Significant optimization potential. Score: ${globalScore}%`
+          : `High optimization potential! Score: ${globalScore}%`;
+
+    showToast(message, "success");
+
+    setTimeout(() => {
+      window.location.href = `/projects/view?id=${projectId}&evaluationType=${evaluationType}`;
+    }, 1500);
+  });
+</script>

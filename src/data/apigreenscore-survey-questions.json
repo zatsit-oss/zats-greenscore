@@ -18,7 +18,7 @@
   {
     "section": "Architecture",
     "id": "AR03",
-    "question": "Ensure the same API does not exist *",
+    "question": "Ensure the same API does not exist *",
     "description": "Ensure only one API fit the same need",
     "tooltip": "It is often noticed, especially in large information systems, that an API with the same purpose and objective can exist several times.\n\nThese duplicate APIs, in addition to creating confusion in the minds of users, consume additional resources instead of pooling them for a unique API.\n\nIt is recommended to use the data catalog to make sure that the API you want to develop does not already exist. If an existing API covers part of the functional scope, it may be worthwhile to contact the producer as it may be possible to plan an evolution of the existing system rather than creating a duplicate.",
     "points": 375
@@ -26,8 +26,8 @@
   {
     "section": "Architecture",
     "id": "AR04",
-    "question": "Use scalable infrastructure to avoid over-provisioning",
-    "description": "Use scalable infrastructure to avoid over-provisioning",
+    "question": "Use scalable infrastructure to avoid over-provisioning",
+    "description": "Use scalable infrastructure to avoid over-provisioning",
     "tooltip": "Depending of your infrastructure, used scalable runtime fit to your activity",
     "points": 375
   },
@@ -98,8 +98,8 @@
   {
     "section": "Design",
     "id": "DE09",
-    "question": "Leverage OData or GraphQL for your databases APIs",
-    "description": "Leverage OData or GraphQL when relevant",
+    "question": "Leverage OData or GraphQL for your databases APIs",
+    "description": "Leverage OData or GraphQL when relevant",
     "tooltip": "It is quite common to see API backends built to allow database integration. In some cases, these systems are completely redeveloped with data schemas that are not adapted to the usage.\n\nThis forces users to perform several queries, often complex, to retrieve all the data they need.\n\nTo build an interface to a database, it is recommended to rely on OData or GraphQL technologies that allow consumers to perform complex queries.",
     "points": 240
   },
