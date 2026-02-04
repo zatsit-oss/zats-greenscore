@@ -44,19 +44,32 @@ const isQuickDiagnosis = scaleType === 'quickDiagnosis'
     {q.criteria}
   </h3>
 
-  <!-- Additional Explanation -->
-  {q.additionalExplanation && (
-    <div class="mb-3 text-sm">
-      <span class="font-medium text-[var(--color-text-muted)]">Context: </span>
-      <span class="text-[var(--color-text-muted)]">{q.additionalExplanation}</span>
-    </div>
-  )}
+  <!-- Accordion for additional info -->
+  {(q.additionalExplanation || q.waysOfEvaluation) && (
+    <div class="mb-4 flex flex-col gap-2">
+      {q.additionalExplanation && (
+        <details class="group text-sm accordion">
+          <summary class="cursor-pointer list-none flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors">
+            <span class="chevron text-xs">&#9654;</span>
+            <span class="font-medium">Context</span>
+          </summary>
+          <p class="mt-2 ml-5 text-[var(--color-text-muted)]">
+            {q.additionalExplanation}
+          </p>
+        </details>
+      )}
 
-  <!-- Ways of Evaluation -->
-  {q.waysOfEvaluation && (
-    <div class="mb-4 p-3 rounded bg-[var(--color-primary)]/5 border border-[var(--color-primary)]/20 text-sm">
-      <span class="font-medium text-[var(--color-primary)]">How to evaluate: </span>
-      <span class="text-[var(--color-text-muted)]">{q.waysOfEvaluation}</span>
+      {q.waysOfEvaluation && (
+        <details class="group text-sm accordion">
+          <summary class="cursor-pointer list-none flex items-center gap-2 text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors">
+            <span class="chevron text-xs">&#9654;</span>
+            <span class="font-medium">How to evaluate</span>
+          </summary>
+          <p class="mt-2 ml-5 text-[var(--color-text-muted)]">
+            {q.waysOfEvaluation}
+          </p>
+        </details>
+      )}
     </div>
   )}
 
@@ -103,3 +116,16 @@ const isQuickDiagnosis = scaleType === 'quickDiagnosis'
     )}
   </div>
 </div>
+
+<style>
+  .accordion summary::-webkit-details-marker {
+    display: none;
+  }
+  .accordion[open] .chevron {
+    transform: rotate(90deg);
+  }
+  .chevron {
+    transition: transform 0.2s ease;
+    display: inline-block;
+  }
+</style>
