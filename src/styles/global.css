@@ -247,7 +247,8 @@ button:hover {
   opacity: 1;
 }
 
-svg {
+/* SVG sizing only for leaf icons in project cards */
+.leaf svg {
   width: 100%;
   height: 100%;
 }

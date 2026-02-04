@@ -127,7 +127,7 @@ const evaluationTypes = getAvailableEvaluationTypes()
 </Layout>
 
 <script>
-  import { getProjectById, saveProject, deleteProject } from '../../utils/storage'
+  import { getProject, saveProject, deleteProject } from '../../services/project-service'
   import { EvaluationType, EvaluationStatus, EVALUATION_TYPES, createEmptyEvaluation } from '../../types/evaluation'
   import type { Evaluation } from '../../types/evaluation'
   import type { Project } from '../../types/project'
@@ -316,7 +316,7 @@ const evaluationTypes = getAvailableEvaluationTypes()
     document.getElementById('loadingState')!.style.display = 'none'
     document.getElementById('errorState')!.classList.remove('hidden')
   } else {
-    const project = getProjectById(projectId)
+    const project = getProject(projectId)
 
     if (project) {
       // Determine initial evaluation type
