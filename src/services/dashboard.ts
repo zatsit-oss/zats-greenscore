@@ -25,7 +25,8 @@ import { getAllProjects } from '../utils/storage';
 export interface DashboardStats {
   totalProjects: number;
   completedProjects: number;
-  avgScore: number;
+  avgScore: number | null;
+  isAverageScoreMeaningful: boolean;
 }
 
 export interface ProjectWithEvaluation {
@@ -47,6 +48,9 @@ export interface ChartDataPoint {
 
 /**
  * Get dashboard statistics for a specific evaluation type (or all types if null)
+ *
+ * When evalType is null (all evaluations), avgScore is null and isAverageScoreMeaningful is false
+ * because mixing different evaluation types (with different scales) produces meaningless averages.
  */
 export function getDashboardStats(evalType: EvaluationType | null): DashboardStats {
   const projects = evalType
@@ -54,6 +58,17 @@ export function getDashboardStats(evalType: EvaluationType | null): DashboardSta
     : getAllProjectsWithAnyEvaluation();
 
   const completedProjects = projects.filter((p) => p.isCompleted);
+
+  // When "All evaluations" is selected, average score is meaningless
+  // because different evaluation types have different scales
+  if (evalType === null) {
+    return {
+      totalProjects: projects.length,
+      completedProjects: completedProjects.length,
+      avgScore: null,
+      isAverageScoreMeaningful: false
+    };
+  }
 
   const avgScore =
     completedProjects.length > 0
@@ -66,7 +81,8 @@ export function getDashboardStats(evalType: EvaluationType | null): DashboardSta
   return {
     totalProjects: projects.length,
     completedProjects: completedProjects.length,
-    avgScore
+    avgScore,
+    isAverageScoreMeaningful: true
   };
 }
 
@@ -113,12 +129,19 @@ export function getAllProjectsWithAnyEvaluation(): ProjectWithEvaluation[] {
 }
 
 /**
- * Get chart data for completed projects of a specific evaluation type (or all types if null)
+ * Get chart data for completed projects of a specific evaluation type
+ *
+ * Returns empty array when evalType is null (all evaluations) because
+ * mixing different evaluation types on the same chart is misleading.
  */
 export function getChartData(evalType: EvaluationType | null): ChartDataPoint[] {
-  const projects = evalType
-    ? getProjectsWithEvaluation(evalType)
-    : getAllProjectsWithAnyEvaluation();
+  // Don't show chart when "All evaluations" is selected
+  // because different evaluation types have different scales
+  if (evalType === null) {
+    return [];
+  }
+
+  const projects = getProjectsWithEvaluation(evalType);
 
   return projects
     .filter((p) => p.isCompleted && p.evaluation.score !== null)

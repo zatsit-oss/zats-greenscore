@@ -76,17 +76,30 @@ const defaultEvalType = EvaluationType.API_GREEN_SCORE
   </div>
 
   <!-- Delete Confirmation Modal -->
-  <div id="deleteModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
-    <div class="glass-card max-w-md w-full mx-4 p-6">
-      <h2 class="text-xl font-bold mb-4">Delete Project?</h2>
-      <p class="text-muted mb-2">
+  <div
+    id="deleteModal"
+    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="deleteModalTitle"
+    aria-describedby="deleteModalDesc"
+  >
+    <div class="glass-card max-w-md w-full mx-4 p-6" role="document">
+      <h2 id="deleteModalTitle" class="text-xl font-bold mb-4">Delete Project?</h2>
+      <p id="deleteModalDesc" class="text-muted mb-2">
         Are you sure you want to delete
         <span class="font-semibold text-[var(--color-text)]" id="deleteProjectName">"Project Name"</span>?
       </p>
       <p class="text-sm text-red-400 mb-6">This action cannot be undone.</p>
       <div class="flex gap-4 justify-end">
-        <button class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
-        <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+        <button
+          class="btn btn-secondary focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+          id="cancelDeleteBtn"
+        >Cancel</button>
+        <button
+          class="btn btn-danger focus:outline-none focus:ring-2 focus:ring-red-500"
+          id="confirmDeleteBtn"
+        >Delete</button>
       </div>
     </div>
   </div>
@@ -123,20 +136,32 @@ const defaultEvalType = EvaluationType.API_GREEN_SCORE
       }
     }
 
+    // Store the element that triggered the modal for focus restoration
+    let triggerElement: HTMLElement | null = null
+
     // Modal functions
     const openDeleteModal = (projectId: string, projectName: string) => {
       projectToDelete = { id: projectId, name: projectName }
+      triggerElement = document.activeElement as HTMLElement
+
       if (deleteProjectNameEl) {
         deleteProjectNameEl.textContent = `"${projectName}"`
       }
       deleteModal?.classList.remove('hidden')
       deleteModal?.classList.add('flex')
+
+      // Focus the cancel button for accessibility
+      setTimeout(() => cancelDeleteBtn?.focus(), 50)
     }
 
     const closeDeleteModal = () => {
       deleteModal?.classList.add('hidden')
       deleteModal?.classList.remove('flex')
       projectToDelete = null
+
+      // Restore focus to the trigger element
+      triggerElement?.focus()
+      triggerElement = null
     }
 
     const confirmDelete = () => {
@@ -147,12 +172,39 @@ const defaultEvalType = EvaluationType.API_GREEN_SCORE
       }
     }
 
+    // Focus trap for modal
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!deleteModal?.classList.contains('flex')) return
+
+      if (e.key === 'Escape') {
+        closeDeleteModal()
+        return
+      }
+
+      if (e.key === 'Tab') {
+        const focusableElements = deleteModal.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+        const firstElement = focusableElements[0]
+        const lastElement = focusableElements[focusableElements.length - 1]
+
+        if (e.shiftKey && document.activeElement === firstElement) {
+          e.preventDefault()
+          lastElement?.focus()
+        } else if (!e.shiftKey && document.activeElement === lastElement) {
+          e.preventDefault()
+          firstElement?.focus()
+        }
+      }
+    }
+
     // Modal event listeners
     cancelDeleteBtn?.addEventListener('click', closeDeleteModal)
     confirmDeleteBtn?.addEventListener('click', confirmDelete)
     deleteModal?.addEventListener('click', (e) => {
       if (e.target === deleteModal) closeDeleteModal()
     })
+    document.addEventListener('keydown', handleKeyDown)
 
     // Load projects with current filter
     const loadWithFilter = () => {

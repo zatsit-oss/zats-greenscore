@@ -48,24 +48,32 @@ const isQuickDiagnosis = scaleType === 'quickDiagnosis'
   {(q.additionalExplanation || q.waysOfEvaluation) && (
     <div class="mb-4 flex flex-col gap-2">
       {q.additionalExplanation && (
-        <details class="group text-sm accordion">
-          <summary class="cursor-pointer list-none flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors">
-            <span class="chevron text-xs">&#9654;</span>
+        <details class="group text-sm accordion" id={`context-${q.id}`}>
+          <summary
+            class="cursor-pointer list-none flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
+            aria-expanded="false"
+            aria-controls={`context-content-${q.id}`}
+          >
+            <span class="chevron text-xs" aria-hidden="true">&#9654;</span>
             <span class="font-medium">Context</span>
           </summary>
-          <p class="mt-2 ml-5 text-[var(--color-text-muted)]">
+          <p id={`context-content-${q.id}`} class="mt-2 ml-5 text-[var(--color-text-muted)]">
             {q.additionalExplanation}
           </p>
         </details>
       )}
 
       {q.waysOfEvaluation && (
-        <details class="group text-sm accordion">
-          <summary class="cursor-pointer list-none flex items-center gap-2 text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors">
-            <span class="chevron text-xs">&#9654;</span>
+        <details class="group text-sm accordion" id={`eval-${q.id}`}>
+          <summary
+            class="cursor-pointer list-none flex items-center gap-2 text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors"
+            aria-expanded="false"
+            aria-controls={`eval-content-${q.id}`}
+          >
+            <span class="chevron text-xs" aria-hidden="true">&#9654;</span>
             <span class="font-medium">How to evaluate</span>
           </summary>
-          <p class="mt-2 ml-5 text-[var(--color-text-muted)]">
+          <p id={`eval-content-${q.id}`} class="mt-2 ml-5 text-[var(--color-text-muted)]">
             {q.waysOfEvaluation}
           </p>
         </details>
@@ -129,3 +137,15 @@ const isQuickDiagnosis = scaleType === 'quickDiagnosis'
     display: inline-block;
   }
 </style>
+
+<script>
+  // Update aria-expanded when details toggle
+  document.querySelectorAll('details.accordion').forEach(details => {
+    details.addEventListener('toggle', () => {
+      const summary = details.querySelector('summary');
+      if (summary) {
+        summary.setAttribute('aria-expanded', details.open ? 'true' : 'false');
+      }
+    });
+  });
+</script>

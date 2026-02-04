@@ -57,7 +57,7 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
 <script>
   import { EvaluationType, EvaluationStatus } from "../types/evaluation";
   import { getProjectById, saveProject } from "../utils/storage";
-  import { calculateEroomGlobalScore, getEroomRanking } from "../utils/eroom-scoring";
+  import { calculateEroomGlobalScore, getEroomRanking, validateEroomCompletion } from "../utils/eroom-scoring";
   import type { EroomCategory, EroomAnswerValue } from "../types/eroom";
   import eroomData from "../data/eroom-data-model.json";
   import { showToast } from "../utils/toast";
@@ -237,6 +237,9 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
     // Collect Answers
     const answers = collectAnswers();
 
+    // Validate completion - all questions must be answered
+    const validation = validateEroomCompletion(answers, categories);
+
     // Calculate Score using EROOM scoring
     const { globalScore, categoryScores } = calculateEroomGlobalScore(answers, categories);
     const ranking = getEroomRanking(globalScore);
@@ -245,22 +248,34 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
     evaluation.answers = answers;
     evaluation.score = globalScore;
     evaluation.ranking = ranking;
-    evaluation.status = EvaluationStatus.COMPLETED;
-    evaluation.completedAt = new Date().toISOString();
+
+    // Only mark as COMPLETED if all questions are answered
+    if (validation.isComplete) {
+      evaluation.status = EvaluationStatus.COMPLETED;
+      evaluation.completedAt = new Date().toISOString();
+    } else {
+      evaluation.status = EvaluationStatus.IN_PROGRESS;
+    }
 
     // Save project
     saveProject(project);
 
-    // Show result with EROOM interpretation (high score = more optimization potential)
-    const message = globalScore <= 25
-      ? `Very mature service! Score: ${globalScore}%`
-      : globalScore <= 50
-        ? `Some optimizations possible. Score: ${globalScore}%`
-        : globalScore <= 75
-          ? `Significant optimization potential. Score: ${globalScore}%`
-          : `High optimization potential! Score: ${globalScore}%`;
+    // Show appropriate message
+    if (validation.isComplete) {
+      // Show result with EROOM interpretation (high score = more optimization potential)
+      const message = globalScore <= 25
+        ? `Very mature service! Score: ${globalScore}%`
+        : globalScore <= 50
+          ? `Some optimizations possible. Score: ${globalScore}%`
+          : globalScore <= 75
+            ? `Significant optimization potential. Score: ${globalScore}%`
+            : `High optimization potential! Score: ${globalScore}%`;
 
-    showToast(message, "success");
+      showToast(message, "success");
+    } else {
+      const remaining = validation.totalQuestions - validation.answeredQuestions;
+      showToast(`Progress saved. ${remaining} question${remaining > 1 ? 's' : ''} remaining to complete the evaluation.`, "info");
+    }
 
     setTimeout(() => {
       window.location.href = `/projects/view?id=${projectId}&evaluationType=${evaluationType}`;
