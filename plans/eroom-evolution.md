@@ -89,14 +89,18 @@ Ajout d'un second type d'évaluation (EROOM / EOF v1.1 de Boavizta) en plus de l
 
 ### Feature 3: Suppression de projet ✅
 **Fichiers modifiés** :
-- `src/pages/projects/view.astro` - Bouton Delete + modal de confirmation
+- `src/services/project-service.ts` - **Nouveau** : Service mutualisé (architecture hexagonale)
+- `src/pages/projects/view.astro` - Bouton Delete + modal, utilise le service
+- `src/pages/index.astro` - Modal de confirmation pour le dashboard
+- `src/components/ProjectCard.astro` - Bouton corbeille sur chaque carte
+- `src/utils/ui.ts` - Callback `onDelete` pour les cartes
 - `src/styles/global.css` - Style `btn-danger`
-- `src/utils/storage.ts` - Fonction `deleteProject()` (existait déjà)
 
 **Résultat** :
+- Bouton corbeille sur chaque carte du dashboard
 - Bouton corbeille dans la vue détaillée du projet
 - Modal de confirmation avec nom du projet
-- Redirection vers le dashboard après suppression
+- Architecture hexagonale : UI -> Service -> Storage (prêt pour migration API)
 
 ---
 

@@ -41,12 +41,18 @@ export const formatDate = (dateString: string) => {
 };
 
 
+/**
+ * Callback for delete button click
+ */
+export type OnDeleteCallback = (projectId: string, projectName: string) => void;
+
 /*
  * Helper to populate a card element with project data.
  */
 export const populateCard = (
     card: HTMLAnchorElement,
     data: ProjectWithEvaluation,
+    onDelete?: OnDeleteCallback,
 ) => {
     const { project, evaluation, evaluationType, isCompleted } = data;
     const score = evaluation.score || 0;
@@ -71,6 +77,16 @@ export const populateCard = (
     set(".project-name", project.name);
     set(".project-desc", project.description || "");
     set(".project-date", formatDate(project.updatedAt));
+
+    // Delete button
+    const deleteBtn = card.querySelector('.delete-project-btn');
+    if (deleteBtn && onDelete) {
+        deleteBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onDelete(project.id, project.name);
+        });
+    }
 
     const rankingResult = getRanking(score);
     // Visualization Updates (Score/Colors)
@@ -102,8 +118,9 @@ export const populateCard = (
 /**
  * Load and display projects filtered by evaluation type
  * @param evalType - The evaluation type to filter by, or null for all evaluations
+ * @param onDelete - Optional callback when delete button is clicked
  */
-export const loadProjects = (evalType: EvaluationType | null) => {
+export const loadProjects = (evalType: EvaluationType | null, onDelete?: OnDeleteCallback) => {
     // Get dashboard stats from service
     const stats = getDashboardStats(evalType);
 
@@ -174,7 +191,7 @@ export const loadProjects = (evalType: EvaluationType | null) => {
         const card = clone.querySelector("a");
 
         if (card) {
-            populateCard(card, data);
+            populateCard(card, data, onDelete);
             grid.appendChild(clone);
         }
     });

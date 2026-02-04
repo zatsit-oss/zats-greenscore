@@ -75,12 +75,38 @@ const defaultEvalType = EvaluationType.API_GREEN_SCORE
     </template>
   </div>
 
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="glass-card max-w-md w-full mx-4 p-6">
+      <h2 class="text-xl font-bold mb-4">Delete Project?</h2>
+      <p class="text-muted mb-2">
+        Are you sure you want to delete
+        <span class="font-semibold text-[var(--color-text)]" id="deleteProjectName">"Project Name"</span>?
+      </p>
+      <p class="text-sm text-red-400 mb-6">This action cannot be undone.</p>
+      <div class="flex gap-4 justify-end">
+        <button class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+        <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     import { loadProjects, getEvaluationTypeName } from '../utils/ui'
+    import { deleteProject } from '../services/project-service'
     import { EvaluationType } from '../types/evaluation'
 
     // Get filter element
     const filterSelect = document.getElementById('evaluationTypeFilter') as HTMLSelectElement
+
+    // Modal elements
+    const deleteModal = document.getElementById('deleteModal')
+    const deleteProjectNameEl = document.getElementById('deleteProjectName')
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn')
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn')
+
+    // State for deletion
+    let projectToDelete: { id: string; name: string } | null = null
 
     // Get selected evaluation type (null means "all")
     const getSelectedEvalType = (): EvaluationType | null => {
@@ -97,10 +123,41 @@ const defaultEvalType = EvaluationType.API_GREEN_SCORE
       }
     }
 
+    // Modal functions
+    const openDeleteModal = (projectId: string, projectName: string) => {
+      projectToDelete = { id: projectId, name: projectName }
+      if (deleteProjectNameEl) {
+        deleteProjectNameEl.textContent = `"${projectName}"`
+      }
+      deleteModal?.classList.remove('hidden')
+      deleteModal?.classList.add('flex')
+    }
+
+    const closeDeleteModal = () => {
+      deleteModal?.classList.add('hidden')
+      deleteModal?.classList.remove('flex')
+      projectToDelete = null
+    }
+
+    const confirmDelete = () => {
+      if (projectToDelete) {
+        deleteProject(projectToDelete.id)
+        closeDeleteModal()
+        loadWithFilter() // Reload the grid
+      }
+    }
+
+    // Modal event listeners
+    cancelDeleteBtn?.addEventListener('click', closeDeleteModal)
+    confirmDeleteBtn?.addEventListener('click', confirmDelete)
+    deleteModal?.addEventListener('click', (e) => {
+      if (e.target === deleteModal) closeDeleteModal()
+    })
+
     // Load projects with current filter
     const loadWithFilter = () => {
       const evalType = getSelectedEvalType()
-      loadProjects(evalType)
+      loadProjects(evalType, openDeleteModal)
       updateChartTitle(evalType)
     }
 
