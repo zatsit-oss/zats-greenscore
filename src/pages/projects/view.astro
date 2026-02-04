@@ -149,7 +149,6 @@ const evaluationTypes = getAvailableEvaluationTypes()
   const scoreLabelEl = document.getElementById('scoreLabel')
   const scoreCircleEl = document.getElementById('scoreCircle')
   const chartCard = document.getElementById('chartCard')
-  const editBtn = document.getElementById('editBtn')
   const deleteBtn = document.getElementById('deleteBtn')
   const deleteModal = document.getElementById('deleteModal')
   const deleteProjectNameEl = document.getElementById('deleteProjectName')
@@ -283,14 +282,16 @@ const evaluationTypes = getAvailableEvaluationTypes()
     }
 
     // Edit Button - update click handler
-    if (editBtn) {
-      editBtn.classList.remove('hidden')
+    // Re-query the button from DOM to get current element (after previous cloneNode operations)
+    const currentEditBtn = document.getElementById('editBtn') as HTMLButtonElement | null
+    if (currentEditBtn) {
+      currentEditBtn.classList.remove('hidden')
       // Update button text based on evaluation state
-      editBtn.textContent = evaluation ? 'Edit Evaluation' : 'Start Evaluation'
+      currentEditBtn.textContent = evaluation ? 'Edit Evaluation' : 'Start Evaluation'
 
-      // Remove old listeners and add new one
-      const newEditBtn = editBtn.cloneNode(true) as HTMLButtonElement
-      editBtn.parentNode?.replaceChild(newEditBtn, editBtn)
+      // Remove old listeners by cloning and replacing
+      const newEditBtn = currentEditBtn.cloneNode(true) as HTMLButtonElement
+      currentEditBtn.parentNode?.replaceChild(newEditBtn, currentEditBtn)
 
       newEditBtn.addEventListener('click', () => {
         if (!evaluation) {

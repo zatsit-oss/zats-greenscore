@@ -266,3 +266,63 @@ export const getEroomRanking = (score: number): 'A' | 'B' | 'C' | 'D' | 'E' => {
   if (score <= 80) return 'D'
   return 'E'
 }
+
+/**
+ * Check if a question is considered "answered" (not pending evaluation)
+ * A question is unanswered if: to_evaluate, evaluation_in_progress, null, or undefined
+ */
+const isQuestionAnswered = (answer: EroomAnswerValue): boolean => {
+  return (
+    answer !== null &&
+    answer !== undefined &&
+    answer !== 'to_evaluate' &&
+    answer !== 'evaluation_in_progress'
+  )
+}
+
+/**
+ * Validation result for EROOM evaluation completeness
+ */
+export interface EroomValidationResult {
+  isComplete: boolean
+  totalQuestions: number
+  answeredQuestions: number
+  missingQuestions: Array<{ categoryName: string; questionId: string; criteria: string }>
+}
+
+/**
+ * Validate that all EROOM questions have been answered
+ * Returns validation result with details about missing answers
+ */
+export const validateEroomCompletion = (
+  answers: EroomAnswers,
+  categories: EroomCategory[]
+): EroomValidationResult => {
+  let totalQuestions = 0
+  let answeredQuestions = 0
+  const missingQuestions: EroomValidationResult['missingQuestions'] = []
+
+  categories.forEach((category) => {
+    category.questions.forEach((question) => {
+      totalQuestions++
+      const answer = answers[question.id]
+
+      if (isQuestionAnswered(answer)) {
+        answeredQuestions++
+      } else {
+        missingQuestions.push({
+          categoryName: category.name,
+          questionId: question.id,
+          criteria: question.criteria
+        })
+      }
+    })
+  })
+
+  return {
+    isComplete: missingQuestions.length === 0,
+    totalQuestions,
+    answeredQuestions,
+    missingQuestions
+  }
+}

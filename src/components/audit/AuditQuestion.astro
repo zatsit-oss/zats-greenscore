@@ -31,7 +31,7 @@ const { question: q } = Astro.props;
             class="info-icon-btn absolute top-4 right-4 w-5 h-5 rounded-full bg-slate-600/20 hover:bg-slate-600/40 border border-slate-600/40 hover:border-[var(--color-primary)] flex items-center justify-center transition-colors cursor-pointer group"
             data-tooltip={q.tooltip}
             data-question-id={q.id}
-            aria-label="Afficher plus d'informations"
+            aria-label="Show more information"
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -57,14 +57,19 @@ const { question: q } = Astro.props;
         {
             ["US06", "US07"].includes(q.id) ? (
                 <div class="flex items-center gap-2">
+                    <label for={`input-${q.id}`} class="sr-only">
+                        {q.id === "US06" ? "Number of consumers" : "Percentage"}
+                    </label>
                     <input
                         type="number"
+                        id={`input-${q.id}`}
                         name={q.id}
-                        class="bg-slate-900/50 border border-[var(--color-border)] rounded-lg p-2 text-[var(--color-text)] w-24 focus:outline-none focus:border-[var(--color-primary)]"
+                        class="bg-slate-900/50 border border-[var(--color-border)] rounded-lg p-2 text-[var(--color-text)] w-24 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
                         placeholder="0"
                         min="0"
+                        aria-describedby={`unit-${q.id}`}
                     />
-                    <span class="text-sm text-[var(--color-text-muted)]">
+                    <span id={`unit-${q.id}`} class="text-sm text-[var(--color-text-muted)]">
                         {q.id === "US06" ? "consumers" : "%"}
                     </span>
                 </div>
@@ -114,7 +119,7 @@ const { question: q } = Astro.props;
                 type="button"
                 class="modal-close flex-shrink-0 w-8 h-8 rounded-full bg-slate-600/20 hover:bg-slate-600/40 border border-slate-600/40 hover:border-[var(--color-primary)] flex items-center justify-center transition-colors cursor-pointer"
                 data-modal-close={`tooltip-modal-${q.id}`}
-                aria-label="Fermer"
+                aria-label="Close"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

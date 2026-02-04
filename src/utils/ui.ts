@@ -130,7 +130,15 @@ export const loadProjects = (evalType: EvaluationType | null, onDelete?: OnDelet
         totalProjectsEl.textContent = stats.totalProjects.toString();
 
     const avgScoreEl = document.getElementById("avgScore");
-    if (avgScoreEl) avgScoreEl.textContent = stats.avgScore.toString();
+    if (avgScoreEl) {
+        if (stats.isAverageScoreMeaningful && stats.avgScore !== null) {
+            avgScoreEl.textContent = stats.avgScore.toString();
+            avgScoreEl.setAttribute('aria-label', `Average score: ${stats.avgScore}`);
+        } else {
+            avgScoreEl.textContent = "-";
+            avgScoreEl.setAttribute('aria-label', 'Average score not available when viewing all evaluation types');
+        }
+    }
 
     // Update Avg Score label
     const avgScoreLabelEl = document.getElementById("avgScoreLabel");

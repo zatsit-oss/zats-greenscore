@@ -110,7 +110,7 @@ Ajout d'un second type d'évaluation (EROOM / EOF v1.1 de Boavizta) en plus de l
 
 La page `src/pages/projects/view.astro` doit :
 - [x] Permettre de switcher entre types d'évaluation (déjà fait)
-- [ ] Afficher le radar chart adapté à EROOM (6 axes au lieu de 4)
+- [x] Afficher le radar chart adapté à EROOM (6 axes au lieu de 4)
 - [ ] Adapter l'interprétation du score (EROOM = score élevé = potentiel d'amélioration)
 
 ### 6. Radar Chart adapté
@@ -173,24 +173,69 @@ Le radar chart EROOM utilise 6 axes :
 
 ---
 
-## État actuel (session 3 - terminée)
+## Session 4 - Corrections et Qualité
+
+### Bug 4: Dashboard mélange les scores de différents types ✅
+**Problème** : Quand "All evaluations" est sélectionné, le dashboard calculait une moyenne de scores de différents types d'évaluation (échelles incompatibles).
+
+**Fichiers modifiés** :
+- `src/services/dashboard.ts` - `DashboardStats.avgScore` peut être `null`, ajout de `isAverageScoreMeaningful`
+- `src/utils/ui.ts` - Affiche "-" quand le score moyen n'est pas significatif, `aria-label` explicatif
+
+**Résultat** :
+| Filtre | Score moyen | Graphique |
+|--------|-------------|-----------|
+| All evaluations | "-" | Masqué |
+| API Green Score | Calculé | Affiché |
+| EROOM | Calculé | Affiché |
+
+### Bug 5: Bouton "Edit Evaluation" ne respecte pas le type sélectionné ✅
+**Problème** : Dans la vue projet, changer le type d'évaluation puis cliquer sur "Edit" redirigeait vers l'ancien type.
+
+**Fichiers modifiés** :
+- `src/pages/projects/view.astro` - Récupération du bouton via `getElementById` à chaque changement au lieu d'une référence statique
+
+### Feature 4: Validation EROOM - questions obligatoires ✅
+**Problème** : Le statut passait à "Completed" même si des questions n'étaient pas répondues.
+
+**Fichiers modifiés** :
+- `src/utils/eroom-scoring.ts` - Nouvelle fonction `validateEroomCompletion()` avec `EroomValidationResult`
+- `src/pages/audit-eroom.astro` - Validation avant soumission, statut "In Progress" si incomplet
+
+**Résultat** :
+- Questions répondues partiellement → status "In Progress", message "X questions remaining"
+- Toutes les questions répondues → status "Completed", score affiché
+
+### Audit Accessibilité & Responsive Design ✅
+**Objectif** : Améliorer l'accessibilité (a11y) et le responsive design de toute l'application.
+
+**Fichiers modifiés** :
+- `src/layouts/Layout.astro` - Suppression Google Fonts (éco-design)
+- `src/styles/global.css` - Passage aux polices système
+- `src/components/audit/AuditNavigation.astro` - `<nav>` sémantique, `aria-label`, focus visible
+- `src/components/audit/AuditStepper.astro` - Version mobile ajoutée (barre de progression)
+- `src/pages/audit.astro` - Script adapté pour stepper mobile
+- `src/components/audit/AuditQuestion.astro` - Labels anglais, `aria-describedby` sur inputs
+- `src/components/audit/eroom/EroomQuestion.astro` - `aria-expanded` sur accordéons
+- `src/components/ProjectCard.astro` - `aria-label` sur bouton delete, focus visible
+- `src/pages/index.astro` - Modal avec `role="dialog"`, focus trap, gestion Escape
+
+**Améliorations** :
+- Plus de fonts externes (éco-design respecté)
+- Navigation clavier complète sur les modals
+- Stepper API Green Score responsive sur mobile
+- Screen readers : meilleure expérience avec aria-labels
+
+---
+
+## État actuel (session 4 - terminée)
 
 ### ✅ Toutes les tâches prévues sont terminées
 
 1. **Bug 1** : Score label adapté ("GreenScore" / "EROOM Score") ✅
 2. **Bug 2** : Filtre "All evaluations" sur le dashboard ✅
 3. **Feature 3** : Suppression de projet complète ✅
-   - Bouton delete sur le dashboard (ProjectCard)
-   - Bouton delete dans la vue projet
-   - Modal de confirmation
-   - Architecture hexagonale (project-service.ts)
-
-### Corrections supplémentaires
-- Fix style global SVG (`.leaf svg` au lieu de `svg`)
-- Fix texte français → anglais ("in this section")
-- Ajout skills a11y et responsive-design
-
-### Prochaines étapes potentielles
-- [ ] Vérifier les items "Ce qui reste à faire" (radar chart, etc.)
-- [ ] Export des résultats EROOM ?
-- [ ] Tests e2e ?
+4. **Bug 4** : Dashboard ne mélange plus les scores incompatibles ✅
+5. **Bug 5** : Bouton "Edit Evaluation" respecte le type sélectionné ✅
+6. **Feature 4** : Validation EROOM - questions obligatoires ✅
+7. **Audit A11y & Responsive** : Application complète ✅

@@ -92,6 +92,17 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 	const submitBtn = document.getElementById("submitBtn");
 	const totalSteps = steps.length;
 
+	// Mobile progress elements
+	const stepCurrentLabel = document.querySelector(".step-current-label");
+	const stepProgress = document.querySelector(".step-progress");
+	const stepProgressBar = document.querySelector(".step-progress-bar") as HTMLElement;
+	const progressBarContainer = stepProgressBar?.parentElement;
+
+	// Get section names for mobile display
+	const sectionNames = Array.from(stepItems).map(item =>
+		item.querySelector('.step-label')?.textContent?.trim() || `Section ${parseInt(item.getAttribute('data-step') || '0') + 1}`
+	);
+
 	function updateUI() {
 		// Show/Hide steps
 		steps.forEach((step, index) => {
@@ -102,15 +113,31 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 			}
 		});
 
-		// Update Stepper
+		// Update Desktop Stepper
 		stepItems.forEach((item, index) => {
 			item.classList.remove("active", "completed");
+			item.removeAttribute("aria-current");
 			if (index === currentStep) {
 				item.classList.add("active");
+				item.setAttribute("aria-current", "step");
 			} else if (index < currentStep) {
 				item.classList.add("completed");
 			}
 		});
+
+		// Update Mobile Progress
+		if (stepCurrentLabel && sectionNames[currentStep]) {
+			stepCurrentLabel.textContent = sectionNames[currentStep];
+		}
+		if (stepProgress) {
+			stepProgress.innerHTML = `<span class="sr-only">Step</span> ${currentStep + 1} / ${totalSteps}`;
+		}
+		if (stepProgressBar) {
+			stepProgressBar.style.width = `${((currentStep + 1) / totalSteps) * 100}%`;
+		}
+		if (progressBarContainer) {
+			progressBarContainer.setAttribute("aria-valuenow", String(currentStep + 1));
+		}
 
 		// Update Buttons
 		if (prevBtn)
