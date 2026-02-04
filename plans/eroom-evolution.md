@@ -170,3 +170,27 @@ Le radar chart EROOM utilise 6 axes :
 5. Tests et ajustements : ~1h
 
 **Total estimé : ~5h**
+
+---
+
+## État actuel (session 3 - terminée)
+
+### ✅ Toutes les tâches prévues sont terminées
+
+1. **Bug 1** : Score label adapté ("GreenScore" / "EROOM Score") ✅
+2. **Bug 2** : Filtre "All evaluations" sur le dashboard ✅
+3. **Feature 3** : Suppression de projet complète ✅
+   - Bouton delete sur le dashboard (ProjectCard)
+   - Bouton delete dans la vue projet
+   - Modal de confirmation
+   - Architecture hexagonale (project-service.ts)
+
+### Corrections supplémentaires
+- Fix style global SVG (`.leaf svg` au lieu de `svg`)
+- Fix texte français → anglais ("in this section")
+- Ajout skills a11y et responsive-design
+
+### Prochaines étapes potentielles
+- [ ] Vérifier les items "Ce qui reste à faire" (radar chart, etc.)
+- [ ] Export des résultats EROOM ?
+- [ ] Tests e2e ?
