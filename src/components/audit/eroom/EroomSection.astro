@@ -1,0 +1,92 @@
+---
+import EroomQuestion from './EroomQuestion.astro'
+import type { EroomCategory } from '../../../types/eroom'
+
+interface Props {
+  category: EroomCategory
+  index: number
+}
+
+const { category, index } = Astro.props
+
+const isQuickDiagnosis = category.id === '0' && !category.includeInScore
+---
+
+<div
+  class:list={[
+    'step-content p-4 sm:p-8 rounded-xl backdrop-blur-md border animate-[fadeIn_0.3s_ease]',
+    isQuickDiagnosis
+      ? 'bg-gradient-to-br from-amber-500/5 to-orange-500/5 border-amber-500/20'
+      : 'bg-[var(--glass-bg)] border-[var(--glass-border)]'
+  ]}
+  data-step={index}
+  style={index === 0 ? '' : 'display: none;'}
+>
+  <!-- Section Header -->
+  <div class="flex items-start gap-4 mb-6 pb-4 border-b border-[var(--color-border)]">
+    <span class="text-3xl">{category.icon}</span>
+    <div class="flex-1">
+      <div class="flex items-center gap-3 flex-wrap">
+        <h2 class="text-2xl font-bold text-[var(--color-primary)]">
+          {category.name}
+        </h2>
+        {isQuickDiagnosis && (
+          <span class="px-2 py-1 text-xs font-medium rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
+            Diagnosis - Not included in score
+          </span>
+        )}
+      </div>
+      <p class="text-sm text-[var(--color-text-muted)] mt-1">
+        {category.description}
+      </p>
+    </div>
+  </div>
+
+  <!-- Quick Diagnosis Info Banner -->
+  {isQuickDiagnosis && (
+    <div class="mb-6 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
+      <div class="flex items-start gap-3">
+        <span class="text-xl">&#9432;</span>
+        <div>
+          <p class="text-sm font-medium text-amber-400 mb-1">
+            Quick Diagnosis
+          </p>
+          <p class="text-sm text-[var(--color-text-muted)]">
+            This section helps quickly assess the optimization potential of your digital service.
+            Answers are not included in the final score but help identify priorities.
+          </p>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <!-- Questions -->
+  <div class="flex flex-col gap-6">
+    {category.questions.map((q) => (
+      <EroomQuestion
+        question={q}
+        scaleType={category.evaluationScaleType}
+      />
+    ))}
+  </div>
+
+  <!-- Category Progress -->
+  <div class="mt-6 pt-4 border-t border-[var(--color-border)]">
+    <p class="text-sm text-[var(--color-text-muted)]">
+      {category.questions.length} question{category.questions.length > 1 ? 's' : ''} dans cette section
+    </p>
+  </div>
+</div>
+
+<style>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

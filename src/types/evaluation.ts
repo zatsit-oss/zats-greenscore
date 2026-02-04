@@ -13,8 +13,8 @@ import { ProjectRanking } from './common';
  * For now only API_GREEN_SCORE, EROOM will be added later
  */
 export enum EvaluationType {
-  API_GREEN_SCORE = 'apigreenscore'
-  // EROOM = 'eroom' // Coming soon
+  API_GREEN_SCORE = 'apigreenscore',
+  EROOM = 'eroom'
 }
 
 export enum EvaluationStatus {
@@ -41,14 +41,14 @@ export const EVALUATION_TYPES: Record<EvaluationType, EvaluationTypeInfo> = {
     description: 'Evaluate API sustainability based on architecture, design, usage and logs',
     source: 'API Green Score',
     version: '1.0'
+  },
+  [EvaluationType.EROOM]: {
+    id: EvaluationType.EROOM,
+    name: 'EROOM',
+    description: 'EROOM Optimization Framework - Digital service optimization potential assessment',
+    source: 'Boavizta',
+    version: '1.1'
   }
-  // [EvaluationType.EROOM]: {
-  //   id: EvaluationType.EROOM,
-  //   name: 'EROOM',
-  //   description: 'Digital service optimization potential assessment',
-  //   source: 'Boavizta',
-  //   version: '1.1'
-  // }
 };
 
 // ============================================================================

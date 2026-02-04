@@ -1,9 +1,11 @@
 # Project Rules
 
 ## Language
-- File names, variables, functions, CSS classes: **English**
-- User-facing content (labels, messages, tooltips): **French**
+- **Everything in English** for now (code, UI, messages, tooltips)
 - Git commits and code comments: **English**
+- **Future i18n planned**: Structure code to allow easy FR/EN translation later
+  - Keep user-facing strings extractable (avoid inline concatenation)
+  - Consider using constants or simple objects for text that will be translated
 
 ## Git Commits (Angular Convention)
 

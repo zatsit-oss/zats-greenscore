@@ -1,0 +1,81 @@
+---
+import type { EroomCategory } from '../../../types/eroom'
+
+interface Props {
+  categories: EroomCategory[]
+}
+
+const { categories } = Astro.props
+---
+
+<div class="mb-8">
+  <!-- Desktop: Full stepper -->
+  <div class="hidden md:flex justify-between relative">
+    <div
+      class="absolute top-5 left-0 right-0 h-0.5 bg-[var(--color-border)] z-0"
+    ></div>
+    {categories.map((category, index) => (
+      <div
+        class="step-item relative z-10 flex flex-col items-center gap-1 bg-[var(--color-bg)] px-1"
+        data-step={index}
+      >
+        <div
+          class:list={[
+            'step-circle w-10 h-10 rounded-full flex items-center justify-center text-lg transition-all duration-300 border-2',
+            category.includeInScore
+              ? 'bg-[var(--color-surface)] border-[var(--color-border)]'
+              : 'bg-amber-500/10 border-amber-500/30'
+          ]}
+        >
+          {category.icon}
+        </div>
+        <span class="step-label text-xs font-medium text-[var(--color-text-muted)] text-center max-w-[80px] leading-tight transition-colors duration-300">
+          {category.name}
+        </span>
+      </div>
+    ))}
+  </div>
+
+  <!-- Mobile: Compact progress -->
+  <div class="md:hidden">
+    <div class="flex items-center justify-between mb-2">
+      <span class="step-current-label text-sm font-medium text-[var(--color-primary)]">
+        {categories[0]?.icon} {categories[0]?.name}
+      </span>
+      <span class="step-progress text-sm text-[var(--color-text-muted)]">
+        1 / {categories.length}
+      </span>
+    </div>
+    <div class="h-2 bg-[var(--color-surface)] rounded-full overflow-hidden">
+      <div
+        class="step-progress-bar h-full bg-[var(--color-primary)] transition-all duration-300"
+        style={`width: ${(1 / categories.length) * 100}%`}
+      ></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Active State */
+  .step-item.active .step-circle {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+    transform: scale(1.15);
+  }
+
+  .step-item.active .step-label {
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+
+  /* Completed State */
+  .step-item.completed .step-circle {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .step-item.completed .step-label {
+    color: var(--color-text);
+  }
+</style>

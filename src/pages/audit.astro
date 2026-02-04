@@ -79,7 +79,7 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 </Layout>
 
 <script>
-	import { getRankingScore, calculateProjectScore } from "../utils/scoring";
+	import { getRankingScore, calculateProjectScore } from "../utils/apigreenscore-scoring";
 	import { EvaluationType, EvaluationStatus } from "../types/evaluation";
 	import { getProjectById, saveProject } from "../utils/storage";
 	import type { Project } from "../types/project";
