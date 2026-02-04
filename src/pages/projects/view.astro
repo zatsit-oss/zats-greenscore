@@ -34,6 +34,11 @@ const evaluationTypes = getAvailableEvaluationTypes()
         <div class="flex gap-4 items-center">
           <span class="status-badge" id="projectStatus">Status</span>
           <button class="btn btn-secondary hidden" id="editBtn">Edit Evaluation</button>
+          <button class="btn btn-danger hidden" id="deleteBtn" title="Delete Project">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -70,7 +75,7 @@ const evaluationTypes = getAvailableEvaluationTypes()
 
       <div class="md:col-span-1">
         <div class="glass-card text-center">
-          <h3 class="text-base font-medium text-muted mb-4">Current GreenScore</h3>
+          <h3 class="text-base font-medium text-muted mb-4" id="scoreTitle">Current Score</h3>
           <div class="flex justify-center mb-4">
             <div
               class="w-32 h-32 rounded-full border-8 flex items-center justify-center bg-white/5 shadow-[0_0_20px_rgba(0,0,0,0.1)]"
@@ -103,10 +108,26 @@ const evaluationTypes = getAvailableEvaluationTypes()
       Back to Dashboard
     </a>
   </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="glass-card max-w-md w-full mx-4 p-6">
+      <h2 class="text-xl font-bold mb-4">Delete Project?</h2>
+      <p class="text-muted mb-2">
+        Are you sure you want to delete
+        <span class="font-semibold text-[var(--color-text)]" id="deleteProjectName">"Project Name"</span>?
+      </p>
+      <p class="text-sm text-red-400 mb-6">This action cannot be undone.</p>
+      <div class="flex gap-4 justify-end">
+        <button class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+        <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
 </Layout>
 
 <script>
-  import { getProjectById, saveProject } from '../../utils/storage'
+  import { getProjectById, saveProject, deleteProject } from '../../utils/storage'
   import { EvaluationType, EvaluationStatus, EVALUATION_TYPES, createEmptyEvaluation } from '../../types/evaluation'
   import type { Evaluation } from '../../types/evaluation'
   import type { Project } from '../../types/project'
@@ -123,11 +144,17 @@ const evaluationTypes = getAvailableEvaluationTypes()
   // DOM Elements
   const evalTypeSelect = document.getElementById('evaluationTypeSelect') as HTMLSelectElement
   const statusEl = document.getElementById('projectStatus')
+  const scoreTitleEl = document.getElementById('scoreTitle')
   const scoreEl = document.getElementById('projectScore')
   const scoreLabelEl = document.getElementById('scoreLabel')
   const scoreCircleEl = document.getElementById('scoreCircle')
   const chartCard = document.getElementById('chartCard')
   const editBtn = document.getElementById('editBtn')
+  const deleteBtn = document.getElementById('deleteBtn')
+  const deleteModal = document.getElementById('deleteModal')
+  const deleteProjectNameEl = document.getElementById('deleteProjectName')
+  const cancelDeleteBtn = document.getElementById('cancelDeleteBtn')
+  const confirmDeleteBtn = document.getElementById('confirmDeleteBtn')
 
   // URL params
   const urlParams = new URLSearchParams(window.location.search)
@@ -174,6 +201,12 @@ const evaluationTypes = getAvailableEvaluationTypes()
    */
   const updateEvaluationDisplay = (project: Project, evalType: EvaluationType) => {
     const evaluation = project.evaluations[evalType]
+
+    // Score Title - adapt to evaluation type
+    if (scoreTitleEl) {
+      const evalMeta = EVALUATION_TYPES[evalType]
+      scoreTitleEl.textContent = `Current ${evalMeta?.shortName || evalMeta?.name || 'Score'}`
+    }
 
     // Status Badge
     if (statusEl) {
@@ -313,6 +346,37 @@ const evaluationTypes = getAvailableEvaluationTypes()
 
       // Initial display
       updateEvaluationDisplay(project, initialEvalType)
+
+      // Delete button setup
+      if (deleteBtn && deleteModal && deleteProjectNameEl && cancelDeleteBtn && confirmDeleteBtn) {
+        deleteBtn.classList.remove('hidden')
+
+        // Open modal
+        deleteBtn.addEventListener('click', () => {
+          deleteProjectNameEl.textContent = `"${project.name}"`
+          deleteModal.classList.remove('hidden')
+          deleteModal.classList.add('flex')
+        })
+
+        // Close modal
+        const closeModal = () => {
+          deleteModal.classList.add('hidden')
+          deleteModal.classList.remove('flex')
+        }
+
+        cancelDeleteBtn.addEventListener('click', closeModal)
+
+        // Close on backdrop click
+        deleteModal.addEventListener('click', (e) => {
+          if (e.target === deleteModal) closeModal()
+        })
+
+        // Confirm delete
+        confirmDeleteBtn.addEventListener('click', () => {
+          deleteProject(project.id)
+          window.location.href = '/'
+        })
+      }
 
       // Show Content
       document.getElementById('loadingState')!.style.display = 'none'

@@ -3,6 +3,7 @@ import { EvaluationType, EVALUATION_TYPES } from '../types/evaluation'
 import {
     getDashboardStats,
     getProjectsWithEvaluation,
+    getAllProjectsWithAnyEvaluation,
     getChartData,
     type ProjectWithEvaluation
 } from '../services/dashboard'
@@ -46,16 +47,16 @@ export const formatDate = (dateString: string) => {
 export const populateCard = (
     card: HTMLAnchorElement,
     data: ProjectWithEvaluation,
-    evalType: EvaluationType,
 ) => {
-    const { project, evaluation, isCompleted } = data;
+    const { project, evaluation, evaluationType, isCompleted } = data;
     const score = evaluation.score || 0;
 
     // Core Attributes - link to view if completed, audit if in progress
+    const auditPage = evaluationType === EvaluationType.EROOM ? '/audit-eroom' : '/audit';
     if (isCompleted) {
-        card.href = `/projects/view?id=${project.id}&evaluationType=${evalType}`;
+        card.href = `/projects/view?id=${project.id}&evaluationType=${evaluationType}`;
     } else {
-        card.href = `/audit?projectId=${project.id}&evaluationType=${evalType}`;
+        card.href = `${auditPage}?projectId=${project.id}`;
     }
 
     // Text Content Updates
@@ -100,9 +101,9 @@ export const populateCard = (
 
 /**
  * Load and display projects filtered by evaluation type
- * @param evalType - The evaluation type to filter by (required)
+ * @param evalType - The evaluation type to filter by, or null for all evaluations
  */
-export const loadProjects = (evalType: EvaluationType) => {
+export const loadProjects = (evalType: EvaluationType | null) => {
     // Get dashboard stats from service
     const stats = getDashboardStats(evalType);
 
@@ -117,7 +118,8 @@ export const loadProjects = (evalType: EvaluationType) => {
     // Update Avg Score label
     const avgScoreLabelEl = document.getElementById("avgScoreLabel");
     if (avgScoreLabelEl) {
-        avgScoreLabelEl.textContent = `Avg ${getEvaluationTypeName(evalType)} Score`;
+        const label = evalType ? `Avg ${getEvaluationTypeName(evalType)} Score` : 'Avg Score';
+        avgScoreLabelEl.textContent = label;
     }
 
     // Bar Chart - Show only if there are completed projects
@@ -137,7 +139,7 @@ export const loadProjects = (evalType: EvaluationType) => {
         }
     }
 
-    // Render Grid - Only projects with the selected evaluation type
+    // Render Grid - Projects with the selected evaluation type (or all if null)
     const grid = document.getElementById("projectsGrid");
     const tplCompleted = document.getElementById(
         "card-template-completed",
@@ -150,11 +152,16 @@ export const loadProjects = (evalType: EvaluationType) => {
 
     grid.innerHTML = "";
 
-    const projectsWithEval = getProjectsWithEvaluation(evalType);
+    const projectsWithEval = evalType
+        ? getProjectsWithEvaluation(evalType)
+        : getAllProjectsWithAnyEvaluation();
 
     if (projectsWithEval.length === 0) {
-        grid.innerHTML =
-            `<p class="col-span-full text-center text-[var(--color-text-muted)]">No ${getEvaluationTypeName(evalType)} projects found. Start a new one!</p>`;
+        const typeName = evalType ? getEvaluationTypeName(evalType) : '';
+        const message = evalType
+            ? `No ${typeName} projects found. Start a new one!`
+            : 'No projects found. Start a new one!';
+        grid.innerHTML = `<p class="col-span-full text-center text-[var(--color-text-muted)]">${message}</p>`;
         return;
     }
 
@@ -167,7 +174,7 @@ export const loadProjects = (evalType: EvaluationType) => {
         const card = clone.querySelector("a");
 
         if (card) {
-            populateCard(card, data, evalType);
+            populateCard(card, data);
             grid.appendChild(clone);
         }
     });
