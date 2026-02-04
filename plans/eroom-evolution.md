@@ -65,7 +65,56 @@ Ajout d'un second type d'évaluation (EROOM / EOF v1.1 de Boavizta) en plus de l
   - `getScoreDetails()` adapté pour EROOM (score élevé = potentiel d'optimisation)
   - Radar chart avec 6 catégories EROOM ou 4 sections API Green Score
 
-## Ce qui reste à faire
+## Prochaines tâches (à reprendre ce soir)
+
+### Bug 1: Score label incorrect pour EROOM
+**Fichier** : `src/pages/projects/view.astro`
+
+Le label "Current GreenScore" doit s'adapter au type d'évaluation :
+- API Green Score → "Current GreenScore"
+- EROOM → "Current EROOM Score"
+
+**Solution** : Modifier le HTML pour rendre le label dynamique via JS selon `evalType`.
+
+### Bug 2: Filtre dashboard - ajouter "All evaluations"
+**Fichier** : `src/pages/index.astro` + `src/utils/ui.ts`
+
+Ajouter l'option "All evaluations" en première position du dropdown pour voir tous les projets.
+
+**Solution** :
+- Ajouter `<option value="">All evaluations</option>` en premier
+- Modifier `loadProjects()` pour accepter `null` et afficher tous les projets
+- Calculer le score moyen global (tous types confondus)
+
+### Feature 3: Suppression de projet
+**Fichiers** :
+- `src/components/ProjectCard.astro` - Ajouter icône corbeille
+- `src/pages/projects/view.astro` - Ajouter bouton "Delete Project"
+- `src/utils/storage.ts` - Ajouter fonction `deleteProject()`
+
+**Solution** :
+1. Ajouter icône corbeille sur la carte projet (à côté de "Continue Audit" / "View Details")
+2. Ajouter bouton "Delete Project" dans la vue détaillée
+3. Modal de confirmation avant suppression
+4. Fonction `deleteProject(id)` dans storage.ts
+5. Redirection vers dashboard après suppression
+
+**UI Confirmation Modal** :
+```
+┌─────────────────────────────────────┐
+│  Delete Project?                    │
+│                                     │
+│  Are you sure you want to delete    │
+│  "Project Name"?                    │
+│  This action cannot be undone.      │
+│                                     │
+│        [Cancel]    [Delete]         │
+└─────────────────────────────────────┘
+```
+
+---
+
+## Ce qui reste à faire (plus tard)
 
 ### 1. Page projet avec multi-évaluation
 
