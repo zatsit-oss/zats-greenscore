@@ -46,66 +46,57 @@ const isQuickDiagnosis = scaleType === 'quickDiagnosis'
 
   <!-- Additional Explanation -->
   {q.additionalExplanation && (
-    <p class="text-sm text-[var(--color-text-muted)] mb-3 italic">
-      {q.additionalExplanation}
-    </p>
+    <div class="mb-3 text-sm">
+      <span class="font-medium text-[var(--color-text-muted)]">Context: </span>
+      <span class="text-[var(--color-text-muted)]">{q.additionalExplanation}</span>
+    </div>
   )}
 
-  <!-- Ways of Evaluation (collapsible) -->
+  <!-- Ways of Evaluation -->
   {q.waysOfEvaluation && (
-    <details class="mb-4 text-sm">
-      <summary class="cursor-pointer text-[var(--color-primary)] hover:underline">
-        How to evaluate?
-      </summary>
-      <p class="mt-2 p-3 rounded bg-[var(--color-primary)]/5 border border-[var(--color-primary)]/20 text-[var(--color-text-muted)]">
-        {q.waysOfEvaluation}
-      </p>
-    </details>
+    <div class="mb-4 p-3 rounded bg-[var(--color-primary)]/5 border border-[var(--color-primary)]/20 text-sm">
+      <span class="font-medium text-[var(--color-primary)]">How to evaluate: </span>
+      <span class="text-[var(--color-text-muted)]">{q.waysOfEvaluation}</span>
+    </div>
   )}
 
   <!-- Answer Input -->
   <div class="mt-4">
     {isQuickDiagnosis ? (
-      <!-- Quick Diagnosis: Numeric scale 1-5 -->
+      <!-- Quick Diagnosis: Numeric scale 1-5 as radio list -->
       <div class="flex flex-col gap-2">
-        <div class="flex flex-wrap gap-2">
-          {q.evaluationScale?.map((option) => (
-            <label class="flex-1 min-w-[120px]">
-              <input
-                type="radio"
-                name={q.id}
-                value={option.value}
-                class="peer sr-only"
-              />
-              <div class="p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] cursor-pointer transition-all hover:border-[var(--color-primary)] peer-checked:border-[var(--color-primary)] peer-checked:bg-[var(--color-primary)]/10">
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="w-6 h-6 rounded-full bg-slate-600/30 flex items-center justify-center text-sm font-bold text-[var(--color-text)]">
-                    {option.value}
-                  </span>
-                </div>
-                <p class="text-xs text-[var(--color-text-muted)] leading-tight">
-                  {option.label}
-                </p>
-              </div>
-            </label>
-          ))}
-        </div>
+        {q.evaluationScale?.map((option) => (
+          <label class="flex items-start gap-3 cursor-pointer group">
+            <input
+              type="radio"
+              name={q.id}
+              value={option.value}
+              class="mt-1 w-4 h-4 accent-[var(--color-primary)]"
+            />
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-slate-600/30 flex items-center justify-center text-sm font-bold text-[var(--color-text)] flex-shrink-0">
+                {option.value}
+              </span>
+              <span class="text-sm text-[var(--color-text-muted)] group-hover:text-[var(--color-text)]">
+                {option.label}
+              </span>
+            </div>
+          </label>
+        ))}
       </div>
     ) : (
-      <!-- Standard / Ease of Change: Qualitative options -->
-      <div class="flex flex-wrap gap-2">
+      <!-- Standard / Ease of Change: Qualitative options as radio list -->
+      <div class="flex flex-col gap-2">
         {answerOptions?.map((option) => (
-          <label class="group">
+          <label class="flex items-center gap-3 cursor-pointer group">
             <input
               type="radio"
               name={q.id}
               value={option.id}
-              class="peer sr-only"
+              class="w-4 h-4 accent-[var(--color-primary)]"
             />
-            <div class="px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] cursor-pointer transition-all hover:border-[var(--color-primary)] peer-checked:border-[var(--color-primary)] peer-checked:bg-[var(--color-primary)]/10 flex items-center gap-2">
-              <span class="text-lg">{option.emoji}</span>
-              <span class="text-sm text-[var(--color-text)]">{option.label}</span>
-            </div>
+            <span class="text-base">{option.emoji}</span>
+            <span class="text-sm text-[var(--color-text-muted)] group-hover:text-[var(--color-text)]">{option.label}</span>
           </label>
         ))}
       </div>
