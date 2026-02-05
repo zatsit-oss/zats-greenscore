@@ -269,3 +269,24 @@ Le radar chart EROOM utilise 6 axes :
 7. **Audit A11y & Responsive** : Application complète ✅
 8. **Bug 6** : Carte projet redirige vers vue projet ✅
 9. **Feature 5** : Afficher les deux scores sur la carte projet ✅
+10. **Feature 6** : Pages About et Documentation ✅
+
+---
+
+## Session 6 - Pages About et Documentation
+
+### Feature 6: Pages About et Documentation ✅
+**Objectif** : Ajouter des pages d'information sur le projet.
+
+**Fichiers créés** :
+- `src/pages/about.astro` - Présentation du projet, types d'évaluation, crédits
+- `src/pages/doc.astro` - Documentation complète avec TOC, guide de démarrage, FAQ
+
+**Fichiers modifiés** :
+- `src/layouts/Layout.astro` - Liens de navigation dans header et footer
+
+**Résultat** :
+- Page About accessible via `/about`
+- Page Documentation accessible via `/doc`
+- Navigation: liens Docs et About dans le header (desktop)
+- Footer: liens Documentation et About

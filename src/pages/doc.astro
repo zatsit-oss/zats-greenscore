@@ -1,0 +1,193 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Documentation">
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-8">
+      <a href="/" class="link-back mb-4">
+        &larr; Back to Dashboard
+      </a>
+      <h1 class="text-3xl font-bold mb-4">Documentation</h1>
+      <p class="text-muted text-lg">
+        Learn how to use Zats Green Score to evaluate your projects.
+      </p>
+    </div>
+
+    <!-- Table of Contents -->
+    <nav class="glass-card mb-8" aria-label="Table of contents">
+      <h2 class="text-lg font-semibold mb-4">Contents</h2>
+      <ul class="space-y-2 text-muted">
+        <li><a href="#getting-started" class="text-[var(--color-primary)] hover:underline">Getting Started</a></li>
+        <li><a href="#create-project" class="text-[var(--color-primary)] hover:underline">Creating a Project</a></li>
+        <li><a href="#evaluation-types" class="text-[var(--color-primary)] hover:underline">Evaluation Types</a></li>
+        <li><a href="#understanding-scores" class="text-[var(--color-primary)] hover:underline">Understanding Scores</a></li>
+        <li><a href="#faq" class="text-[var(--color-primary)] hover:underline">FAQ</a></li>
+      </ul>
+    </nav>
+
+    <!-- Getting Started -->
+    <section id="getting-started" class="glass-card mb-8">
+      <h2 class="text-xl font-semibold mb-4">Getting Started</h2>
+      <ol class="list-decimal list-inside space-y-3 text-muted">
+        <li>Click <strong>"+ New Project"</strong> in the navigation bar</li>
+        <li>Enter your project name and description</li>
+        <li>Select an evaluation type (API Green Score or EROOM)</li>
+        <li>Complete the questionnaire</li>
+        <li>View your results and recommendations</li>
+      </ol>
+    </section>
+
+    <!-- Creating a Project -->
+    <section id="create-project" class="glass-card mb-8">
+      <h2 class="text-xl font-semibold mb-4">Creating a Project</h2>
+      <p class="text-muted leading-relaxed mb-4">
+        A project represents a digital service, API, or application you want to evaluate.
+        Each project can have multiple evaluations of different types.
+      </p>
+      <div class="bg-white/5 rounded-lg p-4 border border-[var(--color-border)]">
+        <h3 class="font-medium mb-2">Project Fields</h3>
+        <ul class="text-muted text-sm space-y-1">
+          <li><strong>Name:</strong> A short, descriptive name for your project</li>
+          <li><strong>Description:</strong> Details about what the project does</li>
+          <li><strong>Evaluation Type:</strong> The methodology to use for assessment</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Evaluation Types -->
+    <section id="evaluation-types" class="glass-card mb-8">
+      <h2 class="text-xl font-semibold mb-4">Evaluation Types</h2>
+
+      <div class="space-y-6">
+        <div class="border-l-4 border-[var(--color-primary)] pl-4">
+          <h3 class="text-lg font-medium mb-2">API Green Score</h3>
+          <p class="text-muted leading-relaxed mb-3">
+            Evaluates API design and implementation against eco-design best practices.
+          </p>
+          <div class="text-sm text-muted">
+            <strong>Sections:</strong> Architecture, Design, Usage, Logs
+          </div>
+          <div class="text-sm text-muted mt-1">
+            <strong>Scoring:</strong> Higher score = Better eco-design (0-100)
+          </div>
+        </div>
+
+        <div class="border-l-4 border-amber-500 pl-4">
+          <h3 class="text-lg font-medium mb-2">EROOM (EOF v1.1)</h3>
+          <p class="text-muted leading-relaxed mb-3">
+            Measures optimization potential across 6 categories plus a quick diagnosis.
+          </p>
+          <div class="text-sm text-muted">
+            <strong>Categories:</strong> Product, Architecture, Infrastructure, Storage & Data, Algo & Code, Ease of Change
+          </div>
+          <div class="text-sm text-muted mt-1">
+            <strong>Scoring:</strong> Lower score = More mature service (0-100%)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Understanding Scores -->
+    <section id="understanding-scores" class="glass-card mb-8">
+      <h2 class="text-xl font-semibold mb-4">Understanding Scores</h2>
+
+      <div class="space-y-6">
+        <div>
+          <h3 class="font-medium mb-3">API Green Score Rankings</h3>
+          <div class="grid grid-cols-5 gap-2 text-center text-sm">
+            <div class="p-2 rounded bg-emerald-500/20 text-emerald-400">
+              <div class="font-bold">A</div>
+              <div class="text-xs">90-100</div>
+            </div>
+            <div class="p-2 rounded bg-lime-500/20 text-lime-400">
+              <div class="font-bold">B</div>
+              <div class="text-xs">75-89</div>
+            </div>
+            <div class="p-2 rounded bg-amber-500/20 text-amber-400">
+              <div class="font-bold">C</div>
+              <div class="text-xs">50-74</div>
+            </div>
+            <div class="p-2 rounded bg-orange-500/20 text-orange-400">
+              <div class="font-bold">D</div>
+              <div class="text-xs">25-49</div>
+            </div>
+            <div class="p-2 rounded bg-red-500/20 text-red-400">
+              <div class="font-bold">E</div>
+              <div class="text-xs">0-24</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-medium mb-3">EROOM Score Interpretation</h3>
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center gap-3">
+              <span class="w-20 text-emerald-400 font-medium">0-25%</span>
+              <span class="text-muted">Very mature service, few optimizations needed</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-20 text-lime-400 font-medium">25-50%</span>
+              <span class="text-muted">Some improvement opportunities identified</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-20 text-amber-400 font-medium">50-75%</span>
+              <span class="text-muted">Significant optimization potential</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-20 text-red-400 font-medium">75-100%</span>
+              <span class="text-muted">High optimization potential - priority actions needed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="glass-card">
+      <h2 class="text-xl font-semibold mb-4">Frequently Asked Questions</h2>
+
+      <div class="space-y-6">
+        <details class="group">
+          <summary class="cursor-pointer font-medium text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors">
+            Where is my data stored?
+          </summary>
+          <p class="mt-2 text-muted text-sm pl-4">
+            All data is stored locally in your browser's localStorage. Nothing is sent to external servers.
+            Your evaluations remain private and on your device.
+          </p>
+        </details>
+
+        <details class="group">
+          <summary class="cursor-pointer font-medium text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors">
+            Can I have multiple evaluations on one project?
+          </summary>
+          <p class="mt-2 text-muted text-sm pl-4">
+            Yes! Each project can have both an API Green Score evaluation and an EROOM evaluation.
+            Use the evaluation type selector on the project view page to switch between them.
+          </p>
+        </details>
+
+        <details class="group">
+          <summary class="cursor-pointer font-medium text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors">
+            Is my progress saved automatically?
+          </summary>
+          <p class="mt-2 text-muted text-sm pl-4">
+            Yes, your answers are saved automatically as you complete the questionnaire.
+            You can leave and come back at any time.
+          </p>
+        </details>
+
+        <details class="group">
+          <summary class="cursor-pointer font-medium text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors">
+            Can I export my results?
+          </summary>
+          <p class="mt-2 text-muted text-sm pl-4">
+            Export functionality is planned for a future release.
+            For now, you can view your results on the project detail page.
+          </p>
+        </details>
+      </div>
+    </section>
+  </div>
+</Layout>
