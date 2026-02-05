@@ -1,0 +1,62 @@
+{
+  "title": "About Zats Green Score",
+  "subtitle": "Evaluate the eco-design maturity of your digital projects.",
+  "sections": {
+    "whatIs": {
+      "title": "What is Zats Green Score?",
+      "paragraphs": [
+        "Zats Green Score is an open-source tool for evaluating the environmental impact and eco-design practices of digital projects, particularly APIs and web services.",
+        "It helps teams identify areas for improvement and track their progress toward more sustainable digital practices."
+      ]
+    },
+    "evaluationTypes": {
+      "title": "Evaluation Types",
+      "types": [
+        {
+          "name": "API Green Score",
+          "description": "Based on the API Green Score methodology, this evaluation focuses on API design best practices for eco-design: architecture, data management, caching strategies, and more.",
+          "link": {
+            "text": "API Green Score",
+            "url": "https://github.com/API-Green-Score/APIGreenScore"
+          }
+        },
+        {
+          "name": "EROOM (EOF v1.1)",
+          "description": "Based on Boavizta's EROOM Optimization Framework, this evaluation measures the optimization potential of digital services across multiple dimensions: product, architecture, infrastructure, and more.",
+          "link": {
+            "text": "Boavizta",
+            "url": "https://boavizta.org/"
+          }
+        }
+      ]
+    },
+    "openSource": {
+      "title": "Open Source",
+      "description": "Zats Green Score is open source and available on GitHub. Contributions are welcome!",
+      "github": {
+        "url": "https://github.com/zatsit-oss/zats-greenscore",
+        "text": "View on GitHub"
+      }
+    },
+    "credits": {
+      "title": "Credits",
+      "items": [
+        {
+          "name": "API Green Score",
+          "url": "https://github.com/API-Green-Score/APIGreenScore",
+          "linkText": "API-Green-Score"
+        },
+        {
+          "name": "EROOM Framework",
+          "url": "https://boavizta.org/",
+          "linkText": "Boavizta"
+        },
+        {
+          "name": "Developed by",
+          "url": "https://zatsit.fr/",
+          "linkText": "Zatsit"
+        }
+      ]
+    }
+  }
+}
