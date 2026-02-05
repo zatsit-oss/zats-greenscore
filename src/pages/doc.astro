@@ -100,11 +100,15 @@ const getBorderClass = (color: string) => {
       <div class="space-y-6">
         <div>
           <h3 class="font-medium mb-3">{sections.understandingScores.apiGreenScore.title}</h3>
-          <div class="grid grid-cols-5 gap-2 text-center text-sm">
+          <div class="grid grid-cols-5 gap-2 text-center text-sm" role="list" aria-label="Score rankings from A to E">
             {sections.understandingScores.apiGreenScore.rankings.map((ranking: { grade: string; range: string; color: string }) => (
-              <div class={`p-2 rounded ${colorClasses[ranking.color].bg} ${colorClasses[ranking.color].text}`}>
-                <div class="font-bold">{ranking.grade}</div>
-                <div class="text-xs">{ranking.range}</div>
+              <div
+                class={`p-2 rounded ${colorClasses[ranking.color].bg} ${colorClasses[ranking.color].text}`}
+                role="listitem"
+                aria-label={`Grade ${ranking.grade}: ${ranking.range} points`}
+              >
+                <div class="font-bold" aria-hidden="true">{ranking.grade}</div>
+                <div class="text-xs" aria-hidden="true">{ranking.range}</div>
               </div>
             ))}
           </div>
@@ -126,6 +130,7 @@ const getBorderClass = (color: string) => {
 
     <!-- FAQ -->
     <section id={sections.faq.id} class="glass-card">
+
       <h2 class="text-xl font-semibold mb-4">{sections.faq.title}</h2>
       <div class="space-y-6">
         {sections.faq.questions.map((faq: { question: string; answer: string }) => (
