@@ -61,17 +61,10 @@ const defaultEvalType = EvaluationType.API_GREEN_SCORE
     <!-- Projects will be loaded here -->
   </div>
 
-  <!-- Hidden Templates used by the script -->
+  <!-- Hidden Template used by the script -->
   <div class="hidden">
-    <template id="card-template-completed">
-      <ProjectCard
-        isCompleted={true}
-      />
-    </template>
-    <template id="card-template-pending">
-      <ProjectCard
-        isCompleted={false}
-      />
+    <template id="card-template">
+      <ProjectCard />
     </template>
   </div>
 

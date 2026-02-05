@@ -238,18 +238,25 @@ Le radar chart EROOM utilise 6 axes :
 
 ---
 
-## À faire (session 5)
+## Session 5 - Multi-scores sur carte projet
 
-### Feature 5: Afficher les deux scores sur la carte projet
+### Feature 5: Afficher les deux scores sur la carte projet ✅
 **Objectif** : Sur la carte du dashboard, afficher le score GreenScore ET le score EROOM quand les deux sont complétés.
 
-**Fichiers à modifier** :
-- `src/components/ProjectCard.astro` - Ajouter zone pour second score
-- `src/utils/ui.ts` - Passer les infos de toutes les évaluations du projet
+**Fichiers modifiés** :
+- `src/services/dashboard.ts` - Nouveau type `EvaluationSummary`, ajout de `allEvaluations` dans `ProjectWithEvaluation`
+- `src/components/ProjectCard.astro` - Nouveau design compact avec badges pour chaque type d'évaluation
+- `src/utils/ui.ts` - Nouvelle fonction `getScoreColor()`, `populateCard()` affiche tous les scores complétés
+- `src/pages/index.astro` - Simplifié à un seul template de carte
+
+**Résultat** :
+- Chaque carte affiche un badge par évaluation complétée (GS et/ou EROOM)
+- Les couleurs sont adaptées au type d'évaluation (EROOM inversé)
+- Badge "pending" affiché seulement si aucune évaluation n'est complétée
 
 ---
 
-## État actuel (session 4 - terminée)
+## État actuel (session 5 - terminée)
 
 ### ✅ Tâches terminées
 
@@ -261,6 +268,4 @@ Le radar chart EROOM utilise 6 axes :
 6. **Feature 4** : Validation EROOM - questions obligatoires ✅
 7. **Audit A11y & Responsive** : Application complète ✅
 8. **Bug 6** : Carte projet redirige vers vue projet ✅
-
-### 🔜 À faire
-- **Feature 5** : Afficher les deux scores sur la carte projet
+9. **Feature 5** : Afficher les deux scores sur la carte projet ✅

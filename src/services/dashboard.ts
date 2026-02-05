@@ -29,11 +29,19 @@ export interface DashboardStats {
   isAverageScoreMeaningful: boolean;
 }
 
+export interface EvaluationSummary {
+  type: EvaluationType;
+  score: number | null;
+  isCompleted: boolean;
+}
+
 export interface ProjectWithEvaluation {
   project: Project;
   evaluation: Evaluation;
   evaluationType: EvaluationType;
   isCompleted: boolean;
+  // All evaluations for this project (for multi-score display)
+  allEvaluations: EvaluationSummary[];
 }
 
 export interface ChartDataPoint {
@@ -87,6 +95,18 @@ export function getDashboardStats(evalType: EvaluationType | null): DashboardSta
 }
 
 /**
+ * Build allEvaluations summary for a project
+ */
+function buildEvaluationsSummary(project: Project): EvaluationSummary[] {
+  return (Object.entries(project.evaluations) as [EvaluationType, Evaluation][])
+    .map(([type, evaluation]) => ({
+      type,
+      score: evaluation.score,
+      isCompleted: evaluation.status === EvaluationStatus.COMPLETED
+    }));
+}
+
+/**
  * Get projects that have a specific evaluation type
  */
 export function getProjectsWithEvaluation(evalType: EvaluationType): ProjectWithEvaluation[] {
@@ -100,7 +120,8 @@ export function getProjectsWithEvaluation(evalType: EvaluationType): ProjectWith
         project,
         evaluation,
         evaluationType: evalType,
-        isCompleted: evaluation.status === EvaluationStatus.COMPLETED
+        isCompleted: evaluation.status === EvaluationStatus.COMPLETED,
+        allEvaluations: buildEvaluationsSummary(project)
       };
     });
 }
@@ -123,7 +144,8 @@ export function getAllProjectsWithAnyEvaluation(): ProjectWithEvaluation[] {
         project,
         evaluation,
         evaluationType: evalType,
-        isCompleted: evaluation.status === EvaluationStatus.COMPLETED
+        isCompleted: evaluation.status === EvaluationStatus.COMPLETED,
+        allEvaluations: buildEvaluationsSummary(project)
       };
     });
 }
