@@ -281,6 +281,8 @@ Le radar chart EROOM utilise 6 axes :
 **Fichiers créés** :
 - `src/pages/about.astro` - Présentation du projet, types d'évaluation, crédits
 - `src/pages/doc.astro` - Documentation complète avec TOC, guide de démarrage, FAQ
+- `src/data/about-content.json` - Contenu externalisé de la page About
+- `src/data/doc-content.json` - Contenu externalisé de la page Documentation
 
 **Fichiers modifiés** :
 - `src/layouts/Layout.astro` - Liens de navigation dans header et footer
@@ -290,3 +292,13 @@ Le radar chart EROOM utilise 6 axes :
 - Page Documentation accessible via `/doc`
 - Navigation: liens Docs et About dans le header (desktop)
 - Footer: liens Documentation et About
+- Contenu externalisé en JSON (pas de SVG inline, eco-design)
+
+### Audit A11y: Pages About et Doc ✅
+**Corrections** :
+- `src/layouts/Layout.astro` - aria-labels traduits en anglais + "(opens in new tab)"
+- `src/pages/about.astro` - Ajout sr-only pour liens externes
+- `src/pages/doc.astro` - Ajout role="list" et aria-label sur grille de scores
+
+**Points restants (non bloquants)** :
+- Navigation mobile : liens dans footer OK, menu hamburger serait mieux
