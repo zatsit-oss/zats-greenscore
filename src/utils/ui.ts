@@ -5,7 +5,8 @@ import {
     getProjectsWithEvaluation,
     getAllProjectsWithAnyEvaluation,
     getChartData,
-    type ProjectWithEvaluation
+    type ProjectWithEvaluation,
+    type EvaluationSummary
 } from '../services/dashboard'
 
 /**
@@ -31,6 +32,23 @@ export const getRanking= (score: number) => {
     return RankingResult.E;
 }
 
+/**
+ * Get score color based on evaluation type
+ * GreenScore: high score = good (green)
+ * EROOM: high score = optimization potential (red/amber)
+ */
+export const getScoreColor = (score: number, evalType: EvaluationType): string => {
+    if (evalType === EvaluationType.EROOM) {
+        // EROOM: low score = mature (green), high score = needs work (red)
+        if (score <= 25) return 'var(--color-score-excellent)';
+        if (score <= 50) return 'var(--color-score-good)';
+        if (score <= 75) return 'var(--color-score-average)';
+        return 'var(--color-score-poor)';
+    }
+    // API Green Score: high score = good
+    return getRanking(score).color;
+}
+
 export const formatDate = (dateString: string) => {
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -54,8 +72,7 @@ export const populateCard = (
     data: ProjectWithEvaluation,
     onDelete?: OnDeleteCallback,
 ) => {
-    const { project, evaluation, evaluationType, isCompleted } = data;
-    const score = evaluation.score || 0;
+    const { project, evaluationType, allEvaluations } = data;
 
     // Always link to project view page (allows switching evaluation types)
     card.href = `/projects/view?id=${project.id}&evaluationType=${evaluationType}`;
@@ -66,9 +83,25 @@ export const populateCard = (
         if (el) el.textContent = value;
     };
 
-    // Status badge - show evaluation status
-    const statusText = isCompleted ? 'Completed' : 'In Progress';
+    // Check if any evaluation is completed
+    const completedEvaluations = allEvaluations.filter(e => e.isCompleted);
+    const hasAnyCompleted = completedEvaluations.length > 0;
+
+    // Status badge - show "Completed" if at least one evaluation is complete
+    const statusText = hasAnyCompleted ? 'Completed' : 'In Progress';
     set(".status-badge", statusText);
+
+    // Update status badge style
+    const statusBadge = card.querySelector('.status-badge');
+    if (statusBadge) {
+        statusBadge.className = 'status-badge text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider border';
+        if (hasAnyCompleted) {
+            statusBadge.classList.add('bg-emerald-500/10', 'text-[var(--color-status-completed)]', 'border-emerald-500/20');
+        } else {
+            statusBadge.classList.add('bg-amber-500/10', 'text-[var(--color-status-inprogress)]', 'border-amber-500/20');
+        }
+    }
+
     set(".project-name", project.name);
     set(".project-desc", project.description || "");
     set(".project-date", formatDate(project.updatedAt));
@@ -83,30 +116,32 @@ export const populateCard = (
         });
     }
 
-    const rankingResult = getRanking(score);
-    // Visualization Updates (Score/Colors)
-    if (isCompleted) {
-        const scoreBadge = card.querySelector(
-            ".score-badge-completed",
-        ) as HTMLElement;
-        if (scoreBadge) {
-            scoreBadge.textContent = score.toString();
-            const color = rankingResult.color;
-            scoreBadge.style.borderColor = color;
-            scoreBadge.style.color = color;
-        }
+    // Score badges - show all completed evaluations
+    const scorePending = card.querySelector('.score-pending') as HTMLElement;
 
-        const ecoLabel = card.querySelector(".eco-label");
-        if (ecoLabel) {
-            ecoLabel.textContent = rankingResult.text;
-            // Preserve base classes, add dynamic one
-            ecoLabel.className = `eco-label text-xs font-semibold mt-1 ${rankingResult.ecoLabelClass}`;
-        }
+    if (hasAnyCompleted) {
+        // Hide pending badge
+        if (scorePending) scorePending.classList.add('hidden');
 
-        const leafHighlight = card.querySelector(`.leaf.leaf-${rankingResult.text}`);
-        if (leafHighlight) {
-            leafHighlight.classList.add("highlighted");
-        }
+        // Show score for each completed evaluation
+        allEvaluations.forEach(evalSummary => {
+            if (evalSummary.isCompleted && evalSummary.score !== null) {
+                const scoreItem = card.querySelector(`.score-item[data-eval-type="${evalSummary.type}"]`) as HTMLElement;
+                if (scoreItem) {
+                    scoreItem.classList.remove('hidden');
+                    const scoreBadge = scoreItem.querySelector('.score-badge') as HTMLElement;
+                    if (scoreBadge) {
+                        scoreBadge.textContent = evalSummary.score.toString();
+                        const color = getScoreColor(evalSummary.score, evalSummary.type);
+                        scoreBadge.style.borderColor = color;
+                        scoreBadge.style.color = color;
+                    }
+                }
+            }
+        });
+    } else {
+        // Show pending badge
+        if (scorePending) scorePending.classList.remove('hidden');
     }
 };
 
@@ -161,14 +196,9 @@ export const loadProjects = (evalType: EvaluationType | null, onDelete?: OnDelet
 
     // Render Grid - Projects with the selected evaluation type (or all if null)
     const grid = document.getElementById("projectsGrid");
-    const tplCompleted = document.getElementById(
-        "card-template-completed",
-    ) as HTMLTemplateElement;
-    const tplPending = document.getElementById(
-        "card-template-pending",
-    ) as HTMLTemplateElement;
+    const template = document.getElementById("card-template") as HTMLTemplateElement;
 
-    if (!grid || !tplCompleted || !tplPending) return;
+    if (!grid || !template) return;
 
     grid.innerHTML = "";
 
@@ -186,11 +216,7 @@ export const loadProjects = (evalType: EvaluationType | null, onDelete?: OnDelet
     }
 
     projectsWithEval.forEach((data) => {
-        const template = data.isCompleted ? tplCompleted : tplPending;
-
-        const clone = template.content.cloneNode(
-            true,
-        ) as DocumentFragment;
+        const clone = template.content.cloneNode(true) as DocumentFragment;
         const card = clone.querySelector("a");
 
         if (card) {
