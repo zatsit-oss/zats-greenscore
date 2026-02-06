@@ -23,9 +23,8 @@ if (isCompleted) {
 const linkHref = "#";
 ---
 
-<a
-    href={linkHref}
-    class="project-card flex flex-col h-full p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:border-[var(--color-primary)] no-underline"
+<div
+    class="project-card relative flex flex-col h-full p-6 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:border-[var(--color-primary)]"
     data-project-id=""
 >
     <div class="flex justify-between items-start mb-4">
@@ -41,26 +40,28 @@ const linkHref = "#";
             <div class="score-item score-apigreenscore hidden flex flex-col items-center" data-eval-type="apigreenscore">
                 <div
                     class="score-badge w-10 h-10 rounded-full bg-white/5 border-2 flex items-center justify-center text-sm font-bold"
+                    aria-label="API Green Score"
                 >
                     --
                 </div>
-                <span class="score-label text-[10px] text-[var(--color-text-muted)] mt-1 font-medium">GS</span>
+                <span class="score-label text-[10px] text-[var(--color-text-muted)] mt-1 font-medium" aria-hidden="true">GS</span>
             </div>
             <!-- EROOM badge (hidden by default, shown via JS) -->
             <div class="score-item score-eroom hidden flex flex-col items-center" data-eval-type="eroom">
                 <div
                     class="score-badge w-10 h-10 rounded-full bg-white/5 border-2 flex items-center justify-center text-sm font-bold"
+                    aria-label="EROOM Score"
                 >
                     --
                 </div>
-                <span class="score-label text-[10px] text-[var(--color-text-muted)] mt-1 font-medium">EROOM</span>
+                <span class="score-label text-[10px] text-[var(--color-text-muted)] mt-1 font-medium" aria-hidden="true">EROOM</span>
             </div>
             <!-- Pending badge (shown when no completed evaluation) -->
             <div class="score-pending flex flex-col items-center">
-                <div class="w-10 h-10 rounded-full bg-white/5 border-2 border-dashed border-slate-400 flex items-center justify-center text-slate-400 text-sm font-bold">
+                <div class="w-10 h-10 rounded-full bg-white/5 border-2 border-dashed border-slate-400 flex items-center justify-center text-slate-400 text-sm font-bold" aria-label="No score yet">
                     --
                 </div>
-                <span class="text-[10px] text-[var(--color-text-muted)] mt-1">Score</span>
+                <span class="text-[10px] text-[var(--color-text-muted)] mt-1" aria-hidden="true">Score</span>
             </div>
         </div>
     </div>
@@ -82,7 +83,7 @@ const linkHref = "#";
         </span>
         <div class="flex items-center gap-3">
             <button
-                class="delete-project-btn p-1.5 rounded text-[var(--color-text-muted)] hover:text-red-500 hover:bg-red-500/10 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
+                class="delete-project-btn relative z-10 p-1.5 rounded text-[var(--color-text-muted)] hover:text-red-500 hover:bg-red-500/10 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
                 aria-label="Delete this project"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -97,4 +98,12 @@ const linkHref = "#";
             </span>
         </div>
     </div>
-</a>
+    <!-- Stretched link covering the entire card -->
+    <a
+        href={linkHref}
+        class="project-card-link absolute inset-0 z-0"
+        aria-label="View project"
+    >
+        <span class="sr-only">{isCompleted ? "View Details" : "View Project"}</span>
+    </a>
+</div>

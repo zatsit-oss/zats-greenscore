@@ -24,7 +24,7 @@ const isQuickDiagnosis = category.id === '0' && !category.includeInScore
 >
   <!-- Section Header -->
   <div class="flex items-start gap-4 mb-6 pb-4 border-b border-[var(--color-border)]">
-    <span class="text-3xl">{category.icon}</span>
+    <span class="text-3xl" aria-hidden="true">{category.icon}</span>
     <div class="flex-1">
       <div class="flex items-center gap-3 flex-wrap">
         <h2 class="text-2xl font-bold text-[var(--color-primary)]">
@@ -46,7 +46,7 @@ const isQuickDiagnosis = category.id === '0' && !category.includeInScore
   {isQuickDiagnosis && (
     <div class="mb-6 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20">
       <div class="flex items-start gap-3">
-        <span class="text-xl">&#9432;</span>
+        <span class="text-xl" aria-hidden="true">&#9432;</span>
         <div>
           <p class="text-sm font-medium text-amber-400 mb-1">
             Quick Diagnosis

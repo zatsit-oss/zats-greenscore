@@ -85,6 +85,15 @@
 		return "light";
 	};
 
+	const updateAriaLabel = (theme: string) => {
+		if (themeToggle) {
+			themeToggle.setAttribute(
+				"aria-label",
+				theme === "dark" ? "Switch to light mode" : "Switch to dark mode",
+			);
+		}
+	};
+
 	const setTheme = (theme: string) => {
 		if (theme === "light") {
 			document.documentElement.setAttribute("data-theme", "light");
@@ -93,7 +102,11 @@
 			document.documentElement.setAttribute("data-theme", "dark");
 			localStorage.setItem("theme", "dark");
 		}
+		updateAriaLabel(theme);
 	};
+
+	// Set initial aria-label
+	updateAriaLabel(getTheme() || "light");
 
 	themeToggle?.addEventListener("click", () => {
 		const currentTheme = getTheme();

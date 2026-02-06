@@ -130,7 +130,9 @@ const { id = 'barChart', title = 'Score Comparison', maxValue = 100 } = Astro.pr
   }
 
   .bar-item a:focus {
-    outline: none;
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 
 </style>

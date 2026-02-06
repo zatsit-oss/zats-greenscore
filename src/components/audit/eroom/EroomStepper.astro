@@ -6,18 +6,24 @@ interface Props {
 }
 
 const { categories } = Astro.props
+const totalCategories = categories.length
 ---
 
-<div class="mb-8">
+<nav class="mb-8" aria-label="EROOM audit progress">
   <!-- Desktop: Full stepper -->
   <div class="hidden md:flex justify-between relative">
     <div
       class="absolute top-5 left-0 right-0 h-0.5 bg-[var(--color-border)] z-0"
+      aria-hidden="true"
     ></div>
     {categories.map((category, index) => (
       <div
-        class="step-item relative z-10 flex flex-col items-center gap-1 bg-[var(--color-bg)] px-1"
+        class="step-item relative z-10 flex flex-col items-center gap-1 bg-[var(--color-bg)] px-1 cursor-pointer"
         data-step={index}
+        role="button"
+        tabindex="0"
+        aria-label={`Go to ${category.name}`}
+        aria-current={index === 0 ? "step" : undefined}
       >
         <div
           class:list={[
@@ -27,7 +33,7 @@ const { categories } = Astro.props
               : 'bg-amber-500/10 border-amber-500/30'
           ]}
         >
-          {category.icon}
+          <span aria-hidden="true">{category.icon}</span>
         </div>
         <span
           class="step-progress-count text-[10px] font-medium text-[var(--color-text-muted)] tabular-nums"
@@ -47,39 +53,44 @@ const { categories } = Astro.props
   <div class="md:hidden">
     <div class="flex items-center justify-between mb-2">
       <span class="step-current-label text-sm font-medium text-[var(--color-primary)]">
-        {categories[0]?.icon} {categories[0]?.name}
+        <span aria-hidden="true">{categories[0]?.icon}</span> {categories[0]?.name}
       </span>
-      <span class="step-progress text-sm text-[var(--color-text-muted)]">
-        1 / {categories.length}
+      <span class="step-progress text-sm text-[var(--color-text-muted)]" aria-live="polite">
+        <span class="sr-only">Step</span> 1 / {totalCategories}
       </span>
     </div>
-    <div class="h-2 bg-[var(--color-surface)] rounded-full overflow-hidden">
+    <div
+      class="h-2 bg-[var(--color-surface)] rounded-full overflow-hidden"
+      role="progressbar"
+      aria-valuenow={1}
+      aria-valuemin={1}
+      aria-valuemax={totalCategories}
+      aria-label="EROOM audit progress"
+    >
       <div
         class="step-progress-bar h-full bg-[var(--color-primary)] transition-all duration-300"
-        style={`width: ${(1 / categories.length) * 100}%`}
+        style={`width: ${(1 / totalCategories) * 100}%`}
       ></div>
     </div>
   </div>
-</div>
+</nav>
 
 <style>
   /* Active State */
   .step-item.active .step-circle {
-    border-color: var(--color-primary);
-    background-color: var(--color-primary);
-    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
     transform: scale(1.15);
   }
 
   .step-item.active .step-label {
-    color: var(--color-primary);
+    color: #3b82f6;
     font-weight: 700;
   }
 
   /* Completed State */
   .step-item.completed .step-circle {
-    background-color: var(--color-primary);
-    border-color: var(--color-primary);
+    border-color: #f59e0b;
   }
 
   .step-item.completed .step-label {
