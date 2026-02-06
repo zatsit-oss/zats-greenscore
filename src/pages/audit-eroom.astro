@@ -204,6 +204,18 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
       const answered = category.questions.filter(q => isAnswered(answers[q.id])).length;
       el.textContent = `${answered}/${category.questions.length}`;
     });
+
+    // Per-question status icons
+    document.querySelectorAll('.question-status').forEach((statusEl) => {
+      const qId = statusEl.getAttribute('data-question-id');
+      if (!qId) return;
+      const answered = isAnswered(answers[qId]);
+      const iconPending = statusEl.querySelector('.icon-pending');
+      const iconAnswered = statusEl.querySelector('.icon-answered');
+      if (iconPending) iconPending.classList.toggle('hidden', answered);
+      if (iconAnswered) iconAnswered.classList.toggle('hidden', !answered);
+      statusEl.setAttribute('aria-label', answered ? 'Answered' : 'Not answered');
+    });
   };
 
   /**
