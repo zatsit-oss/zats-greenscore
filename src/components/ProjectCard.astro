@@ -29,8 +29,11 @@ const linkHref = "#";
     data-project-id=""
 >
     <div class="flex justify-between items-start mb-4">
-        <div class={statusClasses}>
-            {isCompleted ? "Completed" : "In Progress"}
+        <div class="flex items-center gap-2">
+            <div class={statusClasses}>
+                {isCompleted ? "Completed" : "In Progress"}
+            </div>
+            <span class="progress-counter hidden text-sm text-[var(--color-text-muted)] font-medium tabular-nums"></span>
         </div>
         <!-- Scores container - shows all completed evaluations -->
         <div class="scores-container flex gap-2">

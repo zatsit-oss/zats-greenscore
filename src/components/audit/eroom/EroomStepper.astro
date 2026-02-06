@@ -29,6 +29,13 @@ const { categories } = Astro.props
         >
           {category.icon}
         </div>
+        <span
+          class="step-progress-count text-[10px] font-medium text-[var(--color-text-muted)] tabular-nums"
+          data-category-id={category.id}
+          data-total={category.questions.length}
+        >
+          0/{category.questions.length}
+        </span>
         <span class="step-label text-xs font-medium text-[var(--color-text-muted)] text-center max-w-[80px] leading-tight transition-colors duration-300">
           {category.name}
         </span>

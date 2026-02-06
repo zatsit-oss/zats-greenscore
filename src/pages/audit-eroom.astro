@@ -25,12 +25,17 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
       >
         &larr; Back to Dashboard
       </a>
-      <div class="flex items-center gap-3 mb-2">
-        <h1 class="text-3xl font-bold text-[var(--color-text)]">
-          Audit
-        </h1>
-        <span class="px-3 py-1 text-sm rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium">
-          {evaluationInfo.name}
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-3">
+          <h1 class="text-3xl font-bold text-[var(--color-text)]">
+            Audit
+          </h1>
+          <span class="px-3 py-1 text-sm rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium">
+            {evaluationInfo.name}
+          </span>
+        </div>
+        <span id="progressCounter" class="text-base font-medium text-[var(--color-text-muted)] tabular-nums">
+          Answers: 0/0
         </span>
       </div>
       <p class="text-muted">
@@ -63,6 +68,7 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
   import { showToast } from "../utils/toast";
 
   const categories = eroomData.categories as EroomCategory[];
+  const progressCounter = document.getElementById("progressCounter");
 
   let currentStep = 0;
   const steps = document.querySelectorAll(".step-content");
@@ -167,7 +173,41 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
   };
 
   /**
-   * Auto-save answers
+   * Check if a single answer counts as "answered"
+   */
+  const isAnswered = (answer: EroomAnswerValue): boolean => {
+    return (
+      answer !== null &&
+      answer !== undefined &&
+      answer !== 'to_evaluate' &&
+      answer !== 'evaluation_in_progress'
+    );
+  };
+
+  // Only scored categories count toward the global progress
+  const scoredCategories = categories.filter(c => c.includeInScore);
+
+  /**
+   * Update the progress counter display (global + per category)
+   */
+  const updateProgress = (answers: Record<string, EroomAnswerValue>) => {
+    // Global counter: only scored categories
+    const scoredValidation = validateEroomCompletion(answers, scoredCategories);
+    if (progressCounter) {
+      progressCounter.textContent = `Answers: ${scoredValidation.answeredQuestions}/${scoredValidation.totalQuestions}`;
+    }
+
+    // Per-category counters in stepper (all categories including Quick Diagnosis)
+    categories.forEach((category) => {
+      const el = document.querySelector(`.step-progress-count[data-category-id="${category.id}"]`);
+      if (!el) return;
+      const answered = category.questions.filter(q => isAnswered(answers[q.id])).length;
+      el.textContent = `${answered}/${category.questions.length}`;
+    });
+  };
+
+  /**
+   * Auto-save answers with progressive score calculation
    */
   const saveAnswers = () => {
     if (!projectId) return;
@@ -178,9 +218,24 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
     const evaluation = project.evaluations[evaluationType];
     if (!evaluation) return;
 
-    evaluation.answers = collectAnswers();
+    const answers = collectAnswers();
+    evaluation.answers = answers;
+
+    // Progressive score calculation
+    const { globalScore } = calculateEroomGlobalScore(answers, categories);
+    evaluation.score = globalScore;
+    evaluation.ranking = getEroomRanking(globalScore);
+
+    // Track progress (only scored categories)
+    const scoredValidation = validateEroomCompletion(answers, scoredCategories);
+    evaluation.answeredQuestions = scoredValidation.answeredQuestions;
+    evaluation.totalQuestions = scoredValidation.totalQuestions;
+
     project.updatedAt = new Date().toISOString();
     saveProject(project);
+
+    // Update counter display
+    updateProgress(answers);
   };
 
   /**
@@ -213,6 +268,9 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
   // Load answers on init
   loadAnswers();
 
+  // Initialize progress counter
+  updateProgress(collectAnswers());
+
   // Form submission
   auditForm?.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -237,8 +295,8 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
     // Collect Answers
     const answers = collectAnswers();
 
-    // Validate completion - all questions must be answered
-    const validation = validateEroomCompletion(answers, categories);
+    // Validate completion - only scored categories count
+    const validation = validateEroomCompletion(answers, scoredCategories);
 
     // Calculate Score using EROOM scoring
     const { globalScore, categoryScores } = calculateEroomGlobalScore(answers, categories);
@@ -248,8 +306,10 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
     evaluation.answers = answers;
     evaluation.score = globalScore;
     evaluation.ranking = ranking;
+    evaluation.answeredQuestions = validation.answeredQuestions;
+    evaluation.totalQuestions = validation.totalQuestions;
 
-    // Only mark as COMPLETED if all questions are answered
+    // Only mark as COMPLETED if all scored questions are answered
     if (validation.isComplete) {
       evaluation.status = EvaluationStatus.COMPLETED;
       evaluation.completedAt = new Date().toISOString();

@@ -74,6 +74,8 @@ export interface Evaluation {
   ranking: ProjectRanking | null;
   startedAt: string;
   completedAt?: string;
+  answeredQuestions?: number;
+  totalQuestions?: number;
 }
 
 // ============================================================================
