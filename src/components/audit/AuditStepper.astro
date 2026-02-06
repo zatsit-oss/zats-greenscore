@@ -74,13 +74,13 @@ const totalSections = sectionNames.length;
 <style>
     /* Active State */
     .step-item.active .step-circle {
-        border-color: #2563eb;
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 15%, transparent);
         transform: scale(1.1);
     }
 
     .step-item.active .step-label {
-        color: #2563eb;
+        color: var(--color-primary);
         font-weight: 700;
     }
 
