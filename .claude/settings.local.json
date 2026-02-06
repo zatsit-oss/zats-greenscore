@@ -12,7 +12,8 @@
       "Bash(npx tsc:*)",
       "mcp__ide__getDiagnostics",
       "WebFetch(domain:docs.astro.build)",
-      "Bash(LC_ALL=C grep:*)"
+      "Bash(LC_ALL=C grep:*)",
+      "Bash(npx astro check:*)"
     ]
   }
 }

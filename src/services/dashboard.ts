@@ -33,6 +33,8 @@ export interface EvaluationSummary {
   type: EvaluationType;
   score: number | null;
   isCompleted: boolean;
+  answeredQuestions?: number;
+  totalQuestions?: number;
 }
 
 export interface ProjectWithEvaluation {
@@ -102,7 +104,9 @@ function buildEvaluationsSummary(project: Project): EvaluationSummary[] {
     .map(([type, evaluation]) => ({
       type,
       score: evaluation.score,
-      isCompleted: evaluation.status === EvaluationStatus.COMPLETED
+      isCompleted: evaluation.status === EvaluationStatus.COMPLETED,
+      answeredQuestions: evaluation.answeredQuestions,
+      totalQuestions: evaluation.totalQuestions
     }));
 }
 

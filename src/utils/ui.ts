@@ -102,6 +102,19 @@ export const populateCard = (
         }
     }
 
+    // Progress counter - show for evaluations with progress tracking
+    const progressEl = card.querySelector('.progress-counter') as HTMLElement;
+    if (progressEl) {
+        // Find an in-progress evaluation with progress data
+        const evalWithProgress = allEvaluations.find(
+            e => !e.isCompleted && e.answeredQuestions !== undefined && e.totalQuestions !== undefined
+        );
+        if (evalWithProgress) {
+            progressEl.textContent = `Answers: ${evalWithProgress.answeredQuestions}/${evalWithProgress.totalQuestions}`;
+            progressEl.classList.remove('hidden');
+        }
+    }
+
     set(".project-name", project.name);
     set(".project-desc", project.description || "");
     set(".project-date", formatDate(project.updatedAt));

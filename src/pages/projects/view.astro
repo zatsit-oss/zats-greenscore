@@ -33,6 +33,7 @@ const evaluationTypes = getAvailableEvaluationTypes()
         </div>
         <div class="flex gap-4 items-center">
           <span class="status-badge" id="projectStatus">Status</span>
+          <span id="progressCounter" class="hidden text-base text-[var(--color-text-muted)] font-medium tabular-nums"></span>
           <button class="btn btn-secondary hidden" id="editBtn">Edit Evaluation</button>
           <button class="btn btn-danger hidden" id="deleteBtn" title="Delete Project">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -144,6 +145,7 @@ const evaluationTypes = getAvailableEvaluationTypes()
   // DOM Elements
   const evalTypeSelect = document.getElementById('evaluationTypeSelect') as HTMLSelectElement
   const statusEl = document.getElementById('projectStatus')
+  const progressCounterEl = document.getElementById('progressCounter')
   const scoreTitleEl = document.getElementById('scoreTitle')
   const scoreEl = document.getElementById('projectScore')
   const scoreLabelEl = document.getElementById('scoreLabel')
@@ -220,6 +222,17 @@ const evaluationTypes = getAvailableEvaluationTypes()
       } else {
         statusEl.textContent = 'Not Started'
         statusEl.className = 'text-sm px-3 py-1 rounded-full font-semibold uppercase tracking-wider border bg-slate-500/10 text-[var(--color-text-muted)] border-slate-500/20'
+      }
+    }
+
+    // Progress counter
+    if (progressCounterEl) {
+      if (evaluation && evaluation.answeredQuestions !== undefined && evaluation.totalQuestions !== undefined
+          && evaluation.status !== EvaluationStatus.COMPLETED) {
+        progressCounterEl.textContent = `Answers: ${evaluation.answeredQuestions}/${evaluation.totalQuestions}`;
+        progressCounterEl.classList.remove('hidden');
+      } else {
+        progressCounterEl.classList.add('hidden');
       }
     }
 
