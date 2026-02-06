@@ -5,12 +5,12 @@ import docContent from '../data/doc-content.json';
 const { title, subtitle, tableOfContents, sections } = docContent;
 
 // Color mapping for Tailwind classes
-const colorClasses: Record<string, { bg: string; text: string }> = {
-  emerald: { bg: 'bg-emerald-500/20', text: 'text-emerald-400' },
-  lime: { bg: 'bg-lime-500/20', text: 'text-lime-400' },
-  amber: { bg: 'bg-amber-500/20', text: 'text-amber-400' },
-  orange: { bg: 'bg-orange-500/20', text: 'text-orange-400' },
-  red: { bg: 'bg-red-500/20', text: 'text-red-400' }
+const colorClasses: Record<string, { bg: string; lightColor: string; darkColor: string }> = {
+  emerald: { bg: 'bg-emerald-500/20', lightColor: '#065f46', darkColor: '#6ee7b7' },
+  lime: { bg: 'bg-lime-500/20', lightColor: '#3f6212', darkColor: '#bef264' },
+  amber: { bg: 'bg-amber-500/20', lightColor: '#92400e', darkColor: '#fcd34d' },
+  orange: { bg: 'bg-orange-500/20', lightColor: '#9a3412', darkColor: '#fdba74' },
+  red: { bg: 'bg-red-500/20', lightColor: '#991b1b', darkColor: '#fca5a5' }
 };
 
 const getBorderClass = (color: string) => {
@@ -103,7 +103,8 @@ const getBorderClass = (color: string) => {
           <div class="grid grid-cols-5 gap-2 text-center text-sm" role="list" aria-label="Score rankings from A to E">
             {sections.understandingScores.apiGreenScore.rankings.map((ranking: { grade: string; range: string; color: string }) => (
               <div
-                class={`p-2 rounded ${colorClasses[ranking.color].bg} ${colorClasses[ranking.color].text}`}
+                class={`p-2 rounded ${colorClasses[ranking.color].bg} grade-text`}
+                style={`--grade-light: ${colorClasses[ranking.color].lightColor}; --grade-dark: ${colorClasses[ranking.color].darkColor};`}
                 role="listitem"
                 aria-label={`Grade ${ranking.grade}: ${ranking.range} points`}
               >
@@ -119,7 +120,10 @@ const getBorderClass = (color: string) => {
           <div class="space-y-2 text-sm">
             {sections.understandingScores.eroom.ranges.map((range: { range: string; color: string; description: string }) => (
               <div class="flex items-center gap-3">
-                <span class={`w-20 ${colorClasses[range.color].text} font-medium`}>{range.range}</span>
+                <span
+                  class="w-20 font-medium grade-text"
+                  style={`--grade-light: ${colorClasses[range.color].lightColor}; --grade-dark: ${colorClasses[range.color].darkColor};`}
+                >{range.range}</span>
                 <span class="text-muted">{range.description}</span>
               </div>
             ))}
@@ -145,3 +149,14 @@ const getBorderClass = (color: string) => {
     </section>
   </div>
 </Layout>
+
+<style>
+  /* Theme-adaptive grade colors using per-element CSS variables */
+  .grade-text { color: var(--grade-light); }
+
+  :global([data-theme="dark"]) .grade-text { color: var(--grade-dark); }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme="light"])) .grade-text { color: var(--grade-dark); }
+  }
+</style>
