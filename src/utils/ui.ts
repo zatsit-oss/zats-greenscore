@@ -68,14 +68,17 @@ export type OnDeleteCallback = (projectId: string, projectName: string) => void;
  * Helper to populate a card element with project data.
  */
 export const populateCard = (
-    card: HTMLAnchorElement,
+    card: HTMLElement,
     data: ProjectWithEvaluation,
     onDelete?: OnDeleteCallback,
 ) => {
     const { project, evaluationType, allEvaluations } = data;
 
-    // Always link to project view page (allows switching evaluation types)
-    card.href = `/projects/view?id=${project.id}&evaluationType=${evaluationType}`;
+    // Set the link href on the stretched link inside the card
+    const cardLink = card.querySelector('.project-card-link') as HTMLAnchorElement | null;
+    if (cardLink) {
+        cardLink.href = `/projects/view?id=${project.id}&evaluationType=${evaluationType}`;
+    }
 
     // Text Content Updates
     const set = (selector: string, value: string) => {
@@ -230,10 +233,10 @@ export const loadProjects = (evalType: EvaluationType | null, onDelete?: OnDelet
 
     projectsWithEval.forEach((data) => {
         const clone = template.content.cloneNode(true) as DocumentFragment;
-        const card = clone.querySelector("a");
+        const card = clone.querySelector(".project-card");
 
         if (card) {
-            populateCard(card, data, onDelete);
+            populateCard(card as HTMLElement, data, onDelete);
             grid.appendChild(clone);
         }
     });

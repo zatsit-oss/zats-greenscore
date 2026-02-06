@@ -96,7 +96,8 @@ const isQuickDiagnosis = scaleType === 'quickDiagnosis'
   )}
 
   <!-- Answer Input -->
-  <div class="mt-4">
+  <fieldset class="mt-4 border-none p-0 m-0">
+    <legend class="sr-only">{q.criteria}</legend>
     {isQuickDiagnosis ? (
       <!-- Quick Diagnosis: Numeric scale 1-5 as radio list -->
       <div class="flex flex-col gap-2">
@@ -109,7 +110,7 @@ const isQuickDiagnosis = scaleType === 'quickDiagnosis'
               class="mt-1 w-4 h-4 accent-[var(--color-primary)]"
             />
             <div class="flex items-center gap-2">
-              <span class="w-6 h-6 rounded-full bg-slate-600/30 flex items-center justify-center text-sm font-bold text-[var(--color-text)] flex-shrink-0">
+              <span class="w-6 h-6 rounded-full bg-slate-600/30 flex items-center justify-center text-sm font-bold text-[var(--color-text)] flex-shrink-0" aria-hidden="true">
                 {option.value}
               </span>
               <span class="text-sm text-[var(--color-text-muted)] group-hover:text-[var(--color-text)]">
@@ -130,13 +131,13 @@ const isQuickDiagnosis = scaleType === 'quickDiagnosis'
               value={option.id}
               class="w-4 h-4 accent-[var(--color-primary)]"
             />
-            <span class="text-base">{option.emoji}</span>
+            <span class="text-base" aria-hidden="true">{option.emoji}</span>
             <span class="text-sm text-[var(--color-text-muted)] group-hover:text-[var(--color-text)]">{option.label}</span>
           </label>
         ))}
       </div>
     )}
-  </div>
+  </fieldset>
 </div>
 
 <style>

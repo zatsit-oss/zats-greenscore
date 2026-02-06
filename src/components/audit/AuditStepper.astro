@@ -19,15 +19,25 @@ const totalSections = sectionNames.length;
         {
             sectionNames.map((sectionName, index) => (
                 <div
-                    class="step-item relative z-10 flex flex-col items-center gap-2 bg-[var(--color-bg)] px-2"
+                    class="step-item relative z-10 flex flex-col items-center gap-2 bg-[var(--color-bg)] px-2 cursor-pointer"
                     data-step={index}
-                    role="listitem"
+                    data-section-name={sectionName}
+                    role="button"
+                    tabindex="0"
+                    aria-label={`Go to ${sectionName}`}
                     aria-current={index === 0 ? "step" : undefined}
                 >
                     <div class="step-circle w-12 h-12 rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex items-center justify-center font-bold text-[var(--color-text-muted)] transition-all duration-300">
                         {index + 1}
                     </div>
-                    <span class="step-label text-sm font-medium text-[var(--color-text-muted)] mt-2 transition-colors duration-300">
+                    <span
+                        class="step-progress-count text-[10px] font-medium text-[var(--color-text-muted)] tabular-nums"
+                        data-section-name={sectionName}
+                        data-total={sections[sectionName].length}
+                    >
+                        0/{sections[sectionName].length}
+                    </span>
+                    <span class="step-label text-sm font-medium text-[var(--color-text-muted)] transition-colors duration-300">
                         {sectionName}
                     </span>
                 </div>
@@ -64,23 +74,19 @@ const totalSections = sectionNames.length;
 <style>
     /* Active State */
     .step-item.active .step-circle {
-        border-color: var(--color-primary);
-        background-color: var(--color-primary);
-        color: #ffffff;
-        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
         transform: scale(1.1);
     }
 
     .step-item.active .step-label {
-        color: var(--color-primary);
+        color: #3b82f6;
         font-weight: 700;
     }
 
     /* Completed State */
     .step-item.completed .step-circle {
-        background-color: var(--color-primary);
-        border-color: var(--color-primary);
-        color: #ffffff;
+        border-color: #f59e0b;
     }
 
     .step-item.completed .step-label {

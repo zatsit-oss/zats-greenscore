@@ -31,7 +31,7 @@ const { title, subtitle, sections } = aboutContent;
             <p class="text-muted leading-relaxed">
               <Fragment set:html={type.description.replace(
                 type.link.text,
-                `<a href="${type.link.url}" target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary)] hover:underline">${type.link.text}</a>`
+                `<a href="${type.link.url}" target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary)] hover:underline">${type.link.text}<span class="sr-only"> (opens in new tab)</span></a>`
               )} />
             </p>
           </div>
@@ -66,7 +66,7 @@ const { title, subtitle, sections } = aboutContent;
               rel="noopener noreferrer"
               class="text-[var(--color-primary)] hover:underline"
             >
-              {item.linkText}
+              {item.linkText}<span class="sr-only"> (opens in new tab)</span>
             </a>
           </li>
         ))}

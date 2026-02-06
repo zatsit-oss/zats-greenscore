@@ -92,8 +92,10 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
     // Update Stepper (desktop)
     stepItems.forEach((item, index) => {
       item.classList.remove("active", "completed");
+      item.removeAttribute("aria-current");
       if (index === currentStep) {
         item.classList.add("active");
+        item.setAttribute("aria-current", "step");
       } else if (index < currentStep) {
         item.classList.add("completed");
       }
@@ -101,13 +103,17 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
 
     // Update mobile progress
     if (stepCurrentLabel && categories[currentStep]) {
-      stepCurrentLabel.textContent = `${categories[currentStep].icon} ${categories[currentStep].name}`;
+      stepCurrentLabel.innerHTML = `<span aria-hidden="true">${categories[currentStep].icon}</span> ${categories[currentStep].name}`;
     }
     if (stepProgress) {
-      stepProgress.textContent = `${currentStep + 1} / ${totalSteps}`;
+      stepProgress.innerHTML = `<span class="sr-only">Step</span> ${currentStep + 1} / ${totalSteps}`;
     }
     if (stepProgressBar) {
       stepProgressBar.style.width = `${((currentStep + 1) / totalSteps) * 100}%`;
+    }
+    const progressBarContainer = stepProgressBar?.parentElement;
+    if (progressBarContainer) {
+      progressBarContainer.setAttribute("aria-valuenow", String(currentStep + 1));
     }
 
     // Update Buttons
@@ -137,6 +143,22 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
       currentStep--;
       updateUI();
     }
+  });
+
+  // Clickable stepper steps
+  stepItems.forEach((item) => {
+    const goToStep = () => {
+      const step = parseInt(item.getAttribute("data-step") || "0", 10);
+      currentStep = step;
+      updateUI();
+    };
+    item.addEventListener("click", goToStep);
+    item.addEventListener("keydown", (e) => {
+      if ((e as KeyboardEvent).key === "Enter" || (e as KeyboardEvent).key === " ") {
+        e.preventDefault();
+        goToStep();
+      }
+    });
   });
 
   // Initialize
