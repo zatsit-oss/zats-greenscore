@@ -111,7 +111,7 @@ Ajout d'un second type d'évaluation (EROOM / EOF v1.1 de Boavizta) en plus de l
 La page `src/pages/projects/view.astro` doit :
 - [x] Permettre de switcher entre types d'évaluation (déjà fait)
 - [x] Afficher le radar chart adapté à EROOM (6 axes au lieu de 4)
-- [ ] Adapter l'interprétation du score (EROOM = score élevé = potentiel d'amélioration)
+- [x] Adapter l'interprétation du score (EROOM = score élevé = potentiel d'amélioration)
 
 ### 6. Radar Chart adapté
 
@@ -302,3 +302,46 @@ Le radar chart EROOM utilise 6 axes :
 
 **Points restants (non bloquants)** :
 - Navigation mobile : liens dans footer OK, menu hamburger serait mieux
+
+---
+
+## Session 7 - Audit A11y complet (Axe DevTools)
+
+### Audit A11y global - 23 problèmes sur 12 fichiers ✅
+**Objectif** : Corriger tous les problèmes d'accessibilité identifiés pour respecter WCAG AA.
+
+**Corrections critiques** :
+- `src/layouts/Layout.astro` - Skip link "Skip to main content", `aria-label="Main navigation"` sur `<nav>`, `aria-label="New Project"` sur le bouton "+" mobile, sr-only "(opens in new tab)" sur le lien API GreenScore
+- `src/components/BarChart.astro` - Remplacement de `outline: none` par un focus visible (`outline: 2px solid`)
+- `src/components/ProjectCard.astro` - Restructuration HTML : bouton delete sorti du `<a>` via stretched link pattern, `aria-label` sur badges de score
+- `src/utils/ui.ts` - Adaptation de `populateCard()` pour le nouveau HTML (query `.project-card` au lieu de `a`, href sur `.project-card-link`)
+- `src/pages/projects/view.astro` - `role="dialog"` + `aria-modal` + `aria-labelledby` sur le modal de suppression, focus trap (Tab), Escape, restauration du focus, `aria-label` sur bouton delete, `aria-live="polite"` sur contenu dynamique
+
+**Corrections majeures** :
+- `src/components/audit/eroom/EroomStepper.astro` - Wrapper `<nav aria-label>`, `aria-current="step"`, `aria-hidden` sur ligne décorative, `role="progressbar"` avec attributs ARIA, `aria-live="polite"` sur progression mobile
+- `src/pages/audit-eroom.astro` - Gestion `aria-current="step"` et `aria-valuenow` dans `updateUI()` (parité avec audit.astro)
+- `src/components/audit/AuditQuestion.astro` - Focus trap dans le tooltip modal, restauration du focus, `aria-label` spécifique par question
+- `src/components/audit/eroom/EroomQuestion.astro` - `<fieldset>`/`<legend>` autour des radio buttons, `aria-hidden` sur emojis
+
+**Corrections mineures** :
+- `src/components/audit/eroom/EroomSection.astro` - `aria-hidden` sur icône catégorie et icône info
+- `src/components/audit/eroom/EroomImpactBadge.astro` - `aria-hidden` sur point coloré décoratif
+- `src/components/ThemeToggle.astro` - `aria-label` dynamique ("Switch to dark/light mode")
+- `src/pages/about.astro` - sr-only "(opens in new tab)" sur liens credits, `underline` permanent sur liens (distinction par plus que la couleur)
+
+### Corrections Axe DevTools - Contraste ✅
+**Problèmes trouvés par Axe DevTools après audit initial** :
+
+1. **Stepper labels actifs** : `#3b82f6` (blue-500) insuffisant en dark mode (3.32:1)
+   - Fix : Utilisation de `var(--color-primary)` qui s'adapte au thème (bleu foncé en light, doré en dark)
+
+2. **Stepper labels inactifs** : `--color-text-muted` insuffisant pour du texte `text-xs`
+   - Fix : Passage à `--color-text` pour les step-labels
+
+3. **`role="img"` manquant** : `aria-label` interdit sur `<span>` (rôle "generic")
+   - Fix : Ajout de `role="img"` sur les `<span class="question-status">` dans AuditQuestion et EroomQuestion
+
+4. **Grades de score dans doc.astro** : Couleurs `-400` insuffisantes en dark mode, `-300` insuffisantes en light mode
+   - Fix : Couleurs adaptatives par thème via CSS custom properties (`--grade-light`/`--grade-dark`) et classe `.grade-text`
+   - Light mode : variantes `-800` (emerald `#065f46`, lime `#3f6212`, amber `#92400e`, orange `#9a3412`, red `#991b1b`)
+   - Dark mode : variantes `-300` (emerald `#6ee7b7`, lime `#bef264`, amber `#fcd34d`, orange `#fdba74`, red `#fca5a5`)
