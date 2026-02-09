@@ -86,6 +86,7 @@ const evaluationTypes = getAvailableEvaluationTypes()
             </div>
           </div>
           <p class="text-sm text-muted" id="scoreLabel">Level</p>
+          <p class="text-xs text-muted mt-2 hidden" id="scoreContext"></p>
         </div>
       </div>
     </div>
@@ -150,6 +151,7 @@ const evaluationTypes = getAvailableEvaluationTypes()
   const scoreEl = document.getElementById('projectScore')
   const scoreLabelEl = document.getElementById('scoreLabel')
   const scoreCircleEl = document.getElementById('scoreCircle')
+  const scoreContextEl = document.getElementById('scoreContext')
   const chartCard = document.getElementById('chartCard')
   const deleteBtn = document.getElementById('deleteBtn')
   const deleteModal = document.getElementById('deleteModal')
@@ -252,6 +254,17 @@ const evaluationTypes = getAvailableEvaluationTypes()
         scoreCircleEl.style.borderColor = '#94a3b8'
         scoreCircleEl.style.boxShadow = 'none'
         scoreCircleEl.style.backgroundColor = 'transparent'
+      }
+    }
+
+    // Score context - explain EROOM inverted interpretation
+    if (scoreContextEl) {
+      if (evalType === EvaluationType.EROOM && score !== null) {
+        const interpretation = getScoreInterpretation(score)
+        scoreContextEl.textContent = interpretation.description
+        scoreContextEl.classList.remove('hidden')
+      } else {
+        scoreContextEl.classList.add('hidden')
       }
     }
 
