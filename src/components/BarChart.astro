@@ -144,7 +144,7 @@ const { id = 'barChart', title = 'Score Comparison', maxValue = 100 } = Astro.pr
    * @param data - Array of {label, value, id?} objects
    * @param maxValue - Maximum value for the scale (default 100)
    */
-  (window as any).initBarChart = function(
+  window.initBarChart = function(
     chartId: string,
     data: Array<{label: string; value: number; id?: string}>,
     maxValue: number = 100

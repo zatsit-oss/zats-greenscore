@@ -64,10 +64,10 @@ const evaluationTypes = getAvailableEvaluationTypes()
     <script>
       import { EvaluationType, EVALUATION_TYPES, createEmptyEvaluation } from '../../types/evaluation'
       import type { Project } from '../../types/project'
-      import { saveProject, migrateStorageIfNeeded } from '../../utils/storage'
+      import { saveProject, ensureStorageMigrated } from '../../services/project-service'
 
       // Ensure storage is migrated
-      migrateStorageIfNeeded()
+      ensureStorageMigrated()
 
       // Evaluation type descriptions
       const descriptions: Record<string, string> = {}
@@ -87,18 +87,14 @@ const evaluationTypes = getAvailableEvaluationTypes()
 
       // Form submission
       const form = document.getElementById('createProjectForm')
-      console.log('Form element:', form)
       form?.addEventListener('submit', (e) => {
         e.preventDefault()
-        console.log('Form submitted')
         const formData = new FormData(e.target as HTMLFormElement)
         const name = formData.get('name')
         const description = formData.get('description')
         const evaluationType = formData.get('evaluationType') as EvaluationType
-        console.log('Form data:', { name, description, evaluationType })
 
         if (name && description && evaluationType) {
-          console.log('Creating project...')
           const id = crypto.randomUUID()
           const now = new Date().toISOString()
 

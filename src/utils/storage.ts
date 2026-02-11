@@ -4,9 +4,42 @@
 
 import { StorageKeys, CURRENT_STORAGE_VERSION } from '../types/storage';
 import type { Project, LegacyProject } from '../types/project';
-import type { Evaluation } from '../types/evaluation';
-import { ProjectRanking, ProjectStatus, APP_VERSION } from '../types/project';
+import { ProjectStatus, APP_VERSION } from '../types/project';
 import { EvaluationType, EvaluationStatus } from '../types/evaluation';
+import type { Evaluation } from '../types/evaluation';
+
+// Track if migration has already been checked this session
+let migrationChecked = false;
+
+/**
+ * Safely parse JSON, returning fallback on failure
+ */
+function safeJsonParse<T>(data: string | null, fallback: T): T {
+  if (!data) return fallback;
+  try {
+    return JSON.parse(data) as T;
+  } catch {
+    console.error('Failed to parse JSON from localStorage, using fallback');
+    return fallback;
+  }
+}
+
+/**
+ * Safely write to localStorage, handling QuotaExceededError
+ */
+function safeSetItem(key: string, value: string): boolean {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (e) {
+    if (e instanceof DOMException && e.name === 'QuotaExceededError') {
+      console.error('localStorage quota exceeded. Unable to save data.');
+    } else {
+      console.error('Failed to write to localStorage:', e);
+    }
+    return false;
+  }
+}
 
 // ============================================================================
 // MIGRATION
@@ -46,9 +79,12 @@ function migrateLegacyProject(legacy: LegacyProject): Project {
  * Check if migration is needed and perform it
  */
 export function migrateStorageIfNeeded(): void {
+  if (migrationChecked) return;
+
   const version = localStorage.getItem(StorageKeys.STORAGE_VERSION);
 
   if (version === String(CURRENT_STORAGE_VERSION)) {
+    migrationChecked = true;
     return; // Already migrated
   }
 
@@ -58,36 +94,28 @@ export function migrateStorageIfNeeded(): void {
 
   if (!legacyInProgress && !legacyCompleted) {
     // No legacy data, just set version
-    localStorage.setItem(
-      StorageKeys.STORAGE_VERSION,
-      String(CURRENT_STORAGE_VERSION)
-    );
+    safeSetItem(StorageKeys.STORAGE_VERSION, String(CURRENT_STORAGE_VERSION));
+    migrationChecked = true;
     return;
   }
 
   // Migrate legacy data
-  const inProgressProjects: LegacyProject[] = legacyInProgress
-    ? JSON.parse(legacyInProgress)
-    : [];
-  const completedProjects: LegacyProject[] = legacyCompleted
-    ? JSON.parse(legacyCompleted)
-    : [];
+  const inProgressProjects = safeJsonParse<LegacyProject[]>(legacyInProgress, []);
+  const completedProjects = safeJsonParse<LegacyProject[]>(legacyCompleted, []);
 
   const allLegacyProjects = [...inProgressProjects, ...completedProjects];
   const migratedProjects = allLegacyProjects.map(migrateLegacyProject);
 
   // Save migrated data
-  localStorage.setItem(StorageKeys.PROJECTS, JSON.stringify(migratedProjects));
+  safeSetItem(StorageKeys.PROJECTS, JSON.stringify(migratedProjects));
 
   // Clean up legacy keys
   localStorage.removeItem(StorageKeys.LEGACY_IN_PROGRESS);
   localStorage.removeItem(StorageKeys.LEGACY_COMPLETED);
 
   // Set version
-  localStorage.setItem(
-    StorageKeys.STORAGE_VERSION,
-    String(CURRENT_STORAGE_VERSION)
-  );
+  safeSetItem(StorageKeys.STORAGE_VERSION, String(CURRENT_STORAGE_VERSION));
+  migrationChecked = true;
 
   console.log(
     `Migrated ${migratedProjects.length} projects to new storage format`
@@ -104,7 +132,7 @@ export function migrateStorageIfNeeded(): void {
 export function getAllProjects(): Project[] {
   migrateStorageIfNeeded();
   const data = localStorage.getItem(StorageKeys.PROJECTS);
-  return data ? JSON.parse(data) : [];
+  return safeJsonParse<Project[]>(data, []);
 }
 
 /**
@@ -123,16 +151,19 @@ export function saveProject(project: Project): void {
   const projects = getAllProjects();
   const index = projects.findIndex((p) => p.id === project.id);
 
-  project.updatedAt = new Date().toISOString();
-  project.appVersion = APP_VERSION;
+  const updated = {
+    ...project,
+    updatedAt: new Date().toISOString(),
+    appVersion: APP_VERSION
+  };
 
   if (index >= 0) {
-    projects[index] = project;
+    projects[index] = updated;
   } else {
-    projects.push(project);
+    projects.push(updated);
   }
 
-  localStorage.setItem(StorageKeys.PROJECTS, JSON.stringify(projects));
+  safeSetItem(StorageKeys.PROJECTS, JSON.stringify(projects));
 }
 
 /**
@@ -141,33 +172,5 @@ export function saveProject(project: Project): void {
 export function deleteProject(id: string): void {
   const projects = getAllProjects();
   const filtered = projects.filter((p) => p.id !== id);
-  localStorage.setItem(StorageKeys.PROJECTS, JSON.stringify(filtered));
-}
-
-/**
- * Get projects with completed evaluations (for dashboard stats)
- */
-export function getCompletedProjects(): Project[] {
-  const projects = getAllProjects();
-  return projects.filter((p) =>
-    Object.values(p.evaluations).some(
-      (e) => e?.status === EvaluationStatus.COMPLETED
-    )
-  );
-}
-
-/**
- * Update an evaluation within a project
- */
-export function updateProjectEvaluation(
-  projectId: string,
-  evaluation: Evaluation
-): void {
-  const project = getProjectById(projectId);
-  if (!project) {
-    throw new Error(`Project not found: ${projectId}`);
-  }
-
-  project.evaluations[evaluation.type] = evaluation;
-  saveProject(project);
+  safeSetItem(StorageKeys.PROJECTS, JSON.stringify(filtered));
 }
