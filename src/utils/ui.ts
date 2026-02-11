@@ -1,4 +1,4 @@
-import { type Project, ProjectRanking } from '../types/project'
+import { ProjectRanking } from '../types/project'
 import { EvaluationType, EVALUATION_TYPES } from '../types/evaluation'
 import {
     getDashboardStats,
@@ -6,8 +6,14 @@ import {
     getAllProjectsWithAnyEvaluation,
     getChartData,
     type ProjectWithEvaluation,
-    type EvaluationSummary
+    type ChartDataPoint
 } from '../services/dashboard'
+
+declare global {
+    interface Window {
+        initBarChart?: (canvasId: string, data: ChartDataPoint[]) => void;
+    }
+}
 
 /**
  * Get the display name for an evaluation type
@@ -24,7 +30,7 @@ export const RankingResult = {
     E: { text: ProjectRanking.E, minScore: 0, color: 'var(--color-score-poor)', ecoLabelClass: 'text-red-400' }
 };
 
-export const getRanking= (score: number) => {
+export const getRanking = (score: number): typeof RankingResult[keyof typeof RankingResult] => {
     if (score >= 90) return RankingResult.A;
     if (score >= 75) return RankingResult.B;
     if (score >= 50) return RankingResult.C;
@@ -49,7 +55,7 @@ export const getScoreColor = (score: number, evalType: EvaluationType): string =
     return getRanking(score).color;
 }
 
-export const formatDate = (dateString: string) => {
+export const formatDate = (dateString: string): string => {
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString("en-US", {
         year: "numeric",
@@ -201,8 +207,8 @@ export const loadProjects = (evalType: EvaluationType | null, onDelete?: OnDelet
             chartSection.classList.remove("hidden");
             // Initialize chart after DOM is ready
             requestAnimationFrame(() => {
-                if (typeof (window as any).initBarChart === "function") {
-                    (window as any).initBarChart("projectsBarChart", chartData);
+                if (typeof window.initBarChart === "function") {
+                    window.initBarChart("projectsBarChart", chartData);
                 }
             });
         } else {
@@ -227,7 +233,11 @@ export const loadProjects = (evalType: EvaluationType | null, onDelete?: OnDelet
         const message = evalType
             ? `No ${typeName} projects found. Start a new one!`
             : 'No projects found. Start a new one!';
-        grid.innerHTML = `<p class="col-span-full text-center text-[var(--color-text-muted)]">${message}</p>`;
+        const emptyMessage = document.createElement('p');
+        emptyMessage.className = 'col-span-full text-center text-[var(--color-text-muted)]';
+        emptyMessage.textContent = message;
+        grid.innerHTML = '';
+        grid.appendChild(emptyMessage);
         return;
     }
 

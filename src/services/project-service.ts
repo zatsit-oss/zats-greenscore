@@ -11,14 +11,30 @@
 import type { Project } from '../types/project';
 import type { Evaluation } from '../types/evaluation';
 import {
+  getAllProjects as storageGetAllProjects,
   getProjectById as storageGetProjectById,
   saveProject as storageSaveProject,
-  deleteProject as storageDeleteProject
+  deleteProject as storageDeleteProject,
+  migrateStorageIfNeeded as storageMigrateIfNeeded
 } from '../utils/storage';
 
 // ============================================================================
 // PROJECT OPERATIONS
 // ============================================================================
+
+/**
+ * Ensure storage is migrated (call on app init)
+ */
+export function ensureStorageMigrated(): void {
+  storageMigrateIfNeeded();
+}
+
+/**
+ * Get all projects
+ */
+export function getAllProjects(): Project[] {
+  return storageGetAllProjects();
+}
 
 /**
  * Get a project by ID

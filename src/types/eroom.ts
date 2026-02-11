@@ -212,13 +212,13 @@ export interface EroomDataModel {
   source: string
   metadata: {
     impactLevels: Record<ImpactLevel, { weight: number; description: string }>
-    scoring: object
-    interpretation: object
-    evaluationScales: object
+    scoring: Record<string, unknown>
+    interpretation: Record<string, unknown>
+    evaluationScales: Record<string, unknown>
   }
   categories: EroomCategory[]
-  synthesis: object
-  evaluationResponse: object
+  synthesis: Record<string, unknown>
+  evaluationResponse: Record<string, unknown>
 }
 
 // ============================================================================

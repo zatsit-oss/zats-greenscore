@@ -61,7 +61,7 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
 
 <script>
   import { EvaluationType, EvaluationStatus } from "../types/evaluation";
-  import { getProjectById, saveProject } from "../utils/storage";
+  import { getProject, saveProject } from "../services/project-service";
   import { calculateEroomGlobalScore, getEroomRanking, validateEroomCompletion } from "../utils/eroom-scoring";
   import type { EroomCategory, EroomAnswerValue } from "../types/eroom";
   import eroomData from "../data/eroom-data-model.json";
@@ -246,7 +246,7 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
   const saveAnswers = () => {
     if (!projectId) return;
 
-    const project = getProjectById(projectId);
+    const project = getProject(projectId);
     if (!project) return;
 
     const evaluation = project.evaluations[evaluationType];
@@ -278,7 +278,7 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
   const loadAnswers = () => {
     if (!projectId) return;
 
-    const project = getProjectById(projectId);
+    const project = getProject(projectId);
     if (!project) return;
 
     const evaluation = project.evaluations[evaluationType];
@@ -314,7 +314,7 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
       return;
     }
 
-    const project = getProjectById(projectId);
+    const project = getProject(projectId);
     if (!project) {
       showToast("Project not found. Cannot save.", "error");
       return;

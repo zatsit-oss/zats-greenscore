@@ -101,25 +101,18 @@ export function hasEvaluationType(project: Project, type: EvaluationType): boole
  * Get the best score from all evaluations (for display on cards)
  */
 export function getBestScore(project: Project): number | null {
-  const completedEvaluations = Object.values(project.evaluations).filter(
-    (evaluation) => evaluation?.status === EvaluationStatus.COMPLETED && evaluation.score !== null
-  );
+  const scores = Object.values(project.evaluations)
+    .filter((evaluation) => evaluation?.status === EvaluationStatus.COMPLETED)
+    .map((e) => e?.score)
+    .filter((s): s is number => s !== null && s !== undefined);
 
-  if (completedEvaluations.length === 0) return null;
-
-  return Math.max(...completedEvaluations.map((e) => e!.score!));
+  return scores.length > 0 ? Math.max(...scores) : null;
 }
 
 /**
  * Get the best ranking from all evaluations
  */
 export function getBestRanking(project: Project): ProjectRanking | null {
-  const completedEvaluations = Object.values(project.evaluations).filter(
-    (evaluation) => evaluation?.status === EvaluationStatus.COMPLETED && evaluation.ranking !== null
-  );
-
-  if (completedEvaluations.length === 0) return null;
-
   const rankingOrder: ProjectRanking[] = [
     ProjectRanking.A,
     ProjectRanking.B,
@@ -128,7 +121,13 @@ export function getBestRanking(project: Project): ProjectRanking | null {
     ProjectRanking.E
   ];
 
-  const rankings = completedEvaluations.map((e) => e!.ranking!);
+  const rankings = Object.values(project.evaluations)
+    .filter((evaluation) => evaluation?.status === EvaluationStatus.COMPLETED)
+    .map((e) => e?.ranking)
+    .filter((r): r is ProjectRanking => r !== null && r !== undefined);
+
+  if (rankings.length === 0) return null;
+
   return rankings.sort((a, b) => rankingOrder.indexOf(a) - rankingOrder.indexOf(b))[0];
 }
 

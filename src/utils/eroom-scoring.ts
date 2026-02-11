@@ -3,70 +3,30 @@
  * Based on Boavizta's EOF v1.1
  */
 
-// Impact weights
-export const IMPACT_WEIGHTS = {
-  Decisive: 3,
-  Significant: 2,
-  Moderate: 1
-} as const
+import type {
+  ImpactLevel,
+  StandardAnswer,
+  EaseOfChangeAnswer,
+  EroomAnswerValue,
+  EroomQuestion,
+  EroomCategory,
+  CategoryScore
+} from '../types/eroom'
+import { ProjectRanking } from '../types/common'
 
-export type ImpactLevel = keyof typeof IMPACT_WEIGHTS
-
-// Answer types for standard categories (1-5)
-export type StandardAnswer =
-  | 'to_evaluate'
-  | 'evaluation_in_progress'
-  | 'strength_confirmed'
-  | 'improvement_potential'
-  | 'not_applicable'
-
-// Answer types for ease of change category (6)
-export type EaseOfChangeAnswer =
-  | 'to_evaluate'
-  | 'evaluation_in_progress'
-  | 'easy_to_change'
-  | 'moderate_effort'
-  | 'hard_to_change'
-  | 'not_applicable'
-
-// Answer type for quick diagnosis (0)
-export type QuickDiagnosisAnswer = number | null // 1-5
-
-// Union type for all EROOM answers
-export type EroomAnswerValue = StandardAnswer | EaseOfChangeAnswer | QuickDiagnosisAnswer
+// Re-export types for consumers that imported from here
+export type {
+  ImpactLevel,
+  StandardAnswer,
+  EaseOfChangeAnswer,
+  EroomAnswerValue,
+  EroomQuestion,
+  EroomCategory,
+  CategoryScore
+}
 
 export interface EroomAnswers {
   [questionId: string]: EroomAnswerValue
-}
-
-export interface EroomQuestion {
-  id: string
-  criteria: string
-  additionalExplanation?: string
-  waysOfEvaluation?: string
-  impactLevel: ImpactLevel
-  impactWeight: number
-  evaluationScale?: Array<{ value: number; label: string }>
-}
-
-export interface EroomCategory {
-  id: string
-  name: string
-  icon: string
-  description: string
-  includeInScore: boolean
-  evaluationScaleType: 'quickDiagnosis' | 'standard' | 'easeOfChange'
-  questions: EroomQuestion[]
-}
-
-export interface CategoryScore {
-  categoryId: string
-  categoryName: string
-  score: number // 0-100%
-  earnedScore: number
-  maxPossibleScore: number
-  answeredQuestions: number
-  totalQuestions: number
 }
 
 /**
@@ -258,13 +218,13 @@ export const getScoreInterpretation = (score: number): {
  * Get ranking based on EROOM score
  * Note: EROOM score is inverted (high = more optimization needed)
  */
-export const getEroomRanking = (score: number): 'A' | 'B' | 'C' | 'D' | 'E' => {
+export const getEroomRanking = (score: number): ProjectRanking => {
   // Lower score = more mature = better ranking
-  if (score <= 20) return 'A'
-  if (score <= 40) return 'B'
-  if (score <= 60) return 'C'
-  if (score <= 80) return 'D'
-  return 'E'
+  if (score <= 20) return ProjectRanking.A
+  if (score <= 40) return ProjectRanking.B
+  if (score <= 60) return ProjectRanking.C
+  if (score <= 80) return ProjectRanking.D
+  return ProjectRanking.E
 }
 
 /**

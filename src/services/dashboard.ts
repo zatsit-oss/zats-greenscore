@@ -100,14 +100,19 @@ export function getDashboardStats(evalType: EvaluationType | null): DashboardSta
  * Build allEvaluations summary for a project
  */
 function buildEvaluationsSummary(project: Project): EvaluationSummary[] {
-  return (Object.entries(project.evaluations) as [EvaluationType, Evaluation][])
-    .map(([type, evaluation]) => ({
-      type,
-      score: evaluation.score,
-      isCompleted: evaluation.status === EvaluationStatus.COMPLETED,
-      answeredQuestions: evaluation.answeredQuestions,
-      totalQuestions: evaluation.totalQuestions
-    }));
+  return Object.entries(project.evaluations)
+    .filter(([key]) => Object.values(EvaluationType).includes(key as EvaluationType))
+    .map(([key, evaluation]) => {
+      const type = key as EvaluationType;
+      const eval_ = evaluation as Evaluation;
+      return {
+        type,
+        score: eval_.score,
+        isCompleted: eval_.status === EvaluationStatus.COMPLETED,
+        answeredQuestions: eval_.answeredQuestions,
+        totalQuestions: eval_.totalQuestions
+      };
+    });
 }
 
 /**

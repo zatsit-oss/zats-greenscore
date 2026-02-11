@@ -45,7 +45,7 @@ const { title } = Astro.props;
 		<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-[var(--color-primary)] focus:text-[var(--color-on-primary)] focus:font-medium">
 			Skip to main content
 		</a>
-		<nav class="glass sticky top-0 z-50 py-4 mb-8" aria-label="Main navigation">
+		<nav class="glass sticky top-0 z-50 py-4 mb-8 relative" aria-label="Main navigation">
 			<div
 				class="container mx-auto px-4 flex justify-between items-center"
 			>
@@ -77,9 +77,52 @@ const { title } = Astro.props;
 						<span class="hidden sm:inline">+ New Project</span>
 					</a>
 					<ThemeToggle />
+					<button
+						id="mobileMenuBtn"
+						class="sm:hidden flex items-center justify-center w-9 h-9 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] transition-colors"
+						aria-label="Open navigation menu"
+						aria-expanded="false"
+						aria-controls="mobileMenu"
+					>
+						<svg class="w-5 h-5 text-[var(--color-text)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+						</svg>
+					</button>
+				</div>
+			</div>
+			<div
+				id="mobileMenu"
+				class="sm:hidden hidden absolute top-full left-0 right-0 border-t border-[var(--color-border)] bg-[var(--color-bg)] shadow-lg z-50"
+				role="navigation"
+				aria-label="Mobile navigation"
+			>
+				<div class="container mx-auto px-4 py-3 flex flex-col gap-1">
+					<a href="/" class="px-3 py-2 rounded-lg font-medium text-[var(--color-text)] hover:bg-[var(--color-surface)] transition-colors">Projects</a>
+					<a href="/doc" class="px-3 py-2 rounded-lg font-medium text-[var(--color-text)] hover:bg-[var(--color-surface)] transition-colors">Docs</a>
+					<a href="/about" class="px-3 py-2 rounded-lg font-medium text-[var(--color-text)] hover:bg-[var(--color-surface)] transition-colors">About</a>
 				</div>
 			</div>
 		</nav>
+		<script>
+			const menuBtn = document.getElementById('mobileMenuBtn');
+			const mobileMenu = document.getElementById('mobileMenu');
+
+			menuBtn?.addEventListener('click', () => {
+				const isOpen = !mobileMenu?.classList.contains('hidden');
+				mobileMenu?.classList.toggle('hidden');
+				menuBtn.setAttribute('aria-expanded', String(!isOpen));
+				menuBtn.setAttribute('aria-label', isOpen ? 'Open navigation menu' : 'Close navigation menu');
+			});
+
+			// Close menu when clicking outside
+			document.addEventListener('click', (e) => {
+				if (!menuBtn?.contains(e.target as Node) && !mobileMenu?.contains(e.target as Node)) {
+					mobileMenu?.classList.add('hidden');
+					menuBtn?.setAttribute('aria-expanded', 'false');
+					menuBtn?.setAttribute('aria-label', 'Open navigation menu');
+				}
+			});
+		</script>
 		<main id="main-content" class="container mx-auto px-4">
 			<slot />
 		</main>

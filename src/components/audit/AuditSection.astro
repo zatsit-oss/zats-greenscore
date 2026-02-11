@@ -1,9 +1,17 @@
 ---
 import AuditQuestion from "./AuditQuestion.astro";
 
+interface AuditQuestion {
+    id: string;
+    section: string;
+    question: string;
+    description: string;
+    tooltip?: string;
+}
+
 interface Props {
     sectionName: string;
-    questions: any[];
+    questions: AuditQuestion[];
     index: number;
 }
 

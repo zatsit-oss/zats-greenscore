@@ -112,10 +112,10 @@ const evaluationTypes = getAvailableEvaluationTypes()
   </div>
 
   <!-- Delete Confirmation Modal -->
-  <div id="deleteModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
-    <div class="glass-card max-w-md w-full mx-4 p-6">
+  <div id="deleteModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle" aria-describedby="deleteModalDesc">
+    <div class="glass-card max-w-md w-full mx-4 p-6" role="document">
       <h2 id="deleteModalTitle" class="text-xl font-bold mb-4">Delete Project?</h2>
-      <p class="text-muted mb-2">
+      <p id="deleteModalDesc" class="text-muted mb-2">
         Are you sure you want to delete
         <span class="font-semibold text-[var(--color-text)]" id="deleteProjectName">"Project Name"</span>?
       </p>
@@ -140,6 +140,12 @@ const evaluationTypes = getAvailableEvaluationTypes()
   import { calculateEroomGlobalScore, getScoreInterpretation } from '../../utils/eroom-scoring'
   import type { EroomCategory, EroomAnswerValue } from '../../types/eroom'
   import eroomData from '../../data/eroom-data-model.json'
+
+  declare global {
+    interface Window {
+      initRadarChart?: (canvasId: string, data: Array<{ label: string; score: number }>) => void;
+    }
+  }
 
   const eroomCategories = eroomData.categories as EroomCategory[]
 
@@ -295,8 +301,8 @@ const evaluationTypes = getAvailableEvaluationTypes()
         if (chartData.length > 0) {
           chartCard.classList.remove('hidden')
           requestAnimationFrame(() => {
-            if (typeof (window as any).initRadarChart === 'function') {
-              (window as any).initRadarChart('sectionRadarChart', chartData)
+            if (typeof window.initRadarChart === 'function') {
+              window.initRadarChart('sectionRadarChart', chartData)
             }
           })
         } else {

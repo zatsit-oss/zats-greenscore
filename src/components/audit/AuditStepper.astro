@@ -1,6 +1,14 @@
 ---
+interface AuditQuestion {
+    id: string;
+    section: string;
+    question: string;
+    description: string;
+    tooltip?: string;
+}
+
 interface Props {
-    sections: Record<string, any[]>;
+    sections: Record<string, AuditQuestion[]>;
 }
 
 const { sections } = Astro.props;

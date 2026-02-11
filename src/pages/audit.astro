@@ -40,7 +40,7 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 		<div class="mb-8">
 			<a
 				href="/"
-				class="text-[var(--color-text-muted)] text-sm inline-flex items-center gap-2 mb-4 hover:text-[var(--color-primary)] transition-colors"
+				class="link-back mb-4"
 			>
 				&larr; Back to Dashboard
 			</a>
@@ -79,10 +79,9 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 </Layout>
 
 <script>
-	import { getRankingScore, calculateProjectScore } from "../utils/apigreenscore-scoring";
+	import { getRankingScore, calculateProjectScore, type Question } from "../utils/apigreenscore-scoring";
 	import { EvaluationType, EvaluationStatus } from "../types/evaluation";
-	import { getProjectById, saveProject } from "../utils/storage";
-	import type { Project } from "../types/project";
+	import { getProject, saveProject } from "../services/project-service";
 
 	let currentStep = 0;
 	const steps = document.querySelectorAll(".step-content");
@@ -195,8 +194,6 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 	const projectId = urlParams.get("projectId");
 	const evaluationType = (urlParams.get("evaluationType") || EvaluationType.API_GREEN_SCORE) as EvaluationType;
 
-	console.log("Audit page loaded:", { projectId, evaluationType });
-
 	/**
 	 * Check if a question is answered
 	 * Checkbox: checked = answered. Number: non-empty = answered.
@@ -250,7 +247,7 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 	const saveAnswers = () => {
 		if (!projectId) return;
 
-		const project = getProjectById(projectId);
+		const project = getProject(projectId);
 		if (!project) return;
 
 		const evaluation = project.evaluations[evaluationType];
@@ -258,7 +255,7 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 
 		const checkboxes = auditForm?.querySelectorAll('input[type="checkbox"]');
 		const numberInputs = auditForm?.querySelectorAll('input[type="number"]');
-		const answers: Record<string, any> = {};
+		const answers: Record<string, boolean | string | number> = {};
 
 		checkboxes?.forEach((cb) => {
 			const input = cb as HTMLInputElement;
@@ -280,7 +277,7 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 	const loadAnswers = () => {
 		if (!projectId) return;
 
-		const project = getProjectById(projectId);
+		const project = getProject(projectId);
 		if (!project) return;
 
 		const evaluation = project.evaluations[evaluationType];
@@ -323,7 +320,7 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 			return;
 		}
 
-		const project = getProjectById(projectId);
+		const project = getProject(projectId);
 		if (!project) {
 			showToast("Project not found. Cannot save.", "error");
 			return;
@@ -338,7 +335,7 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 		// Collect Answers
 		const checkboxes = auditForm.querySelectorAll('input[type="checkbox"]');
 		const numberInputs = auditForm.querySelectorAll('input[type="number"]');
-		const answers: Record<string, any> = {};
+		const answers: Record<string, boolean | string | number> = {};
 
 		checkboxes.forEach((cb) => {
 			const input = cb as HTMLInputElement;
@@ -353,11 +350,11 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 		// Calculate Score
 		const { avg: finalScore } = calculateProjectScore(
 			answers,
-			surveyQuestions as any[],
+			surveyQuestions as Question[],
 		);
 		const finalRankingScore = getRankingScore(
 			answers,
-			surveyQuestions as any[],
+			surveyQuestions as Question[],
 		);
 
 		// Update evaluation
