@@ -13,7 +13,11 @@
       "mcp__ide__getDiagnostics",
       "WebFetch(domain:docs.astro.build)",
       "Bash(LC_ALL=C grep:*)",
-      "Bash(npx astro check:*)"
+      "Bash(npx astro check:*)",
+      "WebFetch(domain:doc-04-88-sheets.googleusercontent.com)",
+      "WebFetch(domain:docs.google.com)",
+      "Bash(pip3 install:*)",
+      "Bash(python3:*)"
     ]
   }
 }

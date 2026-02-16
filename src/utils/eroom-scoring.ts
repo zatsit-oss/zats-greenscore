@@ -30,46 +30,62 @@ export interface EroomAnswers {
 }
 
 /**
- * Check if an answer should be excluded from calculation
+ * Derive scoring weight from impact weight.
+ * Data model uses 3/2/1 (Decisive/Significant/Moderate).
+ * Reference spreadsheet scoring uses 2/1.5/1.
  */
-const isExcludedAnswer = (answer: EroomAnswerValue): boolean => {
-  return (
-    answer === 'to_evaluate' ||
-    answer === 'evaluation_in_progress' ||
-    answer === 'not_applicable' ||
-    answer === null ||
-    answer === undefined
-  )
+const getScoringWeight = (impactWeight: number): number => {
+  return (impactWeight + 1) / 2
+}
+
+/**
+ * Check if an answer is present (not null/undefined).
+ * All present answers (including to_evaluate, not_applicable) count in the denominator.
+ */
+const isAnswerPresent = (answer: EroomAnswerValue): boolean => {
+  return answer !== null && answer !== undefined
 }
 
 /**
  * Calculate score contribution for a standard category answer (categories 1-5)
+ * - improvement_potential: full scoring weight
+ * - evaluation_in_progress: half scoring weight
+ * - strength_confirmed, to_evaluate, not_applicable: 0
  */
-const calculateStandardScore = (answer: StandardAnswer, impactWeight: number): number => {
+const calculateStandardScore = (answer: EroomAnswerValue, scoringWeight: number): number => {
   if (answer === 'improvement_potential') {
-    return impactWeight
+    return scoringWeight
   }
-  // 'strength_confirmed' contributes 0
+  if (answer === 'evaluation_in_progress') {
+    return scoringWeight * 0.5
+  }
   return 0
 }
 
 /**
  * Calculate score contribution for ease of change category answer (category 6)
+ * - easy_to_change: 0.75 × scoring weight
+ * - moderate_effort: 0.5 × scoring weight
+ * - hard_to_change: 0.25 × scoring weight
+ * - to_evaluate, not_applicable: 0
  */
-const calculateEaseOfChangeScore = (answer: EaseOfChangeAnswer, impactWeight: number): number => {
+const calculateEaseOfChangeScore = (answer: EroomAnswerValue, scoringWeight: number): number => {
   switch (answer) {
-    case 'hard_to_change':
-      return impactWeight
-    case 'moderate_effort':
-      return impactWeight * 0.5
     case 'easy_to_change':
+      return scoringWeight * 0.75
+    case 'moderate_effort':
+      return scoringWeight * 0.5
+    case 'hard_to_change':
+      return scoringWeight * 0.25
     default:
       return 0
   }
 }
 
 /**
- * Calculate score for a single category
+ * Calculate score for a single category.
+ * All present answers (including to_evaluate, not_applicable) count in the denominator.
+ * Only null/undefined answers are excluded entirely.
  */
 export const calculateCategoryScore = (
   answers: EroomAnswers,
@@ -81,20 +97,25 @@ export const calculateCategoryScore = (
 
   category.questions.forEach((question) => {
     const answer = answers[question.id]
-    const impactWeight = question.impactWeight
+    const scoringWeight = getScoringWeight(question.impactWeight)
 
-    // Skip excluded answers
-    if (isExcludedAnswer(answer)) {
+    // Only null/undefined are excluded entirely
+    if (!isAnswerPresent(answer)) {
       return
     }
 
-    answeredQuestions++
-    maxPossibleScore += impactWeight
+    // All present answers contribute to the denominator
+    maxPossibleScore += scoringWeight
+
+    // Track actively answered questions for progress display
+    if (answer !== 'to_evaluate' && answer !== 'evaluation_in_progress') {
+      answeredQuestions++
+    }
 
     if (category.evaluationScaleType === 'standard') {
-      earnedScore += calculateStandardScore(answer as StandardAnswer, impactWeight)
+      earnedScore += calculateStandardScore(answer, scoringWeight)
     } else if (category.evaluationScaleType === 'easeOfChange') {
-      earnedScore += calculateEaseOfChangeScore(answer as EaseOfChangeAnswer, impactWeight)
+      earnedScore += calculateEaseOfChangeScore(answer, scoringWeight)
     }
     // quickDiagnosis is not included in score
   })
@@ -143,18 +164,20 @@ export const calculateQuickDiagnosisScore = (
 }
 
 /**
- * Calculate global EROOM score (average of categories 1-6)
+ * Calculate global EROOM score.
+ * Uses total earned / total max for standard categories (1-5).
+ * Ease of Change (category 6) is calculated but excluded from global score.
  */
 export const calculateEroomGlobalScore = (
   answers: EroomAnswers,
   categories: EroomCategory[]
 ): { globalScore: number; categoryScores: CategoryScore[] } => {
   const categoryScores: CategoryScore[] = []
-  let totalCategoryScore = 0
-  let scoredCategories = 0
+  let totalEarned = 0
+  let totalMax = 0
 
   categories.forEach((category) => {
-    // Skip category 0 (Quick Diagnosis) from global score
+    // Skip category 0 (Quick Diagnosis)
     if (!category.includeInScore) {
       return
     }
@@ -162,15 +185,15 @@ export const calculateEroomGlobalScore = (
     const categoryScore = calculateCategoryScore(answers, category)
     categoryScores.push(categoryScore)
 
-    // Only include categories with answered questions
-    if (categoryScore.answeredQuestions > 0) {
-      totalCategoryScore += categoryScore.score
-      scoredCategories++
+    // Only standard categories (1-5) contribute to global score
+    if (category.evaluationScaleType === 'standard') {
+      totalEarned += categoryScore.earnedScore
+      totalMax += categoryScore.maxPossibleScore
     }
   })
 
-  const globalScore = scoredCategories > 0
-    ? Math.round(totalCategoryScore / scoredCategories)
+  const globalScore = totalMax > 0
+    ? Math.round((totalEarned / totalMax) * 100)
     : 0
 
   return {
