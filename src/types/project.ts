@@ -98,9 +98,13 @@ export function hasEvaluationType(project: Project, type: EvaluationType): boole
 }
 
 /**
- * Get the best score from all evaluations (for display on cards)
+ * Get the highest numerical score from all completed evaluations.
+ *
+ * Note: This returns the highest number, which means different things per type:
+ * - API Green Score: higher = better eco-design
+ * - EROOM: higher = more optimization potential (worse maturity)
  */
-export function getBestScore(project: Project): number | null {
+export function getHighestScore(project: Project): number | null {
   const scores = Object.values(project.evaluations)
     .filter((evaluation) => evaluation?.status === EvaluationStatus.COMPLETED)
     .map((e) => e?.score)

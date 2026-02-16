@@ -102,7 +102,7 @@ const linkHref = "#";
     <a
         href={linkHref}
         class="project-card-link absolute inset-0 z-0"
-        aria-label="View project"
+        aria-label={isCompleted ? "View project details" : "View project"}
     >
         <span class="sr-only">{isCompleted ? "View Details" : "View Project"}</span>
     </a>

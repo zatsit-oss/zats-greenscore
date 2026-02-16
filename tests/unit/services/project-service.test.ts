@@ -49,11 +49,15 @@ const makeProject = (overrides: Partial<Project> = {}): Project => ({
   ...overrides
 })
 
+// Helper to avoid verbose casts throughout tests
+const setMockProjects = (p: unknown[]) => {
+  (storage as unknown as { _setProjects: (p: unknown[]) => void })._setProjects(p)
+}
+
 describe('project-service', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    // Reset projects state in mock
-    ;(storage as unknown as { _setProjects: (p: unknown[]) => void })._setProjects([])
+    setMockProjects([])
   })
 
   describe('ensureStorageMigrated', () => {
@@ -65,7 +69,7 @@ describe('project-service', () => {
 
   describe('getAllProjects', () => {
     it('delegates to storage', () => {
-      ;(storage as unknown as { _setProjects: (p: unknown[]) => void })._setProjects([makeProject()])
+      setMockProjects([makeProject()])
       const result = getAllProjects()
       expect(result).toHaveLength(1)
       expect(storage.getAllProjects).toHaveBeenCalled()
@@ -74,7 +78,7 @@ describe('project-service', () => {
 
   describe('getProject', () => {
     it('returns project by id', () => {
-      ;(storage as unknown as { _setProjects: (p: unknown[]) => void })._setProjects([makeProject({ id: 'abc' })])
+      setMockProjects([makeProject({ id: 'abc' })])
       const result = getProject('abc')
       expect(result).toBeDefined()
       expect(result!.id).toBe('abc')
@@ -96,7 +100,7 @@ describe('project-service', () => {
 
   describe('deleteProject', () => {
     it('returns true when project exists', () => {
-      ;(storage as unknown as { _setProjects: (p: unknown[]) => void })._setProjects([makeProject({ id: 'del1' })])
+      setMockProjects([makeProject({ id: 'del1' })])
       const result = deleteProject('del1')
       expect(result).toBe(true)
       expect(storage.deleteProject).toHaveBeenCalledWith('del1')
@@ -124,7 +128,7 @@ describe('project-service', () => {
           }
         }
       })
-      ;(storage as unknown as { _setProjects: (p: unknown[]) => void })._setProjects([project])
+      setMockProjects([project])
 
       const newEval: Evaluation = {
         type: EvaluationType.API_GREEN_SCORE,
