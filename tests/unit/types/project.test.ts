@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   hasCompletedEvaluation,
   hasEvaluationType,
-  getBestScore,
+  getHighestScore,
   getBestRanking,
   createProject
 } from '../../../src/types/project'
@@ -84,26 +84,26 @@ describe('hasEvaluationType', () => {
 })
 
 // ============================================================================
-// getBestScore
+// getHighestScore
 // ============================================================================
 
-describe('getBestScore', () => {
+describe('getHighestScore', () => {
   it('returns null when no evaluations', () => {
-    expect(getBestScore(makeProject())).toBeNull()
+    expect(getHighestScore(makeProject())).toBeNull()
   })
 
   it('returns null when no completed evaluations', () => {
     const project = makeProject({
       [EvaluationType.API_GREEN_SCORE]: makeEval({ score: 50 }) // IN_PROGRESS
     })
-    expect(getBestScore(project)).toBeNull()
+    expect(getHighestScore(project)).toBeNull()
   })
 
   it('returns score of single completed evaluation', () => {
     const project = makeProject({
       [EvaluationType.API_GREEN_SCORE]: makeEval({ status: EvaluationStatus.COMPLETED, score: 75 })
     })
-    expect(getBestScore(project)).toBe(75)
+    expect(getHighestScore(project)).toBe(75)
   })
 
   it('returns highest score from multiple completed evaluations', () => {
@@ -111,7 +111,7 @@ describe('getBestScore', () => {
       [EvaluationType.API_GREEN_SCORE]: makeEval({ status: EvaluationStatus.COMPLETED, score: 60 }),
       [EvaluationType.EROOM]: makeEval({ type: EvaluationType.EROOM, status: EvaluationStatus.COMPLETED, score: 85 })
     })
-    expect(getBestScore(project)).toBe(85)
+    expect(getHighestScore(project)).toBe(85)
   })
 
   it('ignores in-progress evaluations', () => {
@@ -119,7 +119,7 @@ describe('getBestScore', () => {
       [EvaluationType.API_GREEN_SCORE]: makeEval({ status: EvaluationStatus.COMPLETED, score: 60 }),
       [EvaluationType.EROOM]: makeEval({ type: EvaluationType.EROOM, status: EvaluationStatus.IN_PROGRESS, score: 90 })
     })
-    expect(getBestScore(project)).toBe(60)
+    expect(getHighestScore(project)).toBe(60)
   })
 })
 

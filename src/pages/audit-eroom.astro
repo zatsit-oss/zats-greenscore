@@ -103,10 +103,20 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
 
     // Update mobile progress
     if (stepCurrentLabel && categories[currentStep]) {
-      stepCurrentLabel.innerHTML = `<span aria-hidden="true">${categories[currentStep].icon}</span> ${categories[currentStep].name}`;
+      stepCurrentLabel.textContent = '';
+      const iconSpan = document.createElement('span');
+      iconSpan.setAttribute('aria-hidden', 'true');
+      iconSpan.textContent = categories[currentStep].icon;
+      stepCurrentLabel.appendChild(iconSpan);
+      stepCurrentLabel.appendChild(document.createTextNode(` ${categories[currentStep].name}`));
     }
     if (stepProgress) {
-      stepProgress.innerHTML = `<span class="sr-only">Step</span> ${currentStep + 1} / ${totalSteps}`;
+      stepProgress.textContent = '';
+      const srSpan = document.createElement('span');
+      srSpan.className = 'sr-only';
+      srSpan.textContent = 'Step';
+      stepProgress.appendChild(srSpan);
+      stepProgress.appendChild(document.createTextNode(` ${currentStep + 1} / ${totalSteps}`));
     }
     if (stepProgressBar) {
       stepProgressBar.style.width = `${((currentStep + 1) / totalSteps) * 100}%`;
@@ -285,12 +295,12 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
     if (!evaluation || !evaluation.answers) return;
 
     Object.entries(evaluation.answers).forEach(([key, value]) => {
-      const input = document.querySelector(
-        `input[name="${key}"][value="${value}"]`
-      ) as HTMLInputElement;
-      if (input) {
-        input.checked = true;
-      }
+      const inputs = auditForm?.querySelectorAll(`input[name="${key}"]`) as NodeListOf<HTMLInputElement>;
+      inputs?.forEach((input) => {
+        if (input.value === String(value)) {
+          input.checked = true;
+        }
+      });
     });
   };
 

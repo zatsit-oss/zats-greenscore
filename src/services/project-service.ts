@@ -75,7 +75,10 @@ export function updateProjectEvaluation(
     return false;
   }
 
-  project.evaluations[evaluation.type] = evaluation;
-  storageSaveProject(project);
+  const updated = {
+    ...project,
+    evaluations: { ...project.evaluations, [evaluation.type]: evaluation }
+  };
+  storageSaveProject(updated);
   return true;
 }

@@ -135,7 +135,8 @@ export const calculateQuickDiagnosisScore = (
   })
 
   return {
-    score: answeredCount > 0 ? Math.round((totalScore / answeredCount) * 20) : 0, // Convert 1-5 to 0-100
+    // Scale factor converts 1-5 range to 0-100 percentage
+    score: answeredCount > 0 ? Math.round((totalScore / answeredCount) * (100 / 5)) : 0,
     answeredCount,
     totalCount: questions.length
   }

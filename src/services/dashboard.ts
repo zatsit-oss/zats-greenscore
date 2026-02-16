@@ -100,17 +100,18 @@ export function getDashboardStats(evalType: EvaluationType | null): DashboardSta
  * Build allEvaluations summary for a project
  */
 function buildEvaluationsSummary(project: Project): EvaluationSummary[] {
+  const validTypes = Object.values(EvaluationType) as string[];
   return Object.entries(project.evaluations)
-    .filter(([key]) => Object.values(EvaluationType).includes(key as EvaluationType))
+    .filter(([key]) => validTypes.includes(key))
     .map(([key, evaluation]) => {
       const type = key as EvaluationType;
-      const eval_ = evaluation as Evaluation;
+      const typedEvaluation = evaluation as Evaluation;
       return {
         type,
-        score: eval_.score,
-        isCompleted: eval_.status === EvaluationStatus.COMPLETED,
-        answeredQuestions: eval_.answeredQuestions,
-        totalQuestions: eval_.totalQuestions
+        score: typedEvaluation.score,
+        isCompleted: typedEvaluation.status === EvaluationStatus.COMPLETED,
+        answeredQuestions: typedEvaluation.answeredQuestions,
+        totalQuestions: typedEvaluation.totalQuestions
       };
     });
 }
@@ -147,7 +148,7 @@ export function getAllProjectsWithAnyEvaluation(): ProjectWithEvaluation[] {
     .map((project) => {
       // Get the first evaluation type available
       const evalTypes = Object.keys(project.evaluations) as EvaluationType[];
-      const evalType = evalTypes[0];
+      const evalType = evalTypes[0]!;
       const evaluation = project.evaluations[evalType]!;
       return {
         project,

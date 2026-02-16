@@ -13,6 +13,36 @@ describe('storage', () => {
   }
 
   // ============================================================================
+  // safeSetItem (QuotaExceeded)
+  // ============================================================================
+
+  describe('safeSetItem via saveProject', () => {
+    it('handles QuotaExceededError gracefully', async () => {
+      localStorage.setItem('storageVersion', '2')
+      localStorage.setItem('projects', JSON.stringify([]))
+      const { saveProject } = await importStorage()
+
+      // Mock setItem to throw QuotaExceededError
+      const error = new DOMException('quota exceeded', 'QuotaExceededError')
+      const originalSetItem = localStorage.setItem
+      localStorage.setItem = vi.fn(() => { throw error })
+
+      // Should not throw
+      expect(() => saveProject({
+        id: 'quota1',
+        name: 'Big Project',
+        description: '',
+        createdAt: '2024-01-01',
+        updatedAt: '2024-01-01',
+        evaluations: {}
+      })).not.toThrow()
+
+      // Restore
+      localStorage.setItem = originalSetItem
+    })
+  })
+
+  // ============================================================================
   // getAllProjects
   // ============================================================================
 
@@ -214,17 +244,62 @@ describe('storage', () => {
     })
 
     it('only runs migration once per session', async () => {
-      localStorage.setItem('storageVersion', '2')
-      const { migrateStorageIfNeeded } = await importStorage()
+      // Setup legacy data to trigger migration
+      localStorage.setItem('inProgress', JSON.stringify([
+        { id: 'leg1', name: 'Legacy', description: '', createdAt: '2024-01-01', updatedAt: '2024-01-01', status: 'InProgress', score: null }
+      ]))
+      const { migrateStorageIfNeeded, saveProject, getAllProjects } = await importStorage()
+
+      // First call migrates legacy data
+      migrateStorageIfNeeded()
+      expect(getAllProjects()).toHaveLength(1)
+
+      // Add a new project after migration
+      saveProject({ id: 'new1', name: 'New', description: '', createdAt: '2024-01-01', updatedAt: '2024-01-01', evaluations: {} })
+
+      // Subsequent calls must NOT re-run migration (would overwrite the new project)
+      migrateStorageIfNeeded()
+      migrateStorageIfNeeded()
+
+      const projects = getAllProjects()
+      expect(projects).toHaveLength(2)
+    })
+
+    it('migrates legacy completed projects', async () => {
+      const legacyCompleted = [
+        { id: 'comp1', name: 'Completed', description: 'Test', createdAt: '2024-01-01', updatedAt: '2024-02-01', status: 'Completed', score: 85, ranking: 'B', answers: { q1: true } }
+      ]
+      localStorage.setItem('Completed', JSON.stringify(legacyCompleted))
+      const { migrateStorageIfNeeded, getAllProjects } = await importStorage()
 
       migrateStorageIfNeeded()
-      migrateStorageIfNeeded()
+
+      const projects = getAllProjects()
+      expect(projects).toHaveLength(1)
+      expect(projects[0].name).toBe('Completed')
+      expect(projects[0].evaluations.apigreenscore).toBeDefined()
+      expect(projects[0].evaluations.apigreenscore?.score).toBe(85)
+      expect(localStorage.getItem('Completed')).toBeNull()
+    })
+
+    it('migrates both inProgress and Completed legacy projects', async () => {
+      const legacyInProgress = [
+        { id: 'ip1', name: 'InProg', description: '', createdAt: '2024-01-01', updatedAt: '2024-01-01', status: 'InProgress', score: null, answers: {} }
+      ]
+      const legacyCompleted = [
+        { id: 'comp1', name: 'Done', description: '', createdAt: '2024-01-01', updatedAt: '2024-02-01', status: 'Completed', score: 90, ranking: 'A', answers: { q1: true } }
+      ]
+      localStorage.setItem('inProgress', JSON.stringify(legacyInProgress))
+      localStorage.setItem('Completed', JSON.stringify(legacyCompleted))
+      const { migrateStorageIfNeeded, getAllProjects } = await importStorage()
+
       migrateStorageIfNeeded()
 
-      // getItem called only once for version check (first call), then skipped
-      // Due to the flag, subsequent calls should not read localStorage
-      // We verify it doesn't throw
-      expect(true).toBe(true)
+      const projects = getAllProjects()
+      expect(projects).toHaveLength(2)
+      expect(localStorage.getItem('inProgress')).toBeNull()
+      expect(localStorage.getItem('Completed')).toBeNull()
+      expect(localStorage.getItem('storageVersion')).toBe('2')
     })
   })
 })

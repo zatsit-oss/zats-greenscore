@@ -3,6 +3,19 @@ import Layout from '../layouts/Layout.astro';
 import aboutContent from '../data/about-content.json';
 
 const { title, subtitle, sections } = aboutContent;
+
+// Pre-process evaluation types to split description around link text (avoids set:html)
+const evaluationTypes = sections.evaluationTypes.types.map(
+  (type: { name: string; description: string; link: { text: string; url: string } }) => {
+    const idx = type.description.indexOf(type.link.text);
+    return {
+      ...type,
+      descBefore: idx >= 0 ? type.description.substring(0, idx) : type.description,
+      descAfter: idx >= 0 ? type.description.substring(idx + type.link.text.length) : '',
+      hasLink: idx >= 0
+    };
+  }
+);
 ---
 
 <Layout title="About">
@@ -25,14 +38,21 @@ const { title, subtitle, sections } = aboutContent;
     <section class="glass-card mb-8">
       <h2 class="text-xl font-semibold mb-4">{sections.evaluationTypes.title}</h2>
       <div class="space-y-6">
-        {sections.evaluationTypes.types.map((type: { name: string; description: string; link: { text: string; url: string } }) => (
+        {evaluationTypes.map((type) => (
           <div>
             <h3 class="text-lg font-medium mb-2 text-[var(--color-primary)]">{type.name}</h3>
             <p class="text-muted leading-relaxed">
-              <Fragment set:html={type.description.replace(
-                type.link.text,
-                `<a href="${type.link.url}" target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary)] underline">${type.link.text}<span class="sr-only"> (opens in new tab)</span></a>`
-              )} />
+              {type.hasLink ? (
+                <>
+                  {type.descBefore}
+                  <a href={type.link.url} target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary)] underline">
+                    {type.link.text}<span class="sr-only"> (opens in new tab)</span>
+                  </a>
+                  {type.descAfter}
+                </>
+              ) : (
+                type.description
+              )}
             </p>
           </div>
         ))}

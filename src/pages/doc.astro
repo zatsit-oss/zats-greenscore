@@ -18,6 +18,27 @@ const getBorderClass = (color: string) => {
   if (color === 'amber') return 'border-amber-500';
   return 'border-[var(--color-border)]';
 };
+
+// Parse **bold** markup into typed parts (avoids set:html)
+interface TextPart { type: 'text' | 'bold'; content: string }
+
+function parseBoldMarkup(text: string): TextPart[] {
+  const parts: TextPart[] = [];
+  const regex = /\*\*(.*?)\*\*/g;
+  let lastIndex = 0;
+  let match;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push({ type: 'text', content: text.slice(lastIndex, match.index) });
+    }
+    parts.push({ type: 'bold', content: match[1] });
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < text.length) {
+    parts.push({ type: 'text', content: text.slice(lastIndex) });
+  }
+  return parts;
+}
 ---
 
 <Layout title="Documentation">
@@ -49,7 +70,11 @@ const getBorderClass = (color: string) => {
       <h2 class="text-xl font-semibold mb-4">{sections.gettingStarted.title}</h2>
       <ol class="list-decimal list-inside space-y-3 text-muted">
         {sections.gettingStarted.steps.map((step: string) => (
-          <li set:html={step.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')} />
+          <li>
+            {parseBoldMarkup(step).map((part) =>
+              part.type === 'bold' ? <strong>{part.content}</strong> : part.content
+            )}
+          </li>
         ))}
       </ol>
     </section>
