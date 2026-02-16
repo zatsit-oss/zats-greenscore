@@ -63,43 +63,57 @@ describe('calculateCategoryScore', () => {
 
   it('calculates standard score with improvement_potential answers', () => {
     const answers = {
-      q1: 'improvement_potential' as const, // weight 3
-      q2: 'strength_confirmed' as const,    // weight 0
-      q3: 'improvement_potential' as const   // weight 1
+      q1: 'improvement_potential' as const, // scoringWeight 2
+      q2: 'strength_confirmed' as const,    // scoringWeight 1.5, earned 0
+      q3: 'improvement_potential' as const   // scoringWeight 1
     }
     const result = calculateCategoryScore(answers, makeCategory())
-    // earned = 3 + 0 + 1 = 4, max = 3 + 2 + 1 = 6
-    expect(result.earnedScore).toBe(4)
-    expect(result.maxPossibleScore).toBe(6)
-    expect(result.score).toBe(67) // Math.round(4/6 * 100)
+    // earned = 2 + 0 + 1 = 3, max = 2 + 1.5 + 1 = 4.5
+    expect(result.earnedScore).toBe(3)
+    expect(result.maxPossibleScore).toBe(4.5)
+    expect(result.score).toBe(67) // Math.round(3/4.5 * 100)
     expect(result.answeredQuestions).toBe(3)
   })
 
-  it('excludes not_applicable answers from max possible', () => {
+  it('includes not_applicable in denominator with score 0', () => {
     const answers = {
-      q1: 'improvement_potential' as const, // weight 3
-      q2: 'not_applicable' as const,        // excluded
-      q3: 'strength_confirmed' as const     // weight 0
+      q1: 'improvement_potential' as const, // scoringWeight 2
+      q2: 'not_applicable' as const,        // scoringWeight 1.5, earned 0
+      q3: 'strength_confirmed' as const     // scoringWeight 1, earned 0
     }
     const result = calculateCategoryScore(answers, makeCategory())
-    // earned = 3, max = 3 + 1 = 4 (q2 excluded)
-    expect(result.earnedScore).toBe(3)
-    expect(result.maxPossibleScore).toBe(4)
-    expect(result.answeredQuestions).toBe(2)
+    // earned = 2, max = 2 + 1.5 + 1 = 4.5 (not_applicable included in max)
+    expect(result.earnedScore).toBe(2)
+    expect(result.maxPossibleScore).toBe(4.5)
+    expect(result.answeredQuestions).toBe(3) // not_applicable counts as actively answered
+  })
+
+  it('scores evaluation_in_progress as half weight', () => {
+    const answers = {
+      q1: 'evaluation_in_progress' as const, // scoringWeight 2 × 0.5 = 1
+      q2: 'improvement_potential' as const,   // scoringWeight 1.5
+      q3: 'strength_confirmed' as const       // scoringWeight 1, earned 0
+    }
+    const result = calculateCategoryScore(answers, makeCategory())
+    // earned = 1 + 1.5 + 0 = 2.5, max = 2 + 1.5 + 1 = 4.5
+    expect(result.earnedScore).toBe(2.5)
+    expect(result.maxPossibleScore).toBe(4.5)
+    expect(result.score).toBe(56) // Math.round(2.5/4.5 * 100)
+    expect(result.answeredQuestions).toBe(2) // evaluation_in_progress not counted as actively answered
   })
 
   it('calculates ease of change scores correctly', () => {
     const category = makeEaseOfChangeCategory()
     const answers = {
-      q1: 'hard_to_change' as const,   // weight * 1
-      q2: 'moderate_effort' as const,  // weight * 0.5
-      q3: 'easy_to_change' as const    // 0
+      q1: 'hard_to_change' as const,   // 0.25 × scoringWeight 2 = 0.5
+      q2: 'moderate_effort' as const,  // 0.5 × scoringWeight 1.5 = 0.75
+      q3: 'easy_to_change' as const    // 0.75 × scoringWeight 1 = 0.75
     }
     const result = calculateCategoryScore(answers, category)
-    // earned = 3 + 1 + 0 = 4, max = 3 + 2 + 1 = 6
-    expect(result.earnedScore).toBe(4)
-    expect(result.maxPossibleScore).toBe(6)
-    expect(result.score).toBe(67)
+    // earned = 0.5 + 0.75 + 0.75 = 2, max = 2 + 1.5 + 1 = 4.5
+    expect(result.earnedScore).toBe(2)
+    expect(result.maxPossibleScore).toBe(4.5)
+    expect(result.score).toBe(44) // Math.round(2/4.5 * 100)
   })
 
   it('returns all strengths confirmed as score 0', () => {
@@ -111,7 +125,7 @@ describe('calculateCategoryScore', () => {
     const result = calculateCategoryScore(answers, makeCategory())
     expect(result.score).toBe(0)
     expect(result.earnedScore).toBe(0)
-    expect(result.maxPossibleScore).toBe(6)
+    expect(result.maxPossibleScore).toBe(4.5) // scoringWeights: 2 + 1.5 + 1
   })
 })
 
@@ -182,7 +196,7 @@ describe('calculateEroomGlobalScore', () => {
     expect(result.globalScore).toBe(100) // all improvement_potential = max score
   })
 
-  it('averages scores across multiple scored categories', () => {
+  it('uses total earned / total max across standard categories', () => {
     const cat1 = makeCategory({ id: '1', name: 'Cat 1', questions: [
       { id: 'c1q1', criteria: 'C1Q1', impactLevel: 'Moderate', impactWeight: 1 }
     ]})
@@ -190,11 +204,31 @@ describe('calculateEroomGlobalScore', () => {
       { id: 'c2q1', criteria: 'C2Q1', impactLevel: 'Moderate', impactWeight: 1 }
     ]})
     const answers = {
-      c1q1: 'improvement_potential' as const,  // score 100
-      c2q1: 'strength_confirmed' as const       // score 0
+      c1q1: 'improvement_potential' as const,  // earned 1, max 1
+      c2q1: 'strength_confirmed' as const       // earned 0, max 1
     }
     const result = calculateEroomGlobalScore(answers, [cat1, cat2])
-    expect(result.globalScore).toBe(50) // (100 + 0) / 2
+    // total earned = 1, total max = 2 → 50%
+    expect(result.globalScore).toBe(50)
+  })
+
+  it('excludes easeOfChange category from global score', () => {
+    const standard = makeCategory({ id: '1', name: 'Standard', questions: [
+      { id: 's1', criteria: 'S1', impactLevel: 'Moderate', impactWeight: 1 }
+    ]})
+    const eoc = makeEaseOfChangeCategory()
+    const answers = {
+      s1: 'strength_confirmed' as const,      // earned 0, max 1
+      q1: 'hard_to_change' as const,          // ease of change - excluded from global
+      q2: 'hard_to_change' as const,
+      q3: 'hard_to_change' as const
+    }
+    const result = calculateEroomGlobalScore(answers, [standard, eoc])
+    // Global uses only standard category: 0/1 = 0%
+    expect(result.globalScore).toBe(0)
+    // But both categories are in categoryScores
+    expect(result.categoryScores).toHaveLength(2)
+    expect(result.categoryScores[1].score).toBeGreaterThan(0) // ease of change has a score
   })
 })
 

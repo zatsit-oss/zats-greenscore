@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import eroomData from "../data/eroom-data-model.json";
+import eroomData from "../data/eroom-data-model-1-1.json";
 import EroomStepper from "../components/audit/eroom/EroomStepper.astro";
 import EroomSection from "../components/audit/eroom/EroomSection.astro";
 import AuditNavigation from "../components/audit/AuditNavigation.astro";
@@ -64,7 +64,7 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
   import { getProject, saveProject } from "../services/project-service";
   import { calculateEroomGlobalScore, getEroomRanking, validateEroomCompletion } from "../utils/eroom-scoring";
   import type { EroomCategory, EroomAnswerValue } from "../types/eroom";
-  import eroomData from "../data/eroom-data-model.json";
+  import eroomData from "../data/eroom-data-model-1-1.json";
   import { showToast } from "../utils/toast";
 
   const categories = eroomData.categories as EroomCategory[];
