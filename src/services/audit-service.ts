@@ -8,7 +8,7 @@
  */
 
 import type { Project } from '../types/project';
-import type { Evaluation } from '../types/evaluation';
+import type { Evaluation, EvaluationAnswers } from '../types/evaluation';
 import { EvaluationType, EvaluationStatus } from '../types/evaluation';
 import type { EroomCategory, EroomAnswerValue } from '../types/eroom';
 import { getProject, saveProject } from './project-service';
@@ -159,7 +159,7 @@ export function finalizeEroomEvaluation(
   const { globalScore } = calculateEroomGlobalScore(answers, allCategories);
   const ranking = getEroomRanking(globalScore);
 
-  evaluation.answers = answers;
+  evaluation.answers = answers as EvaluationAnswers;
   evaluation.score = globalScore;
   evaluation.ranking = ranking;
   evaluation.answeredQuestions = validation.answeredQuestions;
@@ -218,7 +218,7 @@ export function saveEroomProgressiveScore(
   const evaluation = project.evaluations[evalType];
   if (!evaluation) return false;
 
-  evaluation.answers = answers;
+  evaluation.answers = answers as EvaluationAnswers;
 
   const { globalScore } = calculateEroomGlobalScore(answers, allCategories);
   evaluation.score = globalScore;
