@@ -131,14 +131,14 @@ const evaluationTypes = getAvailableEvaluationTypes()
 <script>
   import { getProject, saveProject, deleteProject } from '../../services/project-service'
   import { EvaluationType, EvaluationStatus, EVALUATION_TYPES, createEmptyEvaluation } from '../../types/evaluation'
-  import type { Evaluation } from '../../types/evaluation'
   import type { Project } from '../../types/project'
+  import { getScoreDetailsByType, prepareChartData } from '../../services/evaluation-service'
   // API Green Score imports
-  import { calculateScoresBySection, type Question } from '../../utils/apigreenscore-scoring'
+  import { type Question } from '../../utils/apigreenscore-scoring'
   import surveyQuestions from '../../data/apigreenscore-survey-questions.json'
   // EROOM imports
-  import { calculateEroomGlobalScore, getScoreInterpretation } from '../../utils/eroom-scoring'
-  import type { EroomCategory, EroomAnswerValue } from '../../types/eroom'
+  import { getScoreInterpretation } from '../../utils/eroom-scoring'
+  import type { EroomCategory } from '../../types/eroom'
   import eroomData from '../../data/eroom-data-model-1-1.json'
 
   declare global {
@@ -178,31 +178,6 @@ const evaluationTypes = getAvailableEvaluationTypes()
       month: 'short',
       day: 'numeric'
     })
-  }
-
-  // Score interpretation for API Green Score (high = good)
-  const getApiGreenScoreDetails = (score: number) => {
-    if (score >= 90) return { text: 'Excellent', color: '#10b981', shadow: 'rgba(16, 185, 129, 0.2)' }
-    if (score >= 75) return { text: 'Good', color: '#84cc16', shadow: 'rgba(132, 204, 22, 0.2)' }
-    if (score >= 50) return { text: 'Needs Improvement', color: '#f59e0b', shadow: 'rgba(245, 158, 11, 0.2)' }
-    return { text: 'Poor', color: '#ef4444', shadow: 'rgba(239, 68, 68, 0.2)' }
-  }
-
-  // Score interpretation for EROOM (high = more optimization potential = worse)
-  const getEroomScoreDetails = (score: number) => {
-    const interpretation = getScoreInterpretation(score)
-    return {
-      text: interpretation.level,
-      color: interpretation.color,
-      shadow: `${interpretation.color}33` // 20% opacity
-    }
-  }
-
-  const getScoreDetails = (score: number, evalType: EvaluationType) => {
-    if (evalType === EvaluationType.EROOM) {
-      return getEroomScoreDetails(score)
-    }
-    return getApiGreenScoreDetails(score)
   }
 
   /**
@@ -249,7 +224,7 @@ const evaluationTypes = getAvailableEvaluationTypes()
     if (scoreEl && scoreLabelEl && scoreCircleEl) {
       if (score !== null) {
         scoreEl.textContent = score.toString()
-        const details = getScoreDetails(score, evalType)
+        const details = getScoreDetailsByType(score, evalType)
         scoreLabelEl.textContent = details.text
         scoreCircleEl.style.borderColor = details.color
         scoreCircleEl.style.boxShadow = `0 0 20px ${details.shadow}`
@@ -277,26 +252,12 @@ const evaluationTypes = getAvailableEvaluationTypes()
     // Radar Chart - Score by Section
     if (chartCard) {
       if (evaluation?.answers && Object.keys(evaluation.answers).length > 0) {
-        let chartData: Array<{ label: string; score: number }> = []
-
-        if (evalType === EvaluationType.EROOM) {
-          // EROOM: Use category scores
-          const { categoryScores } = calculateEroomGlobalScore(
-            evaluation.answers as Record<string, EroomAnswerValue>,
-            eroomCategories
-          )
-          chartData = categoryScores.map(cs => ({
-            label: cs.categoryName,
-            score: cs.score
-          }))
-        } else {
-          // API Green Score: Use section scores
-          const sectionScores = calculateScoresBySection(
-            evaluation.answers,
-            surveyQuestions as Question[]
-          )
-          chartData = sectionScores.map(s => ({ label: s.section, score: s.score }))
-        }
+        const chartData = prepareChartData(
+          evaluation.answers,
+          evalType,
+          evalType === EvaluationType.API_GREEN_SCORE ? surveyQuestions as Question[] : undefined,
+          evalType === EvaluationType.EROOM ? eroomCategories : undefined
+        )
 
         if (chartData.length > 0) {
           chartCard.classList.remove('hidden')
