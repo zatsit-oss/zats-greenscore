@@ -70,20 +70,9 @@
 </style>
 
 <script>
-	const themeToggle = document.getElementById("theme-toggle");
+	import { getEffectiveTheme, toggleTheme } from "../services/theme-service";
 
-	const getTheme = () => {
-		if (
-			typeof localStorage !== "undefined" &&
-			localStorage.getItem("theme")
-		) {
-			return localStorage.getItem("theme");
-		}
-		if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-			return "dark";
-		}
-		return "light";
-	};
+	const themeToggle = document.getElementById("theme-toggle");
 
 	const updateAriaLabel = (theme: string) => {
 		if (themeToggle) {
@@ -94,23 +83,11 @@
 		}
 	};
 
-	const setTheme = (theme: string) => {
-		if (theme === "light") {
-			document.documentElement.setAttribute("data-theme", "light");
-			localStorage.setItem("theme", "light");
-		} else {
-			document.documentElement.setAttribute("data-theme", "dark");
-			localStorage.setItem("theme", "dark");
-		}
-		updateAriaLabel(theme);
-	};
-
 	// Set initial aria-label
-	updateAriaLabel(getTheme() || "light");
+	updateAriaLabel(getEffectiveTheme());
 
 	themeToggle?.addEventListener("click", () => {
-		const currentTheme = getTheme();
-		const newTheme = currentTheme === "dark" ? "light" : "dark";
-		setTheme(newTheme);
+		const newTheme = toggleTheme();
+		updateAriaLabel(newTheme);
 	});
 </script>
