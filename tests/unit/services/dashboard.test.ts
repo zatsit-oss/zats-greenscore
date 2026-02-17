@@ -3,8 +3,8 @@ import type { Project } from '../../../src/types/project'
 import { EvaluationType, EvaluationStatus } from '../../../src/types/evaluation'
 import type { Evaluation } from '../../../src/types/evaluation'
 
-// Mock storage module
-vi.mock('../../../src/utils/storage', () => {
+// Mock project-service module
+vi.mock('../../../src/services/project-service', () => {
   let projects: Project[] = []
   return {
     getAllProjects: vi.fn(() => projects),
@@ -18,10 +18,10 @@ import {
   getAllProjectsWithAnyEvaluation,
   getChartData
 } from '../../../src/services/dashboard'
-import * as storage from '../../../src/utils/storage'
+import * as projectService from '../../../src/services/project-service'
 
 const setProjects = (p: Project[]) => {
-  (storage as unknown as { _setProjects: (p: Project[]) => void })._setProjects(p)
+  (projectService as unknown as { _setProjects: (p: Project[]) => void })._setProjects(p)
 }
 
 const makeEvaluation = (overrides: Partial<Evaluation> = {}): Evaluation => ({

@@ -16,7 +16,7 @@
 import type { Project } from '../types/project';
 import type { Evaluation } from '../types/evaluation';
 import { EvaluationType, EvaluationStatus } from '../types/evaluation';
-import { getAllProjects } from '../utils/storage';
+import { getAllProjects } from './project-service';
 
 // ============================================================================
 // TYPES
