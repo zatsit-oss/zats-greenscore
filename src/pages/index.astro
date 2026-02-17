@@ -50,7 +50,7 @@ const defaultEvalType = EvaluationType.API_GREEN_SCORE
   </div>
 
   <!-- Global Chart - Shows only when there are completed projects -->
-  <div class="glass-card mb-12 hidden" id="chartSection">
+  <div class="glass-card mb-12 hidden" id="chartSection" aria-label="Projects Score Comparison chart">
     <BarChart id="projectsBarChart" title="Projects Score Comparison" />
   </div>
 
@@ -86,11 +86,11 @@ const defaultEvalType = EvaluationType.API_GREEN_SCORE
       <p class="text-sm text-red-400 mb-6">This action cannot be undone.</p>
       <div class="flex gap-4 justify-end">
         <button
-          class="btn btn-secondary focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+          class="btn btn-secondary"
           id="cancelDeleteBtn"
         >Cancel</button>
         <button
-          class="btn btn-danger focus:outline-none focus:ring-2 focus:ring-red-500"
+          class="btn btn-danger focus:ring-red-500"
           id="confirmDeleteBtn"
         >Delete</button>
       </div>

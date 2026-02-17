@@ -135,6 +135,12 @@ const { id = 'barChart', title = 'Score Comparison', maxValue = 100 } = Astro.pr
     border-radius: 4px;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .bar-fill {
+      transition: none;
+    }
+  }
+
 </style>
 
 <script>

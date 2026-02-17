@@ -41,7 +41,7 @@ const evaluationTypes = getAvailableEvaluationTypes()
 
       <div class="flex flex-col gap-2">
         <label for="evaluationType" class="text-sm font-medium text-muted">Evaluation Type</label>
-        <select id="evaluationType" name="evaluationType" class="form-select p-3 text-base" required>
+        <select id="evaluationType" name="evaluationType" class="form-select p-3 text-base" required aria-describedby="evaluationDescription">
           {evaluationTypes.map((evalType) => (
             <option value={evalType.id}>
               {evalType.name}

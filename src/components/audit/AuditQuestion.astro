@@ -43,7 +43,7 @@ const { question: q } = Astro.props;
     {q.tooltip && (
         <button
             type="button"
-            class="info-icon-btn absolute top-4 right-4 w-5 h-5 rounded-full bg-slate-600/20 hover:bg-slate-600/40 border border-slate-600/40 hover:border-[var(--color-primary)] flex items-center justify-center transition-colors cursor-pointer group"
+            class="info-icon-btn absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-600/20 hover:bg-slate-600/40 border border-slate-600/40 hover:border-[var(--color-primary)] flex items-center justify-center transition-colors cursor-pointer group focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2"
             data-tooltip={q.tooltip}
             data-question-id={q.id}
             aria-label={`Show more information about ${q.id}`}
@@ -54,7 +54,8 @@ const { question: q } = Astro.props;
                 viewBox="0 0 24 24"
                 stroke-width="2"
                 stroke="currentColor"
-                class="w-3.5 h-3.5 text-[var(--color-text-muted)] group-hover:text-[var(--color-primary)] transition-colors"
+                class="w-4 h-4 text-[var(--color-text-muted)] group-hover:text-[var(--color-primary)] transition-colors"
+                aria-hidden="true"
             >
                 <path
                     stroke-linecap="round"
@@ -79,9 +80,10 @@ const { question: q } = Astro.props;
                         type="number"
                         id={`input-${q.id}`}
                         name={q.id}
-                        class="bg-slate-900/50 border border-[var(--color-border)] rounded-lg p-2 text-[var(--color-text)] w-24 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
+                        class="bg-slate-900/50 border border-[var(--color-border)] rounded-lg p-2 text-[var(--color-text)] w-24 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:ring-offset-2"
                         placeholder="0"
                         min="0"
+                        aria-label={q.id === "US06" ? "Number of consumers" : "Percentage"}
                         aria-describedby={`unit-${q.id}`}
                     />
                     <span id={`unit-${q.id}`} class="text-sm text-[var(--color-text-muted)]">
@@ -89,7 +91,7 @@ const { question: q } = Astro.props;
                     </span>
                 </div>
             ) : (
-                <label class="relative inline-flex items-center gap-4 cursor-pointer group">
+                <label class="relative inline-flex items-center gap-4 cursor-pointer group min-h-11">
                     <input
                         type="checkbox"
                         name={q.id}
@@ -113,11 +115,13 @@ const { question: q } = Astro.props;
     role="dialog"
     aria-modal="true"
     aria-labelledby={`tooltip-title-${q.id}`}
+    aria-describedby={`tooltip-content-${q.id}`}
     style="position: fixed; top: 0; left: 0; right: 0; bottom: 0;"
 >
     <div
         class="modal-overlay fixed inset-0 bg-black/60 backdrop-blur-lg transition-opacity"
         data-modal-close={`tooltip-modal-${q.id}`}
+        aria-hidden="true"
         style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9998;"
     ></div>
     <div
@@ -153,6 +157,7 @@ const { question: q } = Astro.props;
             </button>
         </div>
         <div
+            id={`tooltip-content-${q.id}`}
             class="tooltip-content text-[var(--color-text)] whitespace-pre-line text-sm leading-relaxed"
             data-tooltip-content={q.id}
         >
@@ -201,6 +206,16 @@ const { question: q } = Astro.props;
         to {
             opacity: 1;
             transform: scale(1) translateY(0);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .modal-content {
+            animation: none;
+        }
+
+        .modal-overlay {
+            transition: none;
         }
     }
 </style>

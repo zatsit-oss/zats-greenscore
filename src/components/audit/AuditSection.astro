@@ -44,4 +44,10 @@ const { sectionName, questions, index } = Astro.props;
             transform: translateY(0);
         }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+        .step-content {
+            animation: none !important;
+        }
+    }
 </style>
