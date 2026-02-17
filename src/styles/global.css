@@ -117,7 +117,7 @@ body {
 .form-select,
 .form-input {
   @apply px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer;
-  @apply focus:outline-none focus:ring-2 focus:ring-emerald-500/20;
+  @apply focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:ring-offset-2;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   color: var(--color-text);
@@ -151,6 +151,7 @@ body {
 /* Buttons */
 .btn {
   @apply px-4 py-2 rounded-lg font-medium transition-colors;
+  @apply focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2;
 }
 
 .btn-primary {
@@ -264,6 +265,17 @@ button:hover {
 .toast.show {
   transform: translateY(0);
   opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    transition: none;
+    transform: none;
+  }
+
+  .toast.show {
+    transform: none;
+  }
 }
 
 .toast-success {

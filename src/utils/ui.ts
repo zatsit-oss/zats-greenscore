@@ -154,6 +154,8 @@ export const populateCard = (
                     const scoreBadge = scoreItem.querySelector('.score-badge') as HTMLElement;
                     if (scoreBadge) {
                         scoreBadge.textContent = evalSummary.score.toString();
+                        const typeName = getEvaluationTypeName(evalSummary.type);
+                        scoreBadge.setAttribute('aria-label', `${typeName}: ${evalSummary.score}`);
                         const color = getScoreColor(evalSummary.score, evalSummary.type);
                         scoreBadge.style.borderColor = color;
                         scoreBadge.style.color = color;
