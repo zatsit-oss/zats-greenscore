@@ -20,7 +20,9 @@ const { title } = Astro.props;
 		<title>{title} | Zats Green Score</title>
 		<!-- Using system fonts for eco-design (no external font CDN) -->
 		<script is:inline>
-			// Immediate theme application to prevent flash
+			// Immediate theme application to prevent FOUC (Flash Of Unstyled Content).
+			// This must remain an inline script with direct localStorage access because
+			// is:inline scripts cannot use ES module imports (like theme-service.ts).
 			const theme = (() => {
 				if (
 					typeof localStorage !== "undefined" &&
