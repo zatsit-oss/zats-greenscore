@@ -1,17 +1,8 @@
 import { ProjectRanking } from '../types/project'
+import type { Question, Answers } from '../types/apigreenscore'
 
-export interface Question {
-  section: string;
-  id: string;
-  question: string;
-  description: string;
-  points: number;
-  formula?: string;
-}
-
-export interface Answers {
-  [key: string]: boolean | string | number;
-}
+// Re-export types for backward compatibility
+export type { Question, Answers } from '../types/apigreenscore'
 
 const safeEvaluate = (formula: string, x: number): number => {
   try {
