@@ -79,9 +79,10 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 </Layout>
 
 <script>
-	import { getRankingScore, calculateProjectScore, type Question } from "../utils/apigreenscore-scoring";
-	import { EvaluationType, EvaluationStatus } from "../types/evaluation";
-	import { getProject, saveProject } from "../services/project-service";
+	import type { Question } from "../utils/apigreenscore-scoring";
+	import { EvaluationType } from "../types/evaluation";
+	import { saveAuditProgress, finalizeApiGreenScoreEvaluation } from "../services/audit-service";
+	import { getProject } from "../services/project-service";
 
 	let currentStep = 0;
 	const steps = document.querySelectorAll(".step-content");
@@ -244,15 +245,7 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 	};
 
 	// Auto-save logic
-	const saveAnswers = () => {
-		if (!projectId) return;
-
-		const project = getProject(projectId);
-		if (!project) return;
-
-		const evaluation = project.evaluations[evaluationType];
-		if (!evaluation) return;
-
+	const collectAnswers = (): Record<string, boolean | string | number> => {
 		const checkboxes = auditForm?.querySelectorAll('input[type="checkbox"]');
 		const numberInputs = auditForm?.querySelectorAll('input[type="number"]');
 		const answers: Record<string, boolean | string | number> = {};
@@ -267,9 +260,13 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 			answers[input.name] = input.value;
 		});
 
-		evaluation.answers = answers;
-		project.updatedAt = new Date().toISOString();
-		saveProject(project);
+		return answers;
+	};
+
+	const saveAnswers = () => {
+		if (!projectId) return;
+		const answers = collectAnswers();
+		saveAuditProgress(projectId, evaluationType, answers);
 		updateQuestionIcons();
 	};
 
@@ -320,57 +317,19 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 			return;
 		}
 
-		const project = getProject(projectId);
-		if (!project) {
-			showToast("Project not found. Cannot save.", "error");
+		const answers = collectAnswers();
+		const result = finalizeApiGreenScoreEvaluation(
+			projectId,
+			answers,
+			surveyQuestions as Question[]
+		);
+
+		if (!result.success) {
+			showToast(result.message, "error");
 			return;
 		}
 
-		const evaluation = project.evaluations[evaluationType];
-		if (!evaluation) {
-			showToast("Evaluation not found. Cannot save.", "error");
-			return;
-		}
-
-		// Collect Answers
-		const checkboxes = auditForm.querySelectorAll('input[type="checkbox"]');
-		const numberInputs = auditForm.querySelectorAll('input[type="number"]');
-		const answers: Record<string, boolean | string | number> = {};
-
-		checkboxes.forEach((cb) => {
-			const input = cb as HTMLInputElement;
-			answers[input.name] = input.checked;
-		});
-
-		numberInputs.forEach((num) => {
-			const input = num as HTMLInputElement;
-			answers[input.name] = input.value;
-		});
-
-		// Calculate Score
-		const { avg: finalScore } = calculateProjectScore(
-			answers,
-			surveyQuestions as Question[],
-		);
-		const finalRankingScore = getRankingScore(
-			answers,
-			surveyQuestions as Question[],
-		);
-
-		// Update evaluation
-		evaluation.answers = answers;
-		evaluation.score = finalScore;
-		evaluation.ranking = finalRankingScore;
-		evaluation.status = EvaluationStatus.COMPLETED;
-		evaluation.completedAt = new Date().toISOString();
-
-		// Save project
-		saveProject(project);
-
-		showToast(
-			`Audit Completed! Score: ${finalScore}/100`,
-			"success",
-		);
+		showToast(result.message, "success");
 		setTimeout(() => {
 			window.location.href = `/projects/view?id=${projectId}`;
 		}, 1500);
