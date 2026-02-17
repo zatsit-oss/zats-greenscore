@@ -8,7 +8,8 @@
  */
 
 import { EvaluationType } from '../types/evaluation';
-import { calculateScoresBySection, type Question, type Answers } from '../utils/apigreenscore-scoring';
+import type { Question, Answers } from '../types/apigreenscore';
+import { calculateScoresBySection } from '../utils/apigreenscore-scoring';
 import { calculateEroomGlobalScore, getScoreInterpretation } from '../utils/eroom-scoring';
 import type { EroomCategory, EroomAnswerValue } from '../types/eroom';
 

@@ -12,7 +12,8 @@ import type { Evaluation } from '../types/evaluation';
 import { EvaluationType, EvaluationStatus } from '../types/evaluation';
 import type { EroomCategory, EroomAnswerValue } from '../types/eroom';
 import { getProject, saveProject } from './project-service';
-import { calculateProjectScore, getRankingScore, type Question, type Answers } from '../utils/apigreenscore-scoring';
+import type { Question, Answers } from '../types/apigreenscore';
+import { calculateProjectScore, getRankingScore } from '../utils/apigreenscore-scoring';
 import { calculateEroomGlobalScore, getEroomRanking, validateEroomCompletion } from '../utils/eroom-scoring';
 
 // ============================================================================
