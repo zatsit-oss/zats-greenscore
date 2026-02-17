@@ -17,7 +17,8 @@
       "WebFetch(domain:doc-04-88-sheets.googleusercontent.com)",
       "WebFetch(domain:docs.google.com)",
       "Bash(pip3 install:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "WebFetch(domain:skills.sh)"
     ]
   }
 }
