@@ -60,9 +60,10 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
 </Layout>
 
 <script>
-  import { EvaluationType, EvaluationStatus } from "../types/evaluation";
-  import { getProject, saveProject } from "../services/project-service";
-  import { calculateEroomGlobalScore, getEroomRanking, validateEroomCompletion } from "../utils/eroom-scoring";
+  import { EvaluationType } from "../types/evaluation";
+  import { saveEroomProgressiveScore, finalizeEroomEvaluation } from "../services/audit-service";
+  import { getProject } from "../services/project-service";
+  import { validateEroomCompletion } from "../utils/eroom-scoring";
   import type { EroomCategory, EroomAnswerValue } from "../types/eroom";
   import eroomData from "../data/eroom-data-model-1-1.json";
   import { showToast } from "../utils/toast";
@@ -256,27 +257,8 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
   const saveAnswers = () => {
     if (!projectId) return;
 
-    const project = getProject(projectId);
-    if (!project) return;
-
-    const evaluation = project.evaluations[evaluationType];
-    if (!evaluation) return;
-
     const answers = collectAnswers();
-    evaluation.answers = answers;
-
-    // Progressive score calculation
-    const { globalScore } = calculateEroomGlobalScore(answers, categories);
-    evaluation.score = globalScore;
-    evaluation.ranking = getEroomRanking(globalScore);
-
-    // Track progress (only scored categories)
-    const scoredValidation = validateEroomCompletion(answers, scoredCategories);
-    evaluation.answeredQuestions = scoredValidation.answeredQuestions;
-    evaluation.totalQuestions = scoredValidation.totalQuestions;
-
-    project.updatedAt = new Date().toISOString();
-    saveProject(project);
+    saveEroomProgressiveScore(projectId, evaluationType, answers, categories, scoredCategories);
 
     // Update counter display
     updateProgress(answers);
@@ -324,63 +306,15 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
       return;
     }
 
-    const project = getProject(projectId);
-    if (!project) {
-      showToast("Project not found. Cannot save.", "error");
-      return;
-    }
-
-    const evaluation = project.evaluations[evaluationType];
-    if (!evaluation) {
-      showToast("Evaluation not found. Cannot save.", "error");
-      return;
-    }
-
-    // Collect Answers
     const answers = collectAnswers();
+    const result = finalizeEroomEvaluation(projectId, answers, categories, scoredCategories);
 
-    // Validate completion - only scored categories count
-    const validation = validateEroomCompletion(answers, scoredCategories);
-
-    // Calculate Score using EROOM scoring
-    const { globalScore, categoryScores } = calculateEroomGlobalScore(answers, categories);
-    const ranking = getEroomRanking(globalScore);
-
-    // Update evaluation
-    evaluation.answers = answers;
-    evaluation.score = globalScore;
-    evaluation.ranking = ranking;
-    evaluation.answeredQuestions = validation.answeredQuestions;
-    evaluation.totalQuestions = validation.totalQuestions;
-
-    // Only mark as COMPLETED if all scored questions are answered
-    if (validation.isComplete) {
-      evaluation.status = EvaluationStatus.COMPLETED;
-      evaluation.completedAt = new Date().toISOString();
-    } else {
-      evaluation.status = EvaluationStatus.IN_PROGRESS;
+    if (!result.success) {
+      showToast(result.message, "error");
+      return;
     }
 
-    // Save project
-    saveProject(project);
-
-    // Show appropriate message
-    if (validation.isComplete) {
-      // Show result with EROOM interpretation (high score = more optimization potential)
-      const message = globalScore <= 25
-        ? `Very mature service! Score: ${globalScore}%`
-        : globalScore <= 50
-          ? `Some optimizations possible. Score: ${globalScore}%`
-          : globalScore <= 75
-            ? `Significant optimization potential. Score: ${globalScore}%`
-            : `High optimization potential! Score: ${globalScore}%`;
-
-      showToast(message, "success");
-    } else {
-      const remaining = validation.totalQuestions - validation.answeredQuestions;
-      showToast(`Progress saved. ${remaining} question${remaining > 1 ? 's' : ''} remaining to complete the evaluation.`, "info");
-    }
-
+    showToast(result.message, result.isComplete ? "success" : "info");
     setTimeout(() => {
       window.location.href = `/projects/view?id=${projectId}&evaluationType=${evaluationType}`;
     }, 1500);
