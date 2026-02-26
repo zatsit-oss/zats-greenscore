@@ -31,7 +31,7 @@ const isQuickDiagnosis = category.id === '0' && !category.includeInScore
           {category.name}
         </h2>
         {isQuickDiagnosis && (
-          <span class="px-2 py-1 text-xs font-medium rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
+          <span class="px-2 py-1 text-xs font-medium rounded-full bg-amber-500/20 text-[var(--color-text)] border border-amber-500/30">
             Diagnosis - Not included in score
           </span>
         )}
@@ -48,7 +48,7 @@ const isQuickDiagnosis = category.id === '0' && !category.includeInScore
       <div class="flex items-start gap-3">
         <span class="text-xl" aria-hidden="true">&#9432;</span>
         <div>
-          <p class="text-sm font-medium text-amber-400 mb-1">
+          <p class="text-sm font-medium text-[var(--color-text)] mb-1">
             Quick Diagnosis
           </p>
           <p class="text-sm text-[var(--color-text-muted)]">
@@ -70,12 +70,6 @@ const isQuickDiagnosis = category.id === '0' && !category.includeInScore
     ))}
   </div>
 
-  <!-- Category Progress -->
-  <div class="mt-6 pt-4 border-t border-[var(--color-border)]">
-    <p class="text-sm text-[var(--color-text-muted)]">
-      {category.questions.length} question{category.questions.length > 1 ? 's' : ''} in this section
-    </p>
-  </div>
 </div>
 
 <style>
