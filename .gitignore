@@ -29,6 +29,8 @@ parse_survey.mjs
 .idea/
 # vscode setting folder
 .vscode/
+# claude local settings (user-specific)
+.claude/settings.local.json
 # Tauri
 src-tauri/target/
 src-tauri/gen/
