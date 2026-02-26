@@ -183,7 +183,7 @@ const { id = 'barChart', title = 'Score Comparison', maxValue = 100 } = Astro.pr
       barItem.setAttribute('role', 'listitem');
 
       const labelHtml = item.id
-        ? `<a href="/projects/view?id=${item.id}" class="bar-label" title="${item.label}" aria-label="${item.label}: score ${item.value} sur ${maxValue}">${item.label}</a>`
+        ? `<a href="/projects/view?id=${item.id}" class="bar-label" title="${item.label}" aria-label="${item.label}: score ${item.value} out of ${maxValue}">${item.label}</a>`
         : `<span class="bar-label" title="${item.label}">${item.label}</span>`;
 
       barItem.innerHTML = `

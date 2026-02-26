@@ -18,7 +18,9 @@
       "WebFetch(domain:docs.google.com)",
       "Bash(pip3 install:*)",
       "Bash(python3:*)",
-      "WebFetch(domain:skills.sh)"
+      "WebFetch(domain:skills.sh)",
+      "Bash(wc:*)",
+      "Bash(npx vitest:*)"
     ]
   }
 }

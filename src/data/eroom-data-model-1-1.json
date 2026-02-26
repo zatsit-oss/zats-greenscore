@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "EROOM Optimization Framework",
-  "description": "Modèle de données pour le framework EOF (EROOM Optimization Framework) v1.1 - Évaluation de la maturité des services numériques",
+  "description": "Data model for the EOF (EROOM Optimization Framework) v1.1 - Digital service maturity evaluation",
   "version": "1.1",
   "license": "CC-BY-SA",
   "source": "Boavizta",
@@ -9,185 +9,185 @@
     "impactLevels": {
       "Decisive": {
         "weight": 3,
-        "description": "Impact décisif sur l'optimisation"
+        "description": "Decisive impact on optimization"
       },
       "Significant": {
         "weight": 2,
-        "description": "Impact significatif sur l'optimisation"
+        "description": "Significant impact on optimization"
       },
       "Moderate": {
         "weight": 1,
-        "description": "Impact modéré sur l'optimisation"
+        "description": "Moderate impact on optimization"
       }
     },
     "scoring": {
       "formula": "IF(questionsAnswered == 0, 0, actualScore / maxPossibleScore)",
-      "description": "Le score représente le potentiel d'optimisation en pourcentage (0-100%)",
+      "description": "The score represents the optimization potential as a percentage (0-100%)",
       "calculation": {
         "standard": {
-          "description": "Pour les catégories 1-5 (Product, Architecture, Infrastructure, Storage & Data, Algo & Code)",
+          "description": "For categories 1-5 (Product, Architecture, Infrastructure, Storage & Data, Algo & Code)",
           "rules": {
             "improvement_potential": {
               "contributesToScore": true,
               "scoreValue": "impactWeight",
-              "description": "Si 'Improvement potential identified' est sélectionné, ajoute le poids de l'impact au score"
+              "description": "If 'Improvement potential identified' is selected, adds impact weight to score"
             },
             "strength_confirmed": {
               "contributesToScore": false,
               "scoreValue": 0,
-              "description": "Si 'Strength confirmed' est sélectionné, n'ajoute rien au score (pas de potentiel d'amélioration)"
+              "description": "If 'Strength confirmed' is selected, adds nothing to score (no improvement potential)"
             },
             "not_applicable": {
               "contributesToScore": false,
               "excludeFromMax": true,
-              "description": "Si 'Not applicable', la question est exclue du calcul (ni score, ni max)"
+              "description": "If 'Not applicable', the question is excluded from calculation (neither score nor max)"
             },
             "to_evaluate": {
               "contributesToScore": false,
               "excludeFromMax": true,
-              "description": "Question non évaluée - exclue du calcul"
+              "description": "Question not evaluated - excluded from calculation"
             },
             "evaluation_in_progress": {
               "contributesToScore": false,
               "excludeFromMax": true,
-              "description": "Évaluation en cours - exclue du calcul"
+              "description": "Evaluation in progress - excluded from calculation"
             }
           },
           "maxScorePerQuestion": "impactWeight (Decisive=3, Significant=2, Moderate=1)"
         },
         "easeOfChange": {
-          "description": "Pour la catégorie 6 (Ease of change)",
+          "description": "For category 6 (Ease of change)",
           "rules": {
             "hard_to_change": {
               "contributesToScore": true,
               "scoreValue": "impactWeight",
-              "description": "Difficile à changer = potentiel d'optimisation identifié"
+              "description": "Hard to change = optimization potential identified"
             },
             "moderate_effort": {
               "contributesToScore": true,
               "scoreValue": "impactWeight * 0.5",
-              "description": "Effort modéré = potentiel d'optimisation partiel"
+              "description": "Moderate effort = partial optimization potential"
             },
             "easy_to_change": {
               "contributesToScore": false,
               "scoreValue": 0,
-              "description": "Facile à changer = pas de blocage pour l'optimisation"
+              "description": "Easy to change = no blocker for optimization"
             },
             "not_applicable": {
               "contributesToScore": false,
               "excludeFromMax": true,
-              "description": "Non applicable - exclu du calcul"
+              "description": "Not applicable - excluded from calculation"
             }
           }
         },
         "quickDiagnosis": {
-          "description": "Pour la catégorie 0 (Quick Diagnosis) - non inclus dans le score global",
+          "description": "For category 0 (Quick Diagnosis) - not included in global score",
           "rules": {
             "scoreRange": "1-5 par question",
-            "interpretation": "Score bas (1-2) = fort potentiel d'optimisation, Score haut (4-5) = service mature"
+            "interpretation": "Low score (1-2) = high optimization potential, High score (4-5) = mature service"
           }
         }
       },
       "categoryScore": "SUM(questionScores) / SUM(maxPossibleScores) * 100",
-      "globalScore": "AVERAGE(categoryScores) pour les catégories 1-6"
+      "globalScore": "AVERAGE(categoryScores) for categories 1-6"
     },
     "interpretation": {
-      "highPercentage": "Fort potentiel d'amélioration (technique, organisationnel ou environnemental)",
-      "lowPercentage": "Service déjà mature ou efficient",
+      "highPercentage": "High improvement potential (technical, organizational or environmental)",
+      "lowPercentage": "Already mature or efficient service",
       "scale": {
-        "0-25%": "Service très mature, peu d'optimisations nécessaires",
-        "25-50%": "Quelques opportunités d'amélioration identifiées",
-        "50-75%": "Potentiel d'optimisation significatif",
-        "75-100%": "Fort potentiel d'optimisation - priorité haute"
+        "0-25%": "Very mature service, few optimizations needed",
+        "25-50%": "Some improvement opportunities identified",
+        "50-75%": "Significant optimization potential",
+        "75-100%": "High optimization potential - high priority"
       }
     },
     "evaluationScales": {
       "quickDiagnosis": {
         "type": "numeric",
-        "description": "Échelle numérique 1-5 avec descriptions détaillées par question",
+        "description": "Numeric scale 1-5 with detailed descriptions per question",
         "min": 1,
         "max": 5
       },
       "standard": {
         "type": "qualitative",
-        "description": "Évaluation qualitative pour les catégories 1-5 (Product, Architecture, Infrastructure, Storage & Data, Algo & Code)",
+        "description": "Qualitative evaluation for categories 1-5 (Product, Architecture, Infrastructure, Storage & Data, Algo & Code)",
         "options": [
           {
             "id": "to_evaluate",
             "label": "To Evaluate",
             "emoji": "🤔",
-            "description": "Question non encore évaluée"
+            "description": "Question not yet evaluated"
           },
           {
             "id": "evaluation_in_progress",
             "label": "Evaluation in progress",
             "emoji": "📋",
-            "description": "Évaluation en cours"
+            "description": "Evaluation in progress"
           },
           {
             "id": "strength_confirmed",
             "label": "Strength confirmed",
             "emoji": "✅",
-            "description": "Force confirmée - pas de potentiel d'amélioration",
+            "description": "Strength confirmed - no improvement potential",
             "isPositive": true
           },
           {
             "id": "improvement_potential",
             "label": "Improvement potential identified",
             "emoji": "💡",
-            "description": "Potentiel d'amélioration identifié",
+            "description": "Improvement potential identified",
             "isPositive": false
           },
           {
             "id": "not_applicable",
             "label": "Not applicable",
             "emoji": "🚫",
-            "description": "Non applicable à ce projet"
+            "description": "Not applicable to this project"
           }
         ]
       },
       "easeOfChange": {
         "type": "qualitative",
-        "description": "Évaluation de la facilité de changement pour la catégorie 6",
+        "description": "Ease of change evaluation for category 6",
         "options": [
           {
             "id": "to_evaluate",
             "label": "To Evaluate",
             "emoji": "🤔",
-            "description": "Question non encore évaluée"
+            "description": "Question not yet evaluated"
           },
           {
             "id": "evaluation_in_progress",
             "label": "Evaluation in progress",
             "emoji": "📋",
-            "description": "Évaluation en cours"
+            "description": "Evaluation in progress"
           },
           {
             "id": "easy_to_change",
             "label": "Easy to change",
             "emoji": "🟢",
-            "description": "Facile à changer - faible effort requis",
+            "description": "Easy to change - low effort required",
             "effortLevel": 1
           },
           {
             "id": "moderate_effort",
             "label": "Moderate effort",
             "emoji": "🟡",
-            "description": "Effort modéré requis",
+            "description": "Moderate effort required",
             "effortLevel": 2
           },
           {
             "id": "hard_to_change",
             "label": "Hard to change",
             "emoji": "🔴",
-            "description": "Difficile à changer - effort important requis",
+            "description": "Hard to change - significant effort required",
             "effortLevel": 3
           },
           {
             "id": "not_applicable",
             "label": "Not applicable",
             "emoji": "🚫",
-            "description": "Non applicable à ce projet"
+            "description": "Not applicable to this project"
           }
         ]
       }
@@ -198,7 +198,7 @@
       "id": "0",
       "name": "Quick Diagnosis",
       "icon": "🏦",
-      "description": "Diagnostic rapide pour évaluer les produits numériques et identifier ceux avec le plus fort potentiel d'optimisation",
+      "description": "Quick diagnosis to evaluate digital products and identify those with the highest optimization potential",
       "includeInScore": false,
       "evaluationScaleType": "quickDiagnosis",
       "questions": [
@@ -1159,7 +1159,7 @@
   },
   "evaluationResponse": {
     "type": "object",
-    "description": "Structure pour stocker les réponses d'une évaluation",
+    "description": "Structure for storing evaluation responses",
     "properties": {
       "evaluationId": {
         "type": "string",
