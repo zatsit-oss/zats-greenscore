@@ -10,6 +10,8 @@ export interface Question {
   id: string;
   question: string;
   description: string;
+  tooltip?: string;
+  example?: string;
   points: number;
   formula?: string;
 }

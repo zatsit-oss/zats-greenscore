@@ -2,7 +2,7 @@
   {
     "section": "Architecture",
     "id": "AR01",
-    "question": "Use Event Driven Architecture to avoid polling madness and inform subscribers of an update",
+    "question": "Use Event Driven Architecture to avoid polling madness",
     "description": "Use Event Driven Architecture to avoid polling madness.",
     "tooltip": "We often notice that applications, in order to refresh their data, make very frequent requests to APIs.\nThis causes an important workload and we increase the computing resources to absorb this load in order not to penalize the other users.\n\nThe best practice is to use an event-driven architecture in order to receive a notification when a piece of information is modified to avoid making regular useless requests. But the data contained in the event must be precise to be sure to avoid a system making a request to retrieve an unused data.",
     "points": 375
@@ -18,8 +18,8 @@
   {
     "section": "Architecture",
     "id": "AR03",
-    "question": "Ensure the same API does not exist *",
-    "description": "Ensure only one API fit the same need",
+    "question": "Ensure only one API fits the same need",
+    "description": "Ensure only one API fits the same need",
     "tooltip": "It is often noticed, especially in large information systems, that an API with the same purpose and objective can exist several times.\n\nThese duplicate APIs, in addition to creating confusion in the minds of users, consume additional resources instead of pooling them for a unique API.\n\nIt is recommended to use the data catalog to make sure that the API you want to develop does not already exist. If an existing API covers part of the functional scope, it may be worthwhile to contact the producer as it may be possible to plan an evolution of the existing system rather than creating a duplicate.",
     "points": 375
   },
@@ -29,20 +29,22 @@
     "question": "Use scalable infrastructure to avoid over-provisioning",
     "description": "Use scalable infrastructure to avoid over-provisioning",
     "tooltip": "Depending of your infrastructure, used scalable runtime fit to your activity",
+    "example": "Docker EE, Kubernetes as a best way to scale up or scale down depending of season activities.",
     "points": 375
   },
   {
     "section": "Design",
     "id": "DE01",
-    "question": "Choose an exchange format with the smallest size (JSON is smallest than XML)",
+    "question": "Choose an exchange format with the smallest size (JSON is smaller than XML)",
     "description": "Prefer an exchange format with the smallest size (JSON is smaller than XML).",
     "tooltip": "One of the structuring questions when designing an API is the selection of the exchange format to use. If the choice is often made by technical constraints or personal affinities, the durability aspect is also to be taken into account.\n\nIndeed, there are exchange formats that are heavier than others. For example, JSON is smaller than XML. The second format will therefore have a stronger impact on the network, the computing and the storage.\n\nIn the interest of sustainability, we recommend to use a lighter exchange format to reduce the bandwidth consumed for the requests, the compute and storage resources consumption used to process and store the payloads.",
+    "example": "Comparing JSON vs XML for the same API response: XML payload is 43% larger than JSON. On an endpoint requested 1 million times per day, this represents 18 GB of useless data transferred daily.",
     "points": 600
   },
   {
     "section": "Design",
     "id": "DE02",
-    "question": "new API --> cache usage",
+    "question": "Use cache to avoid useless requests and preserve compute resources",
     "description": "Use cache to avoid useless requests and preserve compute resources.",
     "tooltip": "The use of a cache has become common in computer architectures to store frequently used information on a fast storage.\n\nIn addition to improving the response time of APIs, and therefore the consumer's experience of the service, it also saves computational resources by avoiding executing the same query on the same data multiple times. \n\nIt is recommended to place a cache in front of each brick of an architecture returning data (API, database, frontend application, ...) and close to the users to preserve compute resources and improve performances of the API.",
     "points": 360
@@ -50,15 +52,15 @@
   {
     "section": "Design",
     "id": "DE03",
-    "question": "Existing API --> cache usage efficiency",
-    "description": "Use the cache efficiently to avoid useless resources consumtion.",
+    "question": "Use cache efficiently to avoid useless resources consumption",
+    "description": "Use the cache efficiently to avoid useless resources consumption.",
     "tooltip": "The use of a cache has become common in computer architectures to store frequently used information on a fast storage.\n\nIn addition to improving the response time of APIs, and therefore the consumer's experience of the service, it also saves computational resources by avoiding executing the same query on the same data multiple times. \n\nIt is recommended to place a cache in front of each brick of an architecture returning data (API, database, frontend application, ...) and close to the users to preserve compute resources and improve performances of the API.",
     "points": 480
   },
   {
     "section": "Design",
     "id": "DE04",
-    "question": "Opaque token usage",
+    "question": "Prefer opaque token prior to JWT",
     "description": "Prefer opaque token usage prior to JWT",
     "tooltip": "One of the structuring questions when designing an API is the selection of the token type to use. If the choice is often made by technical constraints or personal affinities, the durability aspect is also to be taken into account.\n\nWe can note that an opaque token, in addition to improve the security, is smaller than a JWT token which will have a stronger impact on the network, storage and compute resources.\nIn the interest of sustainability, it is therefore recommended that a lighter token type be preferred in order to reduce the bandwidth, compute and storage resources consumption.",
     "points": 48
@@ -66,23 +68,23 @@
   {
     "section": "Design",
     "id": "DE05",
-    "question": "Align the cache refresh with the datasource **",
-    "description": "Align cache refresh strategy with the data source ",
+    "question": "Align the cache refresh with the datasource",
+    "description": "Align cache refresh strategy with the data source",
     "tooltip": "The use of a cache has become common in computer architectures to store frequently used information on a fast storage.\n\nIn addition to improving the response time of APIs, and therefore the consumer's experience of the service, it also saves computational resources by avoiding executing the same query on the same data multiple times. \n\nIt is recommended to place a cache in front of each brick of an architecture returning data (API, database, frontend application, ...) and close to the users to preserve compute resources and improve performances of the API.",
     "points": 96
   },
   {
     "section": "Design",
     "id": "DE06",
-    "question": "Allow part refresh of cache",
-    "description": "Allow a part cache refresh",
+    "question": "Use Event Driven Architecture to avoid polling madness",
+    "description": "Allow partial cache refresh via event-driven architecture",
     "tooltip": "When configuring a cache, it often happens that the data refresh policy (TTL) is not synchronized with the data life cycle.\n\nIn this case, the cache is not fully efficient because the data is expired too early or too late.\n\nIt is necessary to provide an expiration policy adapted to the data refresh cycle and to allow partial expiration of the cached data in order to be as efficient as possible on all the processed data. To optimize the cache as much as possible, it is also possible to build an architecture where the source of the data notifies, via an event, the cache of the expiration of a specific data.",
     "points": 96
   },
   {
     "section": "Design",
     "id": "DE07",
-    "question": "Is System,  Business or cx API ?",
+    "question": "Construct your API with customer centricity principles",
     "description": "Use Business & Cx APIs closer to the business need",
     "tooltip": "Sometimes the data returned by an API is structured in such a way that, in order to have all the data the user needs, it is necessary to make several requests to the same API.\n\nThis has the consequence of increasing the consumption of bandwidth and computing resources, for the API that has to process several requests, and of bandwidth.\n\nTherefore, it is important to provide a consistent data structure regarding the use of the API. This client-centric best practice prevents the consumer from having to perform multiple queries to retrieve all the information they need.",
     "points": 240
@@ -90,9 +92,10 @@
   {
     "section": "Design",
     "id": "DE08",
-    "question": "Possibility to filter results",
-    "description": "Implement filtering mechanism to limit the payload size",
+    "question": "Implement filters to limit which fields are returned by the API",
+    "description": "Send just the data the consumer needs to reduce bandwidth and storage",
     "tooltip": "It often happens that the implementation of filters in the APIs allowing to return only the necessary data to the consumers are forgotten or not efficient. \n\nThis forces API consumers to make generic requests that retrieve unnecessary amounts of information, resulting in overconsumption of bandwidth and storage.\n\nIt is recommended to design and implement filters that allow the user to limit the amount of data returned to optimize network and storage consumption.",
+    "example": "A service with 1000 addresses (22 kB per query). Filtering for a city with 30 stores returns only 1.3 kB instead of 22 kB. That is 20 kB of useless data per request. For an endpoint requested 500k times per day, this is 10 GB of useless data transferred daily.",
     "points": 60
   },
   {
@@ -114,8 +117,8 @@
   {
     "section": "Design",
     "id": "DE11",
-    "question": "Possibility to fitler pagination results",
-    "description": "Implement pagination mechanism to limit the payload size",
+    "question": "Availability of pagination",
+    "description": "Implement pagination to limit which data are returned by the API",
     "tooltip": "Implement pagination to limit which data are returned by the API (send just the data the consumer need) using for exemple \"next\", \"skip\", \"top\", …\n\nCheck payload log to validate if pagination keywords are used",
     "points": 60
   },
@@ -130,15 +133,15 @@
   {
     "section": "Usage",
     "id": "US02",
-    "question": "Decomission end of life or not used APIs",
-    "description": "Decomission end of life or not used APIs",
+    "question": "Decommission end of life or not used APIs",
+    "description": "Decommission end of life or not used APIs",
     "tooltip": "It often happens that the APIs of an information system are rarely or no longer used but are not decommissioned.\n\nThis leads to the consumption of computing resources for useless or obsolete components.\nIt is important that the decommissioning phase is also treated as part of the application life cycle in order to free up allocated resources. In the case of a rarely used API, a root cause analysis should be performed prior to decommissioning to understand why it is not used more often.",
     "points": 150
   },
   {
     "section": "Usage",
     "id": "US03",
-    "question": "Number of API version <=2 ",
+    "question": "Number of API version <=2",
     "description": "Compute resources saved & Network impact reduced",
     "tooltip": "Have a good lifecycle management of API by reducing the number of API version on production\nThe value of 2 release can be challenge depending of your context.\nLess version permit to have less technical debt.",
     "points": 150
@@ -162,8 +165,8 @@
   {
     "section": "Usage",
     "id": "US06",
-    "question": "Number of Consumers",
-    "description": "Deploy an API well designed and documented to increase the reuse rate. Rate based on number of different consumers",
+    "question": "Well designed and documented API to increase reuse rate",
+    "description": "Deploy a well designed and documented API to increase the reuse rate. Rate based on number of different consumers.",
     "tooltip": "Deploy a well designed and documented API to increase the reuse rate and improve time to market. \n\nBased on documentation provided in the API Portal.\n\nThe more accurate the documentation, the easier it will be for consumers to understand and use the API.\n\nThis indicator is a percentage rate.",
     "points": 375,
     "formula": "(x * 50) - 50"
@@ -180,8 +183,9 @@
   {
     "section": "Logs",
     "id": "LO01",
-    "question": "Logs retention",
-    "description": "Align log retention period to the business need (ops and Legal)",
+    "question": "Collect only required data and use the right retention time according to the business requirements",
+    "description": "Align log retention period to the business need (ops and Legal). Collect only what is necessary and define a coherent retention policy.",
+    "tooltip": "It is quite common for applications to store a large amount of useless information without time limit.\n\nThis results in an excessive consumption of storage services for data that will not be used or no longer used.\n\nIt is necessary to clean up the data in order to keep only the data that is useful and to define a coherent retention policy in order to delete them once their validity or exploitation period has passed.",
     "points": 600
   }
 ]
