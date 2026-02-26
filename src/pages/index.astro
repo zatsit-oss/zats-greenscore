@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro'
 import ProjectCard from '../components/ProjectCard.astro'
 import BarChart from '../components/BarChart.astro'
+import WelcomeHero from '../components/WelcomeHero.astro'
 import { EvaluationType, EVALUATION_TYPES, getAvailableEvaluationTypes } from '../types/evaluation'
 
 const evaluationTypes = getAvailableEvaluationTypes()
@@ -9,6 +10,13 @@ const defaultEvalType = EvaluationType.API_GREEN_SCORE
 ---
 
 <Layout title="Dashboard">
+  <!-- Welcome Hero - shown when no projects exist -->
+  <div id="welcomeHero" class="hidden">
+    <WelcomeHero />
+  </div>
+
+  <!-- Dashboard Content - hidden until projects are loaded -->
+  <div id="dashboardContent">
   <div class="flex flex-wrap justify-between items-end gap-8 mb-8">
     <div>
       <h1
@@ -67,6 +75,7 @@ const defaultEvalType = EvaluationType.API_GREEN_SCORE
       <ProjectCard />
     </template>
   </div>
+  </div><!-- /dashboardContent -->
 
   <!-- Delete Confirmation Modal -->
   <div

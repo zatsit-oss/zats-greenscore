@@ -175,6 +175,22 @@ export const populateCard = (
  * @param onDelete - Optional callback when delete button is clicked
  */
 export const loadProjects = (evalType: EvaluationType | null, onDelete?: OnDeleteCallback) => {
+    const welcomeHero = document.getElementById("welcomeHero");
+    const dashboardContent = document.getElementById("dashboardContent");
+
+    // Check if there are any projects at all (regardless of filter)
+    const globalStats = getDashboardStats(null);
+    if (globalStats.totalProjects === 0) {
+        // First visit / no projects: show welcome hero, hide dashboard
+        if (welcomeHero) welcomeHero.classList.remove("hidden");
+        if (dashboardContent) dashboardContent.classList.add("hidden");
+        return;
+    }
+
+    // Projects exist: show dashboard, hide welcome hero
+    if (welcomeHero) welcomeHero.classList.add("hidden");
+    if (dashboardContent) dashboardContent.classList.remove("hidden");
+
     // Get dashboard stats from service
     const stats = getDashboardStats(evalType);
 
