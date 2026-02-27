@@ -18,35 +18,35 @@ const VALID_THEMES: readonly string[] = ['light', 'dark'];
  * Get the theme stored in localStorage, or null if not set / invalid
  */
 export function getStoredTheme(): Theme | null {
-  if (typeof localStorage === 'undefined') return null;
-  const value = localStorage.getItem(STORAGE_KEY);
-  if (value && VALID_THEMES.includes(value)) {
-    return value as Theme;
-  }
-  return null;
+    if (typeof localStorage === 'undefined') return null;
+    const value = localStorage.getItem(STORAGE_KEY);
+    if (value && VALID_THEMES.includes(value)) {
+        return value as Theme;
+    }
+    return null;
 }
 
 /**
  * Get the effective theme: stored preference, system preference, or fallback to 'light'
  */
 export function getEffectiveTheme(): Theme {
-  const stored = getStoredTheme();
-  if (stored) return stored;
+    const stored = getStoredTheme();
+    if (stored) return stored;
 
-  if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    return 'dark';
-  }
-  return 'light';
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+    }
+    return 'light';
 }
 
 /**
  * Set the theme: persist to localStorage and apply to document
  */
 export function setTheme(theme: Theme): void {
-  localStorage.setItem(STORAGE_KEY, theme);
-  if (typeof document !== 'undefined') {
-    document.documentElement.setAttribute('data-theme', theme);
-  }
+    localStorage.setItem(STORAGE_KEY, theme);
+    if (typeof document !== 'undefined') {
+        document.documentElement.setAttribute('data-theme', theme);
+    }
 }
 
 /**
@@ -54,8 +54,8 @@ export function setTheme(theme: Theme): void {
  * @returns the new theme after toggling
  */
 export function toggleTheme(): Theme {
-  const current = getEffectiveTheme();
-  const next: Theme = current === 'dark' ? 'light' : 'dark';
-  setTheme(next);
-  return next;
+    const current = getEffectiveTheme();
+    const next: Theme = current === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    return next;
 }

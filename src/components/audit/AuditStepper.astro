@@ -11,7 +11,7 @@ interface Props {
     sections: Record<string, AuditQuestion[]>;
 }
 
-const { sections } = Astro.props;
+const {sections} = Astro.props;
 const sectionNames = Object.keys(sections);
 const totalSections = sectionNames.length;
 ---
@@ -20,35 +20,35 @@ const totalSections = sectionNames.length;
     <!-- Desktop: Full stepper -->
     <div class="hidden md:flex justify-between relative">
         <div
-            class="absolute top-6 left-0 right-0 h-0.5 bg-[var(--color-border)] z-0 -translate-y-1/2"
-            aria-hidden="true"
+                class="absolute top-6 left-0 right-0 h-0.5 bg-[var(--color-border)] z-0 -translate-y-1/2"
+                aria-hidden="true"
         >
         </div>
         {
             sectionNames.map((sectionName, index) => (
-                <div
-                    class="step-item relative z-10 flex flex-col items-center gap-2 bg-[var(--color-bg)] px-2 cursor-pointer"
-                    data-step={index}
-                    data-section-name={sectionName}
-                    role="button"
-                    tabindex="0"
-                    aria-label={`Go to ${sectionName}`}
-                    aria-current={index === 0 ? "step" : undefined}
-                >
-                    <div class="step-circle w-12 h-12 rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex items-center justify-center font-bold text-[var(--color-text-muted)] transition-all duration-300">
-                        {index + 1}
-                    </div>
-                    <span
-                        class="step-progress-count text-[10px] font-medium text-[var(--color-text-muted)] tabular-nums"
-                        data-section-name={sectionName}
-                        data-total={sections[sectionName].length}
+                    <div
+                            class="step-item relative z-10 flex flex-col items-center gap-2 bg-[var(--color-bg)] px-2 cursor-pointer"
+                            data-step={index}
+                            data-section-name={sectionName}
+                            role="button"
+                            tabindex="0"
+                            aria-label={`Go to ${sectionName}`}
+                            aria-current={index === 0 ? "step" : undefined}
                     >
+                        <div class="step-circle w-12 h-12 rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex items-center justify-center font-bold text-[var(--color-text-muted)] transition-all duration-300">
+                            {index + 1}
+                        </div>
+                        <span
+                                class="step-progress-count text-[10px] font-medium text-[var(--color-text-muted)] tabular-nums"
+                                data-section-name={sectionName}
+                                data-total={sections[sectionName].length}
+                        >
                         0/{sections[sectionName].length}
                     </span>
-                    <span class="step-label text-sm font-medium text-[var(--color-text)] transition-colors duration-300">
+                        <span class="step-label text-sm font-medium text-[var(--color-text)] transition-colors duration-300">
                         {sectionName}
                     </span>
-                </div>
+                    </div>
             ))
         }
     </div>
@@ -64,16 +64,16 @@ const totalSections = sectionNames.length;
             </span>
         </div>
         <div
-            class="h-2 bg-[var(--color-surface)] rounded-full overflow-hidden"
-            role="progressbar"
-            aria-valuenow={1}
-            aria-valuemin={1}
-            aria-valuemax={totalSections}
-            aria-label="Audit progress"
+                class="h-2 bg-[var(--color-surface)] rounded-full overflow-hidden"
+                role="progressbar"
+                aria-valuenow={1}
+                aria-valuemin={1}
+                aria-valuemax={totalSections}
+                aria-label="Audit progress"
         >
             <div
-                class="step-progress-bar h-full bg-[var(--color-primary)] transition-all duration-300"
-                style={`width: ${(1 / totalSections) * 100}%`}
+                    class="step-progress-bar h-full bg-[var(--color-primary)] transition-all duration-300"
+                    style={`width: ${(1 / totalSections) * 100}%`}
             ></div>
         </div>
     </div>
