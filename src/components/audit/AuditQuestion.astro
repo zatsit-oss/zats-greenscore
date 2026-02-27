@@ -80,7 +80,7 @@ const { question: q } = Astro.props;
                         type="number"
                         id={`input-${q.id}`}
                         name={q.id}
-                        class="bg-slate-900/50 border border-[var(--color-border)] rounded-lg p-2 text-[var(--color-text)] w-24 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:ring-offset-2"
+                        class="audit-number-input border border-[var(--color-border)] rounded-lg p-2 w-24 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:ring-offset-2"
                         placeholder="0"
                         min="0"
                         aria-label={q.id === "US06" ? "Number of consumers" : "Percentage"}
@@ -207,6 +207,16 @@ const { question: q } = Astro.props;
             opacity: 1;
             transform: scale(1) translateY(0);
         }
+    }
+
+    .audit-number-input {
+        background-color: #fff;
+        color: #111;
+    }
+
+    :global([data-theme="dark"]) .audit-number-input {
+        background-color: #0f172a;
+        color: var(--color-primary);
     }
 
     @media (prefers-reduced-motion: reduce) {
