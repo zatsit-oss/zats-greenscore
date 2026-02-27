@@ -3,7 +3,7 @@
 ---
 
 <nav
-    class="fixed bottom-0 left-0 right-0 p-4 flex justify-center gap-4 z-40 border-t border-[var(--color-border)] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md"
+    class="audit-nav fixed bottom-0 left-0 right-0 p-4 flex justify-center gap-4 z-40 border-t border-[var(--color-border)] backdrop-blur-md"
     aria-label="Audit navigation"
 >
     <button
@@ -29,3 +29,13 @@
         style="display: none;">Calculate Score</button
     >
 </nav>
+
+<style>
+    .audit-nav {
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    :global([data-theme="dark"]) .audit-nav {
+        background-color: rgba(15, 23, 42, 0.8);
+    }
+</style>

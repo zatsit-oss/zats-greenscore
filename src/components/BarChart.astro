@@ -182,28 +182,48 @@ const { id = 'barChart', title = 'Score Comparison', maxValue = 100 } = Astro.pr
       barItem.className = 'bar-item';
       barItem.setAttribute('role', 'listitem');
 
-      const labelHtml = item.id
-        ? `<a href="/projects/view?id=${item.id}" class="bar-label" title="${item.label}" aria-label="${item.label}: score ${item.value} out of ${maxValue}">${item.label}</a>`
-        : `<span class="bar-label" title="${item.label}">${item.label}</span>`;
+      // Build label element safely (no innerHTML to prevent XSS from project names)
+      let labelEl: HTMLElement;
+      if (item.id) {
+        labelEl = document.createElement('a');
+        (labelEl as HTMLAnchorElement).href = `/projects/view?id=${encodeURIComponent(item.id)}`;
+        labelEl.className = 'bar-label';
+        labelEl.title = item.label;
+        labelEl.setAttribute('aria-label', `${item.label}: score ${item.value} out of ${maxValue}`);
+      } else {
+        labelEl = document.createElement('span');
+        labelEl.className = 'bar-label';
+        labelEl.title = item.label;
+      }
+      labelEl.textContent = item.label;
 
-      barItem.innerHTML = `
-        ${labelHtml}
-        <div class="bar-wrapper">
-          <div class="bar-track">
-            <div
-              class="bar-fill"
-              style="width: ${percentage}%;"
-              role="progressbar"
-              aria-valuenow="${item.value}"
-              aria-valuemin="0"
-              aria-valuemax="${maxValue}"
-              aria-label="${item.label}: ${item.value}"
-            ></div>
-          </div>
-          <span class="bar-value">${item.value}</span>
-        </div>
-      `;
+      // Build bar wrapper
+      const barWrapper = document.createElement('div');
+      barWrapper.className = 'bar-wrapper';
 
+      const barTrack = document.createElement('div');
+      barTrack.className = 'bar-track';
+
+      const barFill = document.createElement('div');
+      barFill.className = 'bar-fill';
+      barFill.style.width = `${percentage}%`;
+      barFill.setAttribute('role', 'progressbar');
+      barFill.setAttribute('aria-valuenow', String(item.value));
+      barFill.setAttribute('aria-valuemin', '0');
+      barFill.setAttribute('aria-valuemax', String(maxValue));
+      barFill.setAttribute('aria-label', `${item.label}: ${item.value}`);
+
+      barTrack.appendChild(barFill);
+
+      const barValue = document.createElement('span');
+      barValue.className = 'bar-value';
+      barValue.textContent = String(item.value);
+
+      barWrapper.appendChild(barTrack);
+      barWrapper.appendChild(barValue);
+
+      barItem.appendChild(labelEl);
+      barItem.appendChild(barWrapper);
       container.appendChild(barItem);
     });
   };
