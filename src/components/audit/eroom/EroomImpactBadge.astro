@@ -1,36 +1,36 @@
 ---
-import type { ImpactLevel } from '../../../types/eroom'
+import type {ImpactLevel} from '../../../types/eroom'
 
 interface Props {
-  level: ImpactLevel
+    level: ImpactLevel
 }
 
-const { level } = Astro.props
+const {level} = Astro.props
 
 const colors: Record<ImpactLevel, { bg: string; text: string; border: string }> = {
-  Decisive: {
-    bg: 'rgba(239, 68, 68, 0.15)',
-    text: '#ef4444',
-    border: 'rgba(239, 68, 68, 0.3)'
-  },
-  Significant: {
-    bg: 'rgba(245, 158, 11, 0.15)',
-    text: '#f59e0b',
-    border: 'rgba(245, 158, 11, 0.3)'
-  },
-  Moderate: {
-    bg: 'rgba(59, 130, 246, 0.15)',
-    text: '#3b82f6',
-    border: 'rgba(59, 130, 246, 0.3)'
-  }
+    Decisive: {
+        bg: 'rgba(239, 68, 68, 0.15)',
+        text: '#ef4444',
+        border: 'rgba(239, 68, 68, 0.3)'
+    },
+    Significant: {
+        bg: 'rgba(245, 158, 11, 0.15)',
+        text: '#f59e0b',
+        border: 'rgba(245, 158, 11, 0.3)'
+    },
+    Moderate: {
+        bg: 'rgba(59, 130, 246, 0.15)',
+        text: '#3b82f6',
+        border: 'rgba(59, 130, 246, 0.3)'
+    }
 }
 
 const color = colors[level]
 ---
 
 <span
-  class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium"
-  style={`background: ${color.bg}; color: ${color.text}; border: 1px solid ${color.border};`}
+        class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium"
+        style={`background: ${color.bg}; color: ${color.text}; border: 1px solid ${color.border};`}
 >
   <span class="w-1.5 h-1.5 rounded-full" style={`background: ${color.text};`} aria-hidden="true"></span>
   Impact: {level}

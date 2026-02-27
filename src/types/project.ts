@@ -2,12 +2,12 @@
  * Types for project management with multi-evaluation support
  */
 
-import type { Evaluation } from './evaluation';
-import { EvaluationType, EvaluationStatus } from './evaluation';
-import { ProjectRanking } from './common';
+import type {Evaluation} from './evaluation';
+import {EvaluationStatus, EvaluationType} from './evaluation';
+import {ProjectRanking} from './common';
 
 // Re-export for backward compatibility
-export { ProjectRanking } from './common';
+export {ProjectRanking} from './common';
 
 // ============================================================================
 // PROJECT INTERFACE
@@ -24,18 +24,18 @@ export const APP_VERSION = '0.0.1';
  * Each project can have one evaluation of each type
  */
 export interface Project {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-  evaluations: Partial<Record<EvaluationType, Evaluation>>;
-  /**
-   * Application version that last modified this project (semver)
-   * - undefined/missing: legacy project (pre-0.0.1)
-   * - "0.0.1": current version
-   */
-  appVersion?: string;
+    id: string;
+    name: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+    evaluations: Partial<Record<EvaluationType, Evaluation>>;
+    /**
+     * Application version that last modified this project (semver)
+     * - undefined/missing: legacy project (pre-0.0.1)
+     * - "0.0.1": current version
+     */
+    appVersion?: string;
 }
 
 // ============================================================================
@@ -43,36 +43,36 @@ export interface Project {
 // ============================================================================
 
 export enum ProjectStatus {
-  IN_PROGRESS = 'InProgress',
-  COMPLETED = 'Completed'
+    IN_PROGRESS = 'InProgress',
+    COMPLETED = 'Completed'
 }
 
 export interface AuditAnswers {
-  [questionId: string]: boolean | string | number;
+    [questionId: string]: boolean | string | number;
 }
 
 export interface LegacyProjectInProgress {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-  status: ProjectStatus.IN_PROGRESS;
-  score: null;
-  ranking?: null;
-  answers?: AuditAnswers;
+    id: string;
+    name: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+    status: ProjectStatus.IN_PROGRESS;
+    score: null;
+    ranking?: null;
+    answers?: AuditAnswers;
 }
 
 export interface LegacyProjectCompleted {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-  status: ProjectStatus.COMPLETED;
-  score: number;
-  ranking: ProjectRanking;
-  answers: AuditAnswers;
+    id: string;
+    name: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+    status: ProjectStatus.COMPLETED;
+    score: number;
+    ranking: ProjectRanking;
+    answers: AuditAnswers;
 }
 
 export type LegacyProject = LegacyProjectInProgress | LegacyProjectCompleted;
@@ -85,16 +85,16 @@ export type LegacyProject = LegacyProjectInProgress | LegacyProjectCompleted;
  * Check if project has any completed evaluation
  */
 export function hasCompletedEvaluation(project: Project): boolean {
-  return Object.values(project.evaluations).some(
-    (evaluation) => evaluation?.status === EvaluationStatus.COMPLETED
-  );
+    return Object.values(project.evaluations).some(
+        (evaluation) => evaluation?.status === EvaluationStatus.COMPLETED
+    );
 }
 
 /**
  * Check if project has a specific evaluation type
  */
 export function hasEvaluationType(project: Project, type: EvaluationType): boolean {
-  return project.evaluations[type] !== undefined;
+    return project.evaluations[type] !== undefined;
 }
 
 /**
@@ -105,48 +105,48 @@ export function hasEvaluationType(project: Project, type: EvaluationType): boole
  * - EROOM: higher = more optimization potential (worse maturity)
  */
 export function getHighestScore(project: Project): number | null {
-  const scores = Object.values(project.evaluations)
-    .filter((evaluation) => evaluation?.status === EvaluationStatus.COMPLETED)
-    .map((e) => e?.score)
-    .filter((s): s is number => s !== null && s !== undefined);
+    const scores = Object.values(project.evaluations)
+        .filter((evaluation) => evaluation?.status === EvaluationStatus.COMPLETED)
+        .map((e) => e?.score)
+        .filter((s): s is number => s !== null && s !== undefined);
 
-  return scores.length > 0 ? Math.max(...scores) : null;
+    return scores.length > 0 ? Math.max(...scores) : null;
 }
 
 /**
  * Get the best ranking from all evaluations
  */
 export function getBestRanking(project: Project): ProjectRanking | null {
-  const rankingOrder: ProjectRanking[] = [
-    ProjectRanking.A,
-    ProjectRanking.B,
-    ProjectRanking.C,
-    ProjectRanking.D,
-    ProjectRanking.E
-  ];
+    const rankingOrder: ProjectRanking[] = [
+        ProjectRanking.A,
+        ProjectRanking.B,
+        ProjectRanking.C,
+        ProjectRanking.D,
+        ProjectRanking.E
+    ];
 
-  const rankings = Object.values(project.evaluations)
-    .filter((evaluation) => evaluation?.status === EvaluationStatus.COMPLETED)
-    .map((e) => e?.ranking)
-    .filter((r): r is ProjectRanking => r !== null && r !== undefined);
+    const rankings = Object.values(project.evaluations)
+        .filter((evaluation) => evaluation?.status === EvaluationStatus.COMPLETED)
+        .map((e) => e?.ranking)
+        .filter((r): r is ProjectRanking => r !== null && r !== undefined);
 
-  if (rankings.length === 0) return null;
+    if (rankings.length === 0) return null;
 
-  return rankings.sort((a, b) => rankingOrder.indexOf(a) - rankingOrder.indexOf(b))[0];
+    return rankings.sort((a, b) => rankingOrder.indexOf(a) - rankingOrder.indexOf(b))[0];
 }
 
 /**
  * Create a new project
  */
 export function createProject(name: string, description: string): Project {
-  const now = new Date().toISOString();
-  return {
-    id: crypto.randomUUID(),
-    name,
-    description,
-    createdAt: now,
-    updatedAt: now,
-    evaluations: {},
-    appVersion: APP_VERSION
-  };
+    const now = new Date().toISOString();
+    return {
+        id: crypto.randomUUID(),
+        name,
+        description,
+        createdAt: now,
+        updatedAt: now,
+        evaluations: {},
+        appVersion: APP_VERSION
+    };
 }

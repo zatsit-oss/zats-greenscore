@@ -3,221 +3,223 @@ import Layout from '../layouts/Layout.astro'
 import ProjectCard from '../components/ProjectCard.astro'
 import BarChart from '../components/BarChart.astro'
 import WelcomeHero from '../components/WelcomeHero.astro'
-import { getAvailableEvaluationTypes } from '../types/evaluation'
+import {getAvailableEvaluationTypes} from '../types/evaluation'
 
 const evaluationTypes = getAvailableEvaluationTypes()
 ---
 
 <Layout title="Dashboard">
-  <!-- Welcome Hero - shown when no projects exist -->
-  <div id="welcomeHero" class="hidden">
-    <WelcomeHero />
-  </div>
-
-  <!-- Dashboard Content - hidden until projects are loaded -->
-  <div id="dashboardContent">
-  <div class="flex flex-wrap justify-between items-end gap-8 mb-8">
-    <div>
-      <h1
-        class="text-4xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)]"
-      >
-        Dashboard
-      </h1>
-      <p class="text-lg text-muted">
-        Overview of all sustainability initiatives.
-      </p>
+    <!-- Welcome Hero - shown when no projects exist -->
+    <div id="welcomeHero" class="hidden">
+        <WelcomeHero/>
     </div>
-    <div class="flex gap-4">
-      <div class="count-card glass-card p-4 sm:p-6 min-w-[140px] text-center">
-				<span class="block text-sm text-muted mb-1">Total Projects</span>
-        <span class="block text-2xl font-bold" id="totalProjects">0</span>
-      </div>
-      <div class="count-card glass-card p-4 sm:p-6 min-w-[140px] text-center">
+
+    <!-- Dashboard Content - hidden until projects are loaded -->
+    <div id="dashboardContent">
+        <div class="flex flex-wrap justify-between items-end gap-8 mb-8">
+            <div>
+                <h1
+                        class="text-4xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)]"
+                >
+                    Dashboard
+                </h1>
+                <p class="text-lg text-muted">
+                    Overview of all sustainability initiatives.
+                </p>
+            </div>
+            <div class="flex gap-4">
+                <div class="count-card glass-card p-4 sm:p-6 min-w-[140px] text-center">
+                    <span class="block text-sm text-muted mb-1">Total Projects</span>
+                    <span class="block text-2xl font-bold" id="totalProjects">0</span>
+                </div>
+                <div class="count-card glass-card p-4 sm:p-6 min-w-[140px] text-center">
         <span class="block text-sm text-muted mb-1" id="avgScoreLabel">
           Avg Score
         </span>
-        <span class="block text-2xl font-bold" id="avgScore">0</span>
-      </div>
+                    <span class="block text-2xl font-bold" id="avgScore">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evaluation Type Filter -->
+        <div class="flex items-center gap-3 mb-8">
+            <label for="evaluationTypeFilter" class="text-sm font-medium text-muted">
+                Filter by evaluation:
+            </label>
+            <select id="evaluationTypeFilter" class="form-select">
+                <option value="">All evaluations</option>
+                {evaluationTypes.map((evalType) => (
+                        <option value={evalType.id}>
+                            {evalType.name}
+                        </option>
+                ))}
+            </select>
+        </div>
+
+        <!-- Global Chart - Shows only when there are completed projects -->
+        <div class="glass-card mb-12 hidden" id="chartSection" aria-label="Projects Score Comparison chart">
+            <BarChart id="projectsBarChart" title="Projects Score Comparison"/>
+        </div>
+
+        <div
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                id="projectsGrid"
+        >
+            <!-- Projects will be loaded here -->
+        </div>
+
+        <!-- Hidden Template used by the script -->
+        <div class="hidden">
+            <template id="card-template">
+                <ProjectCard/>
+            </template>
+        </div>
+    </div><!-- /dashboardContent -->
+
+    <!-- Delete Confirmation Modal -->
+    <div
+            id="deleteModal"
+            class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="deleteModalTitle"
+            aria-describedby="deleteModalDesc"
+    >
+        <div class="glass-card max-w-md w-full mx-4 p-6" role="document">
+            <h2 id="deleteModalTitle" class="text-xl font-bold mb-4">Delete Project?</h2>
+            <p id="deleteModalDesc" class="text-muted mb-2">
+                Are you sure you want to delete
+                <span class="font-semibold text-[var(--color-text)]" id="deleteProjectName">"Project Name"</span>?
+            </p>
+            <p class="text-sm text-red-400 mb-6">This action cannot be undone.</p>
+            <div class="flex gap-4 justify-end">
+                <button
+                        class="btn btn-secondary"
+                        id="cancelDeleteBtn"
+                >Cancel
+                </button>
+                <button
+                        class="btn btn-danger focus:ring-red-500"
+                        id="confirmDeleteBtn"
+                >Delete
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Evaluation Type Filter -->
-  <div class="flex items-center gap-3 mb-8">
-    <label for="evaluationTypeFilter" class="text-sm font-medium text-muted">
-      Filter by evaluation:
-    </label>
-    <select id="evaluationTypeFilter" class="form-select">
-      <option value="">All evaluations</option>
-      {evaluationTypes.map((evalType) => (
-        <option value={evalType.id}>
-          {evalType.name}
-        </option>
-      ))}
-    </select>
-  </div>
+    <script>
+        import {loadProjects, getEvaluationTypeName} from '../utils/ui'
+        import {deleteProject} from '../services/project-service'
+        import {EvaluationType} from '../types/evaluation'
 
-  <!-- Global Chart - Shows only when there are completed projects -->
-  <div class="glass-card mb-12 hidden" id="chartSection" aria-label="Projects Score Comparison chart">
-    <BarChart id="projectsBarChart" title="Projects Score Comparison" />
-  </div>
+        // Get filter element
+        const filterSelect = document.getElementById('evaluationTypeFilter') as HTMLSelectElement
 
-  <div
-    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-    id="projectsGrid"
-  >
-    <!-- Projects will be loaded here -->
-  </div>
+        // Modal elements
+        const deleteModal = document.getElementById('deleteModal')
+        const deleteProjectNameEl = document.getElementById('deleteProjectName')
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn')
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn')
 
-  <!-- Hidden Template used by the script -->
-  <div class="hidden">
-    <template id="card-template">
-      <ProjectCard />
-    </template>
-  </div>
-  </div><!-- /dashboardContent -->
+        // State for deletion
+        let projectToDelete: { id: string; name: string } | null = null
 
-  <!-- Delete Confirmation Modal -->
-  <div
-    id="deleteModal"
-    class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="deleteModalTitle"
-    aria-describedby="deleteModalDesc"
-  >
-    <div class="glass-card max-w-md w-full mx-4 p-6" role="document">
-      <h2 id="deleteModalTitle" class="text-xl font-bold mb-4">Delete Project?</h2>
-      <p id="deleteModalDesc" class="text-muted mb-2">
-        Are you sure you want to delete
-        <span class="font-semibold text-[var(--color-text)]" id="deleteProjectName">"Project Name"</span>?
-      </p>
-      <p class="text-sm text-red-400 mb-6">This action cannot be undone.</p>
-      <div class="flex gap-4 justify-end">
-        <button
-          class="btn btn-secondary"
-          id="cancelDeleteBtn"
-        >Cancel</button>
-        <button
-          class="btn btn-danger focus:ring-red-500"
-          id="confirmDeleteBtn"
-        >Delete</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    import { loadProjects, getEvaluationTypeName } from '../utils/ui'
-    import { deleteProject } from '../services/project-service'
-    import { EvaluationType } from '../types/evaluation'
-
-    // Get filter element
-    const filterSelect = document.getElementById('evaluationTypeFilter') as HTMLSelectElement
-
-    // Modal elements
-    const deleteModal = document.getElementById('deleteModal')
-    const deleteProjectNameEl = document.getElementById('deleteProjectName')
-    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn')
-    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn')
-
-    // State for deletion
-    let projectToDelete: { id: string; name: string } | null = null
-
-    // Get selected evaluation type (null means "all")
-    const getSelectedEvalType = (): EvaluationType | null => {
-      const value = filterSelect?.value
-      return value ? (value as EvaluationType) : null
-    }
-
-    // Update chart title based on selected evaluation type
-    const updateChartTitle = (evalType: EvaluationType | null) => {
-      const chartTitle = document.getElementById('projectsBarChart-title')
-      if (chartTitle) {
-        const typeName = evalType ? getEvaluationTypeName(evalType) : 'All'
-        chartTitle.textContent = `Projects Score Comparison (${typeName})`
-      }
-    }
-
-    // Store the element that triggered the modal for focus restoration
-    let triggerElement: HTMLElement | null = null
-
-    // Modal functions
-    const openDeleteModal = (projectId: string, projectName: string) => {
-      projectToDelete = { id: projectId, name: projectName }
-      triggerElement = document.activeElement as HTMLElement
-
-      if (deleteProjectNameEl) {
-        deleteProjectNameEl.textContent = `"${projectName}"`
-      }
-      deleteModal?.classList.remove('hidden')
-      deleteModal?.classList.add('flex')
-
-      // Focus the cancel button for accessibility
-      setTimeout(() => cancelDeleteBtn?.focus(), 50)
-    }
-
-    const closeDeleteModal = () => {
-      deleteModal?.classList.add('hidden')
-      deleteModal?.classList.remove('flex')
-      projectToDelete = null
-
-      // Restore focus to the trigger element
-      triggerElement?.focus()
-      triggerElement = null
-    }
-
-    const confirmDelete = () => {
-      if (projectToDelete) {
-        deleteProject(projectToDelete.id)
-        closeDeleteModal()
-        loadWithFilter() // Reload the grid
-      }
-    }
-
-    // Focus trap for modal
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!deleteModal?.classList.contains('flex')) return
-
-      if (e.key === 'Escape') {
-        closeDeleteModal()
-        return
-      }
-
-      if (e.key === 'Tab') {
-        const focusableElements = deleteModal.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-        )
-        const firstElement = focusableElements[0]
-        const lastElement = focusableElements[focusableElements.length - 1]
-
-        if (e.shiftKey && document.activeElement === firstElement) {
-          e.preventDefault()
-          lastElement?.focus()
-        } else if (!e.shiftKey && document.activeElement === lastElement) {
-          e.preventDefault()
-          firstElement?.focus()
+        // Get selected evaluation type (null means "all")
+        const getSelectedEvalType = (): EvaluationType | null => {
+            const value = filterSelect?.value
+            return value ? (value as EvaluationType) : null
         }
-      }
-    }
 
-    // Modal event listeners
-    cancelDeleteBtn?.addEventListener('click', closeDeleteModal)
-    confirmDeleteBtn?.addEventListener('click', confirmDelete)
-    deleteModal?.addEventListener('click', (e) => {
-      if (e.target === deleteModal) closeDeleteModal()
-    })
-    document.addEventListener('keydown', handleKeyDown)
+        // Update chart title based on selected evaluation type
+        const updateChartTitle = (evalType: EvaluationType | null) => {
+            const chartTitle = document.getElementById('projectsBarChart-title')
+            if (chartTitle) {
+                const typeName = evalType ? getEvaluationTypeName(evalType) : 'All'
+                chartTitle.textContent = `Projects Score Comparison (${typeName})`
+            }
+        }
 
-    // Load projects with current filter
-    const loadWithFilter = () => {
-      const evalType = getSelectedEvalType()
-      loadProjects(evalType, openDeleteModal)
-      updateChartTitle(evalType)
-    }
+        // Store the element that triggered the modal for focus restoration
+        let triggerElement: HTMLElement | null = null
 
-    // Listen for filter changes
-    filterSelect?.addEventListener('change', loadWithFilter)
+        // Modal functions
+        const openDeleteModal = (projectId: string, projectName: string) => {
+            projectToDelete = {id: projectId, name: projectName}
+            triggerElement = document.activeElement as HTMLElement
 
-    // Initial load with default filter
-    loadWithFilter()
-  </script>
+            if (deleteProjectNameEl) {
+                deleteProjectNameEl.textContent = `"${projectName}"`
+            }
+            deleteModal?.classList.remove('hidden')
+            deleteModal?.classList.add('flex')
+
+            // Focus the cancel button for accessibility
+            setTimeout(() => cancelDeleteBtn?.focus(), 50)
+        }
+
+        const closeDeleteModal = () => {
+            deleteModal?.classList.add('hidden')
+            deleteModal?.classList.remove('flex')
+            projectToDelete = null
+
+            // Restore focus to the trigger element
+            triggerElement?.focus()
+            triggerElement = null
+        }
+
+        const confirmDelete = () => {
+            if (projectToDelete) {
+                deleteProject(projectToDelete.id)
+                closeDeleteModal()
+                loadWithFilter() // Reload the grid
+            }
+        }
+
+        // Focus trap for modal
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (!deleteModal?.classList.contains('flex')) return
+
+            if (e.key === 'Escape') {
+                closeDeleteModal()
+                return
+            }
+
+            if (e.key === 'Tab') {
+                const focusableElements = deleteModal.querySelectorAll<HTMLElement>(
+                    'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+                )
+                const firstElement = focusableElements[0]
+                const lastElement = focusableElements[focusableElements.length - 1]
+
+                if (e.shiftKey && document.activeElement === firstElement) {
+                    e.preventDefault()
+                    lastElement?.focus()
+                } else if (!e.shiftKey && document.activeElement === lastElement) {
+                    e.preventDefault()
+                    firstElement?.focus()
+                }
+            }
+        }
+
+        // Modal event listeners
+        cancelDeleteBtn?.addEventListener('click', closeDeleteModal)
+        confirmDeleteBtn?.addEventListener('click', confirmDelete)
+        deleteModal?.addEventListener('click', (e) => {
+            if (e.target === deleteModal) closeDeleteModal()
+        })
+        document.addEventListener('keydown', handleKeyDown)
+
+        // Load projects with current filter
+        const loadWithFilter = () => {
+            const evalType = getSelectedEvalType()
+            loadProjects(evalType, openDeleteModal)
+            updateChartTitle(evalType)
+        }
+
+        // Listen for filter changes
+        filterSelect?.addEventListener('change', loadWithFilter)
+
+        // Initial load with default filter
+        loadWithFilter()
+    </script>
 </Layout>

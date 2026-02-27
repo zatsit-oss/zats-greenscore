@@ -4,29 +4,29 @@ import apiGreenScoreQuestions from "../data/apigreenscore-survey-questions.json"
 import AuditStepper from "../components/audit/AuditStepper.astro";
 import AuditSection from "../components/audit/AuditSection.astro";
 import AuditNavigation from "../components/audit/AuditNavigation.astro";
-import { EvaluationType, EVALUATION_TYPES } from "../types/evaluation";
+import {EvaluationType, EVALUATION_TYPES} from "../types/evaluation";
 
 // Group questions by section
 interface Question {
-	section: string;
-	id: string;
-	question: string;
-	description: string;
-	tooltip?: string;
+    section: string;
+    id: string;
+    question: string;
+    description: string;
+    tooltip?: string;
 }
 
 // For now, only API Green Score questions are supported
 const questions = apiGreenScoreQuestions as Question[];
 
 const sections = questions.reduce(
-	(acc: Record<string, Question[]>, q: Question) => {
-		if (!acc[q.section]) {
-			acc[q.section] = [];
-		}
-		acc[q.section].push(q);
-		return acc;
-	},
-	{},
+    (acc: Record<string, Question[]>, q: Question) => {
+        if (!acc[q.section]) {
+            acc[q.section] = [];
+        }
+        acc[q.section].push(q);
+        return acc;
+    },
+    {},
 );
 
 const urlParams = new URLSearchParams(Astro.url.search);
@@ -36,302 +36,303 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 ---
 
 <Layout title={`Audit - ${evaluationInfo?.name || 'API Green Score'}`}>
-	<div class="max-w-4xl mx-auto">
-		<div class="mb-8">
-			<a
-				href="/"
-				class="link-back mb-4"
-			>
-				&larr; Back to Dashboard
-			</a>
-			<div class="flex items-center gap-3 mb-2">
-				<h1 class="text-3xl font-bold text-[var(--color-text)]">
-					Audit
-				</h1>
-				<span class="px-3 py-1 text-sm rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium">
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-8">
+            <a
+                    href="/"
+                    class="link-back mb-4"
+            >
+                &larr; Back to Dashboard
+            </a>
+            <div class="flex items-center gap-3 mb-2">
+                <h1 class="text-3xl font-bold text-[var(--color-text)]">
+                    Audit
+                </h1>
+                <span class="px-3 py-1 text-sm rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium">
 					{evaluationInfo?.name || 'API Green Score'}
 				</span>
-			</div>
-			<p class="text-[var(--color-text-muted)]">
-				Complete the audit questions below. Your progress is saved automatically.
-			</p>
-		</div>
+            </div>
+            <p class="text-[var(--color-text-muted)]">
+                Complete the audit questions below. Your progress is saved automatically.
+            </p>
+        </div>
 
-		<!-- Stepper -->
-		<AuditStepper sections={sections} />
+        <!-- Stepper -->
+        <AuditStepper sections={sections}/>
 
-		<form class="flex flex-col gap-8 pb-24" id="auditForm" data-project-id={projectId} data-evaluation-type={evaluationType}>
-			{
-				Object.entries(sections).map(
-					([sectionName, sectionQuestions], index) => (
-						<AuditSection
-							sectionName={sectionName}
-							questions={sectionQuestions}
-							index={index}
-						/>
-					),
-				)
-			}
+        <form class="flex flex-col gap-8 pb-24" id="auditForm" data-project-id={projectId}
+              data-evaluation-type={evaluationType}>
+            {
+                Object.entries(sections).map(
+                    ([sectionName, sectionQuestions], index) => (
+                            <AuditSection
+                                    sectionName={sectionName}
+                                    questions={sectionQuestions}
+                                    index={index}
+                            />
+                    ),
+                )
+            }
 
-			<AuditNavigation />
-		</form>
-	</div>
+            <AuditNavigation/>
+        </form>
+    </div>
 </Layout>
 
 <script>
-	import type { Question } from "../types/apigreenscore";
-	import { EvaluationType } from "../types/evaluation";
-	import { saveAuditProgress, finalizeApiGreenScoreEvaluation } from "../services/audit-service";
-	import { getProject } from "../services/project-service";
+    import type {Question} from "../types/apigreenscore";
+    import {EvaluationType} from "../types/evaluation";
+    import {saveAuditProgress, finalizeApiGreenScoreEvaluation} from "../services/audit-service";
+    import {getProject} from "../services/project-service";
 
-	let currentStep = 0;
-	const steps = document.querySelectorAll(".step-content");
-	const stepItems = document.querySelectorAll(".step-item");
-	const prevBtn = document.getElementById("prevBtn");
-	const nextBtn = document.getElementById("nextBtn");
-	const submitBtn = document.getElementById("submitBtn");
-	const totalSteps = steps.length;
+    let currentStep = 0;
+    const steps = document.querySelectorAll(".step-content");
+    const stepItems = document.querySelectorAll(".step-item");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const submitBtn = document.getElementById("submitBtn");
+    const totalSteps = steps.length;
 
-	// Mobile progress elements
-	const stepCurrentLabel = document.querySelector(".step-current-label");
-	const stepProgress = document.querySelector(".step-progress");
-	const stepProgressBar = document.querySelector(".step-progress-bar") as HTMLElement;
-	const progressBarContainer = stepProgressBar?.parentElement;
+    // Mobile progress elements
+    const stepCurrentLabel = document.querySelector(".step-current-label");
+    const stepProgress = document.querySelector(".step-progress");
+    const stepProgressBar = document.querySelector(".step-progress-bar") as HTMLElement;
+    const progressBarContainer = stepProgressBar?.parentElement;
 
-	// Get section names for mobile display
-	const sectionNames = Array.from(stepItems).map(item =>
-		item.querySelector('.step-label')?.textContent?.trim() || `Section ${parseInt(item.getAttribute('data-step') || '0') + 1}`
-	);
+    // Get section names for mobile display
+    const sectionNames = Array.from(stepItems).map(item =>
+        item.querySelector('.step-label')?.textContent?.trim() || `Section ${parseInt(item.getAttribute('data-step') || '0') + 1}`
+    );
 
-	function updateUI() {
-		// Show/Hide steps
-		steps.forEach((step, index) => {
-			if (index === currentStep) {
-				(step as HTMLElement).style.display = "block";
-			} else {
-				(step as HTMLElement).style.display = "none";
-			}
-		});
+    function updateUI() {
+        // Show/Hide steps
+        steps.forEach((step, index) => {
+            if (index === currentStep) {
+                (step as HTMLElement).style.display = "block";
+            } else {
+                (step as HTMLElement).style.display = "none";
+            }
+        });
 
-		// Update Desktop Stepper
-		stepItems.forEach((item, index) => {
-			item.classList.remove("active", "completed");
-			item.removeAttribute("aria-current");
-			if (index === currentStep) {
-				item.classList.add("active");
-				item.setAttribute("aria-current", "step");
-			} else if (index < currentStep) {
-				item.classList.add("completed");
-			}
-		});
+        // Update Desktop Stepper
+        stepItems.forEach((item, index) => {
+            item.classList.remove("active", "completed");
+            item.removeAttribute("aria-current");
+            if (index === currentStep) {
+                item.classList.add("active");
+                item.setAttribute("aria-current", "step");
+            } else if (index < currentStep) {
+                item.classList.add("completed");
+            }
+        });
 
-		// Update Mobile Progress
-		if (stepCurrentLabel && sectionNames[currentStep]) {
-			stepCurrentLabel.textContent = sectionNames[currentStep];
-		}
-		if (stepProgress) {
-			stepProgress.innerHTML = `<span class="sr-only">Step</span> ${currentStep + 1} / ${totalSteps}`;
-		}
-		if (stepProgressBar) {
-			stepProgressBar.style.width = `${((currentStep + 1) / totalSteps) * 100}%`;
-		}
-		if (progressBarContainer) {
-			progressBarContainer.setAttribute("aria-valuenow", String(currentStep + 1));
-		}
+        // Update Mobile Progress
+        if (stepCurrentLabel && sectionNames[currentStep]) {
+            stepCurrentLabel.textContent = sectionNames[currentStep];
+        }
+        if (stepProgress) {
+            stepProgress.innerHTML = `<span class="sr-only">Step</span> ${currentStep + 1} / ${totalSteps}`;
+        }
+        if (stepProgressBar) {
+            stepProgressBar.style.width = `${((currentStep + 1) / totalSteps) * 100}%`;
+        }
+        if (progressBarContainer) {
+            progressBarContainer.setAttribute("aria-valuenow", String(currentStep + 1));
+        }
 
-		// Update Buttons
-		if (prevBtn)
-			prevBtn.style.display = currentStep === 0 ? "none" : "block";
+        // Update Buttons
+        if (prevBtn)
+            prevBtn.style.display = currentStep === 0 ? "none" : "block";
 
-		if (currentStep === totalSteps - 1) {
-			if (nextBtn) nextBtn.style.display = "none";
-			if (submitBtn) submitBtn.style.display = "block";
-		} else {
-			if (nextBtn) nextBtn.style.display = "block";
-			if (submitBtn) submitBtn.style.display = "none";
-		}
+        if (currentStep === totalSteps - 1) {
+            if (nextBtn) nextBtn.style.display = "none";
+            if (submitBtn) submitBtn.style.display = "block";
+        } else {
+            if (nextBtn) nextBtn.style.display = "block";
+            if (submitBtn) submitBtn.style.display = "none";
+        }
 
-		// Scroll to top
-		window.scrollTo({ top: 0, behavior: "smooth" });
-	}
+        // Scroll to top
+        window.scrollTo({top: 0, behavior: "smooth"});
+    }
 
-	nextBtn?.addEventListener("click", () => {
-		if (currentStep < totalSteps - 1) {
-			currentStep++;
-			updateUI();
-		}
-	});
+    nextBtn?.addEventListener("click", () => {
+        if (currentStep < totalSteps - 1) {
+            currentStep++;
+            updateUI();
+        }
+    });
 
-	prevBtn?.addEventListener("click", () => {
-		if (currentStep > 0) {
-			currentStep--;
-			updateUI();
-		}
-	});
+    prevBtn?.addEventListener("click", () => {
+        if (currentStep > 0) {
+            currentStep--;
+            updateUI();
+        }
+    });
 
-	// Clickable stepper steps
-	stepItems.forEach((item) => {
-		const goToStep = () => {
-			const step = parseInt(item.getAttribute("data-step") || "0", 10);
-			currentStep = step;
-			updateUI();
-		};
-		item.addEventListener("click", goToStep);
-		item.addEventListener("keydown", (e) => {
-			if (e.key === "Enter" || e.key === " ") {
-				e.preventDefault();
-				goToStep();
-			}
-		});
-	});
+    // Clickable stepper steps
+    stepItems.forEach((item) => {
+        const goToStep = () => {
+            const step = parseInt(item.getAttribute("data-step") || "0", 10);
+            currentStep = step;
+            updateUI();
+        };
+        item.addEventListener("click", goToStep);
+        item.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                goToStep();
+            }
+        });
+    });
 
-	// Initialize
-	updateUI();
+    // Initialize
+    updateUI();
 
-	const auditForm = document.getElementById("auditForm") as HTMLFormElement;
+    const auditForm = document.getElementById("auditForm") as HTMLFormElement;
 
-	// Get params from URL (client-side for static pages)
-	const urlParams = new URLSearchParams(window.location.search);
-	const projectId = urlParams.get("projectId");
-	const evaluationType = (urlParams.get("evaluationType") || EvaluationType.API_GREEN_SCORE) as EvaluationType;
+    // Get params from URL (client-side for static pages)
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get("projectId");
+    const evaluationType = (urlParams.get("evaluationType") || EvaluationType.API_GREEN_SCORE) as EvaluationType;
 
-	/**
-	 * Check if a question is answered
-	 * Checkbox: checked = answered. Number: non-empty = answered.
-	 */
-	const isQuestionAnswered = (questionId: string): boolean => {
-		const input = auditForm?.querySelector(`input[name="${questionId}"]`) as HTMLInputElement | null;
-		if (!input) return false;
-		if (input.type === "checkbox") return input.checked;
-		if (input.type === "number") return input.value !== "";
-		return false;
-	};
+    /**
+     * Check if a question is answered
+     * Checkbox: checked = answered. Number: non-empty = answered.
+     */
+    const isQuestionAnswered = (questionId: string): boolean => {
+        const input = auditForm?.querySelector(`input[name="${questionId}"]`) as HTMLInputElement | null;
+        if (!input) return false;
+        if (input.type === "checkbox") return input.checked;
+        if (input.type === "number") return input.value !== "";
+        return false;
+    };
 
-	/**
-	 * Update question status icons and stepper section counters
-	 */
-	const updateQuestionIcons = () => {
-		// Per-question icons
-		document.querySelectorAll('.question-status').forEach((statusEl) => {
-			const qId = statusEl.getAttribute('data-question-id');
-			if (!qId) return;
-			const answered = isQuestionAnswered(qId);
-			const iconPending = statusEl.querySelector('.icon-pending');
-			const iconAnswered = statusEl.querySelector('.icon-answered');
-			if (iconPending) iconPending.classList.toggle('hidden', answered);
-			if (iconAnswered) iconAnswered.classList.toggle('hidden', !answered);
-			statusEl.setAttribute('aria-label', answered ? 'Answered' : 'Not answered');
-		});
+    /**
+     * Update question status icons and stepper section counters
+     */
+    const updateQuestionIcons = () => {
+        // Per-question icons
+        document.querySelectorAll('.question-status').forEach((statusEl) => {
+            const qId = statusEl.getAttribute('data-question-id');
+            if (!qId) return;
+            const answered = isQuestionAnswered(qId);
+            const iconPending = statusEl.querySelector('.icon-pending');
+            const iconAnswered = statusEl.querySelector('.icon-answered');
+            if (iconPending) iconPending.classList.toggle('hidden', answered);
+            if (iconAnswered) iconAnswered.classList.toggle('hidden', !answered);
+            statusEl.setAttribute('aria-label', answered ? 'Answered' : 'Not answered');
+        });
 
-		// Per-section counters in stepper
-		document.querySelectorAll('.step-progress-count[data-section-name]').forEach((el) => {
-			const sectionName = el.getAttribute('data-section-name');
-			if (!sectionName) return;
-			const stepIndex = Array.from(stepItems).findIndex(
-				item => item.getAttribute('data-section-name') === sectionName
-			);
-			const stepContent = steps[stepIndex] as HTMLElement | undefined;
-			if (!stepContent) return;
-			const inputs = stepContent.querySelectorAll('input[name]');
-			const questionNames = new Set<string>();
-			inputs.forEach(inp => questionNames.add((inp as HTMLInputElement).name));
-			const total = questionNames.size;
-			let answered = 0;
-			questionNames.forEach(name => {
-				if (isQuestionAnswered(name)) answered++;
-			});
-			el.textContent = `${answered}/${total}`;
-		});
-	};
+        // Per-section counters in stepper
+        document.querySelectorAll('.step-progress-count[data-section-name]').forEach((el) => {
+            const sectionName = el.getAttribute('data-section-name');
+            if (!sectionName) return;
+            const stepIndex = Array.from(stepItems).findIndex(
+                item => item.getAttribute('data-section-name') === sectionName
+            );
+            const stepContent = steps[stepIndex] as HTMLElement | undefined;
+            if (!stepContent) return;
+            const inputs = stepContent.querySelectorAll('input[name]');
+            const questionNames = new Set<string>();
+            inputs.forEach(inp => questionNames.add((inp as HTMLInputElement).name));
+            const total = questionNames.size;
+            let answered = 0;
+            questionNames.forEach(name => {
+                if (isQuestionAnswered(name)) answered++;
+            });
+            el.textContent = `${answered}/${total}`;
+        });
+    };
 
-	// Auto-save logic
-	const collectAnswers = (): Record<string, boolean | string | number> => {
-		const checkboxes = auditForm?.querySelectorAll('input[type="checkbox"]');
-		const numberInputs = auditForm?.querySelectorAll('input[type="number"]');
-		const answers: Record<string, boolean | string | number> = {};
+    // Auto-save logic
+    const collectAnswers = (): Record<string, boolean | string | number> => {
+        const checkboxes = auditForm?.querySelectorAll('input[type="checkbox"]');
+        const numberInputs = auditForm?.querySelectorAll('input[type="number"]');
+        const answers: Record<string, boolean | string | number> = {};
 
-		checkboxes?.forEach((cb) => {
-			const input = cb as HTMLInputElement;
-			answers[input.name] = input.checked;
-		});
+        checkboxes?.forEach((cb) => {
+            const input = cb as HTMLInputElement;
+            answers[input.name] = input.checked;
+        });
 
-		numberInputs?.forEach((num) => {
-			const input = num as HTMLInputElement;
-			answers[input.name] = input.value;
-		});
+        numberInputs?.forEach((num) => {
+            const input = num as HTMLInputElement;
+            answers[input.name] = input.value;
+        });
 
-		return answers;
-	};
+        return answers;
+    };
 
-	const saveAnswers = () => {
-		if (!projectId) return;
-		const answers = collectAnswers();
-		saveAuditProgress(projectId, evaluationType, answers);
-		updateQuestionIcons();
-	};
+    const saveAnswers = () => {
+        if (!projectId) return;
+        const answers = collectAnswers();
+        saveAuditProgress(projectId, evaluationType, answers);
+        updateQuestionIcons();
+    };
 
-	// Load answers logic
-	const loadAnswers = () => {
-		if (!projectId) return;
+    // Load answers logic
+    const loadAnswers = () => {
+        if (!projectId) return;
 
-		const project = getProject(projectId);
-		if (!project) return;
+        const project = getProject(projectId);
+        if (!project) return;
 
-		const evaluation = project.evaluations[evaluationType];
-		if (!evaluation || !evaluation.answers) return;
+        const evaluation = project.evaluations[evaluationType];
+        if (!evaluation || !evaluation.answers) return;
 
-		Object.entries(evaluation.answers).forEach(([key, value]) => {
-			const input = document.querySelector(
-				`input[name="${key}"]`,
-			) as HTMLInputElement;
-			if (input) {
-				if (input.type === "checkbox") {
-					input.checked = value as boolean;
-				} else if (input.type === "number") {
-					input.value = value as string;
-				}
-			}
-		});
-	};
+        Object.entries(evaluation.answers).forEach(([key, value]) => {
+            const input = document.querySelector(
+                `input[name="${key}"]`,
+            ) as HTMLInputElement;
+            if (input) {
+                if (input.type === "checkbox") {
+                    input.checked = value as boolean;
+                } else if (input.type === "number") {
+                    input.value = value as string;
+                }
+            }
+        });
+    };
 
-	// Attach change listeners for auto-save
-	auditForm?.querySelectorAll("input").forEach((input) => {
-		input.addEventListener("change", saveAnswers);
-	});
+    // Attach change listeners for auto-save
+    auditForm?.querySelectorAll("input").forEach((input) => {
+        input.addEventListener("change", saveAnswers);
+    });
 
-	// Load answers on init
-	loadAnswers();
-	updateQuestionIcons();
+    // Load answers on init
+    loadAnswers();
+    updateQuestionIcons();
 
-	// Import questions for scoring
-	import surveyQuestions from "../data/apigreenscore-survey-questions.json";
+    // Import questions for scoring
+    import surveyQuestions from "../data/apigreenscore-survey-questions.json";
 
-	// Import toast
-	import { showToast } from "../utils/toast";
+    // Import toast
+    import {showToast} from "../utils/toast";
 
-	auditForm?.addEventListener("submit", (e) => {
-		e.preventDefault();
+    auditForm?.addEventListener("submit", (e) => {
+        e.preventDefault();
 
-		if (!projectId) {
-			showToast("No project ID found. Cannot save.", "error");
-			return;
-		}
+        if (!projectId) {
+            showToast("No project ID found. Cannot save.", "error");
+            return;
+        }
 
-		const answers = collectAnswers();
-		const result = finalizeApiGreenScoreEvaluation(
-			projectId,
-			answers,
-			surveyQuestions as Question[]
-		);
+        const answers = collectAnswers();
+        const result = finalizeApiGreenScoreEvaluation(
+            projectId,
+            answers,
+            surveyQuestions as Question[]
+        );
 
-		if (!result.success) {
-			showToast(result.message, "error");
-			return;
-		}
+        if (!result.success) {
+            showToast(result.message, "error");
+            return;
+        }
 
-		showToast(result.message, "success");
-		setTimeout(() => {
-			window.location.href = `/projects/view?id=${projectId}`;
-		}, 1500);
-	});
+        showToast(result.message, "success");
+        setTimeout(() => {
+            window.location.href = `/projects/view?id=${projectId}`;
+        }, 1500);
+    });
 </script>

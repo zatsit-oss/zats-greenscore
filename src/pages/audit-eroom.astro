@@ -4,8 +4,8 @@ import eroomData from "../data/eroom-data-model-1-1.json";
 import EroomStepper from "../components/audit/eroom/EroomStepper.astro";
 import EroomSection from "../components/audit/eroom/EroomSection.astro";
 import AuditNavigation from "../components/audit/AuditNavigation.astro";
-import { EvaluationType, EVALUATION_TYPES } from "../types/evaluation";
-import type { EroomCategory } from "../types/eroom";
+import {EvaluationType, EVALUATION_TYPES} from "../types/evaluation";
+import type {EroomCategory} from "../types/eroom";
 
 // Get categories from EROOM data
 const categories = eroomData.categories as EroomCategory[];
@@ -17,304 +17,305 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType];
 ---
 
 <Layout title={`Audit - ${evaluationInfo.name}`}>
-  <div class="max-w-4xl mx-auto">
-    <div class="mb-8">
-      <a
-        href="/"
-        class="link-back mb-4"
-      >
-        &larr; Back to Dashboard
-      </a>
-      <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center gap-3">
-          <h1 class="text-3xl font-bold text-[var(--color-text)]">
-            Audit
-          </h1>
-          <span class="px-3 py-1 text-sm rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium">
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-8">
+            <a
+                    href="/"
+                    class="link-back mb-4"
+            >
+                &larr; Back to Dashboard
+            </a>
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-3">
+                    <h1 class="text-3xl font-bold text-[var(--color-text)]">
+                        Audit
+                    </h1>
+                    <span class="px-3 py-1 text-sm rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium">
             {evaluationInfo.name}
           </span>
-        </div>
-        <span id="progressCounter" class="text-base font-medium text-[var(--color-text-muted)] tabular-nums">
+                </div>
+                <span id="progressCounter" class="text-base font-medium text-[var(--color-text-muted)] tabular-nums">
           Answers: 0/0
         </span>
-      </div>
-      <p class="text-muted">
-        Evaluate the optimization potential of your digital service. Your progress is saved automatically.
-      </p>
+            </div>
+            <p class="text-muted">
+                Evaluate the optimization potential of your digital service. Your progress is saved automatically.
+            </p>
+        </div>
+
+        <!-- Stepper -->
+        <EroomStepper categories={categories}/>
+
+        <form class="flex flex-col gap-8 pb-24" id="auditForm" data-project-id={projectId}
+              data-evaluation-type={evaluationType}>
+            {categories.map((category, index) => (
+                    <EroomSection
+                            category={category}
+                            index={index}
+                    />
+            ))}
+
+            <AuditNavigation/>
+        </form>
     </div>
-
-    <!-- Stepper -->
-    <EroomStepper categories={categories} />
-
-    <form class="flex flex-col gap-8 pb-24" id="auditForm" data-project-id={projectId} data-evaluation-type={evaluationType}>
-      {categories.map((category, index) => (
-        <EroomSection
-          category={category}
-          index={index}
-        />
-      ))}
-
-      <AuditNavigation />
-    </form>
-  </div>
 </Layout>
 
 <script>
-  import { EvaluationType } from "../types/evaluation";
-  import { saveEroomProgressiveScore, finalizeEroomEvaluation } from "../services/audit-service";
-  import { getProject } from "../services/project-service";
-  import { validateEroomCompletion } from "../utils/eroom-scoring";
-  import type { EroomCategory, EroomAnswerValue } from "../types/eroom";
-  import eroomData from "../data/eroom-data-model-1-1.json";
-  import { showToast } from "../utils/toast";
+    import {EvaluationType} from "../types/evaluation";
+    import {saveEroomProgressiveScore, finalizeEroomEvaluation} from "../services/audit-service";
+    import {getProject} from "../services/project-service";
+    import {validateEroomCompletion} from "../utils/eroom-scoring";
+    import type {EroomCategory, EroomAnswerValue} from "../types/eroom";
+    import eroomData from "../data/eroom-data-model-1-1.json";
+    import {showToast} from "../utils/toast";
 
-  const categories = eroomData.categories as EroomCategory[];
-  const progressCounter = document.getElementById("progressCounter");
+    const categories = eroomData.categories as EroomCategory[];
+    const progressCounter = document.getElementById("progressCounter");
 
-  let currentStep = 0;
-  const steps = document.querySelectorAll(".step-content");
-  const stepItems = document.querySelectorAll(".step-item");
-  const prevBtn = document.getElementById("prevBtn");
-  const nextBtn = document.getElementById("nextBtn");
-  const submitBtn = document.getElementById("submitBtn");
-  const totalSteps = steps.length;
+    let currentStep = 0;
+    const steps = document.querySelectorAll(".step-content");
+    const stepItems = document.querySelectorAll(".step-item");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const submitBtn = document.getElementById("submitBtn");
+    const totalSteps = steps.length;
 
-  // Mobile progress elements
-  const stepCurrentLabel = document.querySelector(".step-current-label");
-  const stepProgress = document.querySelector(".step-progress");
-  const stepProgressBar = document.querySelector(".step-progress-bar") as HTMLElement;
+    // Mobile progress elements
+    const stepCurrentLabel = document.querySelector(".step-current-label");
+    const stepProgress = document.querySelector(".step-progress");
+    const stepProgressBar = document.querySelector(".step-progress-bar") as HTMLElement;
 
-  function updateUI() {
-    // Show/Hide steps
-    steps.forEach((step, index) => {
-      (step as HTMLElement).style.display = index === currentStep ? "block" : "none";
-    });
+    function updateUI() {
+        // Show/Hide steps
+        steps.forEach((step, index) => {
+            (step as HTMLElement).style.display = index === currentStep ? "block" : "none";
+        });
 
-    // Update Stepper (desktop)
-    stepItems.forEach((item, index) => {
-      item.classList.remove("active", "completed");
-      item.removeAttribute("aria-current");
-      if (index === currentStep) {
-        item.classList.add("active");
-        item.setAttribute("aria-current", "step");
-      } else if (index < currentStep) {
-        item.classList.add("completed");
-      }
-    });
+        // Update Stepper (desktop)
+        stepItems.forEach((item, index) => {
+            item.classList.remove("active", "completed");
+            item.removeAttribute("aria-current");
+            if (index === currentStep) {
+                item.classList.add("active");
+                item.setAttribute("aria-current", "step");
+            } else if (index < currentStep) {
+                item.classList.add("completed");
+            }
+        });
 
-    // Update mobile progress
-    if (stepCurrentLabel && categories[currentStep]) {
-      stepCurrentLabel.textContent = '';
-      const iconSpan = document.createElement('span');
-      iconSpan.setAttribute('aria-hidden', 'true');
-      iconSpan.textContent = categories[currentStep].icon;
-      stepCurrentLabel.appendChild(iconSpan);
-      stepCurrentLabel.appendChild(document.createTextNode(` ${categories[currentStep].name}`));
-    }
-    if (stepProgress) {
-      stepProgress.textContent = '';
-      const srSpan = document.createElement('span');
-      srSpan.className = 'sr-only';
-      srSpan.textContent = 'Step';
-      stepProgress.appendChild(srSpan);
-      stepProgress.appendChild(document.createTextNode(` ${currentStep + 1} / ${totalSteps}`));
-    }
-    if (stepProgressBar) {
-      stepProgressBar.style.width = `${((currentStep + 1) / totalSteps) * 100}%`;
-    }
-    const progressBarContainer = stepProgressBar?.parentElement;
-    if (progressBarContainer) {
-      progressBarContainer.setAttribute("aria-valuenow", String(currentStep + 1));
-    }
-
-    // Update Buttons
-    if (prevBtn) prevBtn.style.display = currentStep === 0 ? "none" : "block";
-
-    if (currentStep === totalSteps - 1) {
-      if (nextBtn) nextBtn.style.display = "none";
-      if (submitBtn) submitBtn.style.display = "block";
-    } else {
-      if (nextBtn) nextBtn.style.display = "block";
-      if (submitBtn) submitBtn.style.display = "none";
-    }
-
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  nextBtn?.addEventListener("click", () => {
-    if (currentStep < totalSteps - 1) {
-      currentStep++;
-      updateUI();
-    }
-  });
-
-  prevBtn?.addEventListener("click", () => {
-    if (currentStep > 0) {
-      currentStep--;
-      updateUI();
-    }
-  });
-
-  // Clickable stepper steps
-  stepItems.forEach((item) => {
-    const goToStep = () => {
-      const step = parseInt(item.getAttribute("data-step") || "0", 10);
-      currentStep = step;
-      updateUI();
-    };
-    item.addEventListener("click", goToStep);
-    item.addEventListener("keydown", (e) => {
-      if ((e as KeyboardEvent).key === "Enter" || (e as KeyboardEvent).key === " ") {
-        e.preventDefault();
-        goToStep();
-      }
-    });
-  });
-
-  // Initialize
-  updateUI();
-
-  const auditForm = document.getElementById("auditForm") as HTMLFormElement;
-
-  // Get params from URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const projectId = urlParams.get("projectId");
-  const evaluationType = EvaluationType.EROOM;
-
-  /**
-   * Collect all answers from the form
-   */
-  const collectAnswers = (): Record<string, EroomAnswerValue> => {
-    const answers: Record<string, EroomAnswerValue> = {};
-    const radioInputs = auditForm?.querySelectorAll('input[type="radio"]:checked');
-
-    radioInputs?.forEach((radio) => {
-      const input = radio as HTMLInputElement;
-      // Check if it's a numeric value (Quick Diagnosis)
-      const numValue = parseInt(input.value, 10);
-      if (!isNaN(numValue)) {
-        answers[input.name] = numValue;
-      } else {
-        answers[input.name] = input.value as EroomAnswerValue;
-      }
-    });
-
-    return answers;
-  };
-
-  /**
-   * Check if a single answer counts as "answered"
-   */
-  const isAnswered = (answer: EroomAnswerValue): boolean => {
-    return (
-      answer !== null &&
-      answer !== undefined &&
-      answer !== 'to_evaluate' &&
-      answer !== 'evaluation_in_progress'
-    );
-  };
-
-  // Only scored categories count toward the global progress
-  const scoredCategories = categories.filter(c => c.includeInScore);
-
-  /**
-   * Update the progress counter display (global + per category)
-   */
-  const updateProgress = (answers: Record<string, EroomAnswerValue>) => {
-    // Global counter: only scored categories
-    const scoredValidation = validateEroomCompletion(answers, scoredCategories);
-    if (progressCounter) {
-      progressCounter.textContent = `Answers: ${scoredValidation.answeredQuestions}/${scoredValidation.totalQuestions}`;
-    }
-
-    // Per-category counters in stepper (all categories including Quick Diagnosis)
-    categories.forEach((category) => {
-      const el = document.querySelector(`.step-progress-count[data-category-id="${category.id}"]`);
-      if (!el) return;
-      const answered = category.questions.filter(q => isAnswered(answers[q.id])).length;
-      el.textContent = `${answered}/${category.questions.length}`;
-    });
-
-    // Per-question status icons
-    document.querySelectorAll('.question-status').forEach((statusEl) => {
-      const qId = statusEl.getAttribute('data-question-id');
-      if (!qId) return;
-      const answered = isAnswered(answers[qId]);
-      const iconPending = statusEl.querySelector('.icon-pending');
-      const iconAnswered = statusEl.querySelector('.icon-answered');
-      if (iconPending) iconPending.classList.toggle('hidden', answered);
-      if (iconAnswered) iconAnswered.classList.toggle('hidden', !answered);
-      statusEl.setAttribute('aria-label', answered ? 'Answered' : 'Not answered');
-    });
-  };
-
-  /**
-   * Auto-save answers with progressive score calculation
-   */
-  const saveAnswers = () => {
-    if (!projectId) return;
-
-    const answers = collectAnswers();
-    saveEroomProgressiveScore(projectId, evaluationType, answers, categories, scoredCategories);
-
-    // Update counter display
-    updateProgress(answers);
-  };
-
-  /**
-   * Load saved answers
-   */
-  const loadAnswers = () => {
-    if (!projectId) return;
-
-    const project = getProject(projectId);
-    if (!project) return;
-
-    const evaluation = project.evaluations[evaluationType];
-    if (!evaluation || !evaluation.answers) return;
-
-    Object.entries(evaluation.answers).forEach(([key, value]) => {
-      const inputs = auditForm?.querySelectorAll(`input[name="${key}"]`) as NodeListOf<HTMLInputElement>;
-      inputs?.forEach((input) => {
-        if (input.value === String(value)) {
-          input.checked = true;
+        // Update mobile progress
+        if (stepCurrentLabel && categories[currentStep]) {
+            stepCurrentLabel.textContent = '';
+            const iconSpan = document.createElement('span');
+            iconSpan.setAttribute('aria-hidden', 'true');
+            iconSpan.textContent = categories[currentStep].icon;
+            stepCurrentLabel.appendChild(iconSpan);
+            stepCurrentLabel.appendChild(document.createTextNode(` ${categories[currentStep].name}`));
         }
-      });
+        if (stepProgress) {
+            stepProgress.textContent = '';
+            const srSpan = document.createElement('span');
+            srSpan.className = 'sr-only';
+            srSpan.textContent = 'Step';
+            stepProgress.appendChild(srSpan);
+            stepProgress.appendChild(document.createTextNode(` ${currentStep + 1} / ${totalSteps}`));
+        }
+        if (stepProgressBar) {
+            stepProgressBar.style.width = `${((currentStep + 1) / totalSteps) * 100}%`;
+        }
+        const progressBarContainer = stepProgressBar?.parentElement;
+        if (progressBarContainer) {
+            progressBarContainer.setAttribute("aria-valuenow", String(currentStep + 1));
+        }
+
+        // Update Buttons
+        if (prevBtn) prevBtn.style.display = currentStep === 0 ? "none" : "block";
+
+        if (currentStep === totalSteps - 1) {
+            if (nextBtn) nextBtn.style.display = "none";
+            if (submitBtn) submitBtn.style.display = "block";
+        } else {
+            if (nextBtn) nextBtn.style.display = "block";
+            if (submitBtn) submitBtn.style.display = "none";
+        }
+
+        // Scroll to top
+        window.scrollTo({top: 0, behavior: "smooth"});
+    }
+
+    nextBtn?.addEventListener("click", () => {
+        if (currentStep < totalSteps - 1) {
+            currentStep++;
+            updateUI();
+        }
     });
-  };
 
-  // Attach change listeners for auto-save
-  auditForm?.querySelectorAll("input").forEach((input) => {
-    input.addEventListener("change", saveAnswers);
-  });
+    prevBtn?.addEventListener("click", () => {
+        if (currentStep > 0) {
+            currentStep--;
+            updateUI();
+        }
+    });
 
-  // Load answers on init
-  loadAnswers();
+    // Clickable stepper steps
+    stepItems.forEach((item) => {
+        const goToStep = () => {
+            const step = parseInt(item.getAttribute("data-step") || "0", 10);
+            currentStep = step;
+            updateUI();
+        };
+        item.addEventListener("click", goToStep);
+        item.addEventListener("keydown", (e) => {
+            if ((e as KeyboardEvent).key === "Enter" || (e as KeyboardEvent).key === " ") {
+                e.preventDefault();
+                goToStep();
+            }
+        });
+    });
 
-  // Initialize progress counter
-  updateProgress(collectAnswers());
+    // Initialize
+    updateUI();
 
-  // Form submission
-  auditForm?.addEventListener("submit", (e) => {
-    e.preventDefault();
+    const auditForm = document.getElementById("auditForm") as HTMLFormElement;
 
-    if (!projectId) {
-      showToast("No project ID found. Cannot save.", "error");
-      return;
-    }
+    // Get params from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get("projectId");
+    const evaluationType = EvaluationType.EROOM;
 
-    const answers = collectAnswers();
-    const result = finalizeEroomEvaluation(projectId, answers, categories, scoredCategories);
+    /**
+     * Collect all answers from the form
+     */
+    const collectAnswers = (): Record<string, EroomAnswerValue> => {
+        const answers: Record<string, EroomAnswerValue> = {};
+        const radioInputs = auditForm?.querySelectorAll('input[type="radio"]:checked');
 
-    if (!result.success) {
-      showToast(result.message, "error");
-      return;
-    }
+        radioInputs?.forEach((radio) => {
+            const input = radio as HTMLInputElement;
+            // Check if it's a numeric value (Quick Diagnosis)
+            const numValue = parseInt(input.value, 10);
+            if (!isNaN(numValue)) {
+                answers[input.name] = numValue;
+            } else {
+                answers[input.name] = input.value as EroomAnswerValue;
+            }
+        });
 
-    showToast(result.message, result.isComplete ? "success" : "info");
-    setTimeout(() => {
-      window.location.href = `/projects/view?id=${projectId}&evaluationType=${evaluationType}`;
-    }, 1500);
-  });
+        return answers;
+    };
+
+    /**
+     * Check if a single answer counts as "answered"
+     */
+    const isAnswered = (answer: EroomAnswerValue): boolean => {
+        return (
+            answer !== null &&
+            answer !== undefined &&
+            answer !== 'to_evaluate' &&
+            answer !== 'evaluation_in_progress'
+        );
+    };
+
+    // Only scored categories count toward the global progress
+    const scoredCategories = categories.filter(c => c.includeInScore);
+
+    /**
+     * Update the progress counter display (global + per category)
+     */
+    const updateProgress = (answers: Record<string, EroomAnswerValue>) => {
+        // Global counter: only scored categories
+        const scoredValidation = validateEroomCompletion(answers, scoredCategories);
+        if (progressCounter) {
+            progressCounter.textContent = `Answers: ${scoredValidation.answeredQuestions}/${scoredValidation.totalQuestions}`;
+        }
+
+        // Per-category counters in stepper (all categories including Quick Diagnosis)
+        categories.forEach((category) => {
+            const el = document.querySelector(`.step-progress-count[data-category-id="${category.id}"]`);
+            if (!el) return;
+            const answered = category.questions.filter(q => isAnswered(answers[q.id])).length;
+            el.textContent = `${answered}/${category.questions.length}`;
+        });
+
+        // Per-question status icons
+        document.querySelectorAll('.question-status').forEach((statusEl) => {
+            const qId = statusEl.getAttribute('data-question-id');
+            if (!qId) return;
+            const answered = isAnswered(answers[qId]);
+            const iconPending = statusEl.querySelector('.icon-pending');
+            const iconAnswered = statusEl.querySelector('.icon-answered');
+            if (iconPending) iconPending.classList.toggle('hidden', answered);
+            if (iconAnswered) iconAnswered.classList.toggle('hidden', !answered);
+            statusEl.setAttribute('aria-label', answered ? 'Answered' : 'Not answered');
+        });
+    };
+
+    /**
+     * Auto-save answers with progressive score calculation
+     */
+    const saveAnswers = () => {
+        if (!projectId) return;
+
+        const answers = collectAnswers();
+        saveEroomProgressiveScore(projectId, evaluationType, answers, categories, scoredCategories);
+
+        // Update counter display
+        updateProgress(answers);
+    };
+
+    /**
+     * Load saved answers
+     */
+    const loadAnswers = () => {
+        if (!projectId) return;
+
+        const project = getProject(projectId);
+        if (!project) return;
+
+        const evaluation = project.evaluations[evaluationType];
+        if (!evaluation || !evaluation.answers) return;
+
+        Object.entries(evaluation.answers).forEach(([key, value]) => {
+            const inputs = auditForm?.querySelectorAll(`input[name="${key}"]`) as NodeListOf<HTMLInputElement>;
+            inputs?.forEach((input) => {
+                if (input.value === String(value)) {
+                    input.checked = true;
+                }
+            });
+        });
+    };
+
+    // Attach change listeners for auto-save
+    auditForm?.querySelectorAll("input").forEach((input) => {
+        input.addEventListener("change", saveAnswers);
+    });
+
+    // Load answers on init
+    loadAnswers();
+
+    // Initialize progress counter
+    updateProgress(collectAnswers());
+
+    // Form submission
+    auditForm?.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        if (!projectId) {
+            showToast("No project ID found. Cannot save.", "error");
+            return;
+        }
+
+        const answers = collectAnswers();
+        const result = finalizeEroomEvaluation(projectId, answers, categories, scoredCategories);
+
+        if (!result.success) {
+            showToast(result.message, "error");
+            return;
+        }
+
+        showToast(result.message, result.isComplete ? "success" : "info");
+        setTimeout(() => {
+            window.location.href = `/projects/view?id=${projectId}&evaluationType=${evaluationType}`;
+        }, 1500);
+    });
 </script>

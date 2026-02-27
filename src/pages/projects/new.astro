@@ -1,128 +1,129 @@
 ---
 import Layout from '../../layouts/Layout.astro'
-import { EvaluationType, EVALUATION_TYPES, getAvailableEvaluationTypes } from '../../types/evaluation'
+import {EvaluationType, EVALUATION_TYPES, getAvailableEvaluationTypes} from '../../types/evaluation'
 
 const evaluationTypes = getAvailableEvaluationTypes()
 ---
 
 <Layout title="New Project">
-  <div class="max-w-2xl mx-auto">
-    <div class="mb-8">
-      <a href="/" class="link-back mb-4">
-        &larr; Back to Dashboard
-      </a>
-      <h1 class="text-3xl font-bold mb-2">Add New Project</h1>
-      <p class="text-muted">Enter the details of the API to be audited.</p>
+    <div class="max-w-2xl mx-auto">
+        <div class="mb-8">
+            <a href="/" class="link-back mb-4">
+                &larr; Back to Dashboard
+            </a>
+            <h1 class="text-3xl font-bold mb-2">Add New Project</h1>
+            <p class="text-muted">Enter the details of the API to be audited.</p>
+        </div>
+
+        <form class="glass-card sm:p-8 flex flex-col gap-6" id="createProjectForm">
+            <div class="flex flex-col gap-2">
+                <label for="name" class="text-sm font-medium text-muted">Project Name</label>
+                <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        class="form-input p-3 text-base placeholder:text-muted"
+                        placeholder="e.g. Customers API"
+                        required
+                />
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label for="description" class="text-sm font-medium text-muted">Description</label>
+                <textarea
+                        id="description"
+                        name="description"
+                        rows="4"
+                        class="form-input p-3 text-base placeholder:text-muted"
+                        placeholder="Describe the project goals and impact..."
+                        required></textarea>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label for="evaluationType" class="text-sm font-medium text-muted">Evaluation Type</label>
+                <select id="evaluationType" name="evaluationType" class="form-select p-3 text-base" required
+                        aria-describedby="evaluationDescription">
+                    {evaluationTypes.map((evalType) => (
+                            <option value={evalType.id}>
+                                {evalType.name}
+                            </option>
+                    ))}
+                </select>
+                <p id="evaluationDescription" class="text-xs text-muted mt-1">
+                    {evaluationTypes[0]?.description}
+                </p>
+            </div>
+
+            <div class="mt-4 flex justify-end gap-4">
+                <a href="/" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary hover:-translate-y-px">
+                    Start Audit
+                </button>
+            </div>
+        </form>
+
+        <script>
+            import {EvaluationType, EVALUATION_TYPES, createEmptyEvaluation} from '../../types/evaluation'
+            import type {Project} from '../../types/project'
+            import {saveProject, ensureStorageMigrated} from '../../services/project-service'
+
+            // Ensure storage is migrated
+            ensureStorageMigrated()
+
+            // Evaluation type descriptions
+            const descriptions: Record<string, string> = {}
+            Object.values(EVALUATION_TYPES).forEach((et) => {
+                descriptions[et.id] = et.description
+            })
+
+            // Update description when evaluation type changes
+            const evalSelect = document.getElementById('evaluationType') as HTMLSelectElement
+            const evalDescription = document.getElementById('evaluationDescription')
+
+            evalSelect?.addEventListener('change', () => {
+                if (evalDescription) {
+                    evalDescription.textContent = descriptions[evalSelect.value] || ''
+                }
+            })
+
+            // Form submission
+            const form = document.getElementById('createProjectForm')
+            form?.addEventListener('submit', (e) => {
+                e.preventDefault()
+                const formData = new FormData(e.target as HTMLFormElement)
+                const name = formData.get('name')
+                const description = formData.get('description')
+                const evaluationType = formData.get('evaluationType') as EvaluationType
+
+                if (name && description && evaluationType) {
+                    const id = crypto.randomUUID()
+                    const now = new Date().toISOString()
+
+                    // Create project with evaluation
+                    const evaluation = createEmptyEvaluation(evaluationType)
+
+                    const newProject: Project = {
+                        id,
+                        name: name.toString(),
+                        description: description.toString(),
+                        createdAt: now,
+                        updatedAt: now,
+                        evaluations: {
+                            [evaluationType]: evaluation
+                        }
+                    }
+
+                    // Save to localStorage
+                    saveProject(newProject)
+
+                    // Redirect to the appropriate audit page based on evaluation type
+                    const params = new URLSearchParams()
+                    params.append('projectId', newProject.id)
+
+                    const auditPage = evaluationType === EvaluationType.EROOM ? '/audit-eroom' : '/audit'
+                    window.location.href = `${auditPage}?${params.toString()}`
+                }
+            })
+        </script>
     </div>
-
-    <form class="glass-card sm:p-8 flex flex-col gap-6" id="createProjectForm">
-      <div class="flex flex-col gap-2">
-        <label for="name" class="text-sm font-medium text-muted">Project Name</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          class="form-input p-3 text-base placeholder:text-muted"
-          placeholder="e.g. Customers API"
-          required
-        />
-      </div>
-
-      <div class="flex flex-col gap-2">
-        <label for="description" class="text-sm font-medium text-muted">Description</label>
-        <textarea
-          id="description"
-          name="description"
-          rows="4"
-          class="form-input p-3 text-base placeholder:text-muted"
-          placeholder="Describe the project goals and impact..."
-          required></textarea>
-      </div>
-
-      <div class="flex flex-col gap-2">
-        <label for="evaluationType" class="text-sm font-medium text-muted">Evaluation Type</label>
-        <select id="evaluationType" name="evaluationType" class="form-select p-3 text-base" required aria-describedby="evaluationDescription">
-          {evaluationTypes.map((evalType) => (
-            <option value={evalType.id}>
-              {evalType.name}
-            </option>
-          ))}
-        </select>
-        <p id="evaluationDescription" class="text-xs text-muted mt-1">
-          {evaluationTypes[0]?.description}
-        </p>
-      </div>
-
-      <div class="mt-4 flex justify-end gap-4">
-        <a href="/" class="btn btn-secondary">Cancel</a>
-        <button type="submit" class="btn btn-primary hover:-translate-y-px">
-          Start Audit
-        </button>
-      </div>
-    </form>
-
-    <script>
-      import { EvaluationType, EVALUATION_TYPES, createEmptyEvaluation } from '../../types/evaluation'
-      import type { Project } from '../../types/project'
-      import { saveProject, ensureStorageMigrated } from '../../services/project-service'
-
-      // Ensure storage is migrated
-      ensureStorageMigrated()
-
-      // Evaluation type descriptions
-      const descriptions: Record<string, string> = {}
-      Object.values(EVALUATION_TYPES).forEach((et) => {
-        descriptions[et.id] = et.description
-      })
-
-      // Update description when evaluation type changes
-      const evalSelect = document.getElementById('evaluationType') as HTMLSelectElement
-      const evalDescription = document.getElementById('evaluationDescription')
-
-      evalSelect?.addEventListener('change', () => {
-        if (evalDescription) {
-          evalDescription.textContent = descriptions[evalSelect.value] || ''
-        }
-      })
-
-      // Form submission
-      const form = document.getElementById('createProjectForm')
-      form?.addEventListener('submit', (e) => {
-        e.preventDefault()
-        const formData = new FormData(e.target as HTMLFormElement)
-        const name = formData.get('name')
-        const description = formData.get('description')
-        const evaluationType = formData.get('evaluationType') as EvaluationType
-
-        if (name && description && evaluationType) {
-          const id = crypto.randomUUID()
-          const now = new Date().toISOString()
-
-          // Create project with evaluation
-          const evaluation = createEmptyEvaluation(evaluationType)
-
-          const newProject: Project = {
-            id,
-            name: name.toString(),
-            description: description.toString(),
-            createdAt: now,
-            updatedAt: now,
-            evaluations: {
-              [evaluationType]: evaluation
-            }
-          }
-
-          // Save to localStorage
-          saveProject(newProject)
-
-          // Redirect to the appropriate audit page based on evaluation type
-          const params = new URLSearchParams()
-          params.append('projectId', newProject.id)
-
-          const auditPage = evaluationType === EvaluationType.EROOM ? '/audit-eroom' : '/audit'
-          window.location.href = `${auditPage}?${params.toString()}`
-        }
-      })
-    </script>
-  </div>
 </Layout>

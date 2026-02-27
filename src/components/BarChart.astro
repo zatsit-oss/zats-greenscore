@@ -1,230 +1,230 @@
 ---
 /**
- * BarChart component - Pure SVG horizontal bar chart
- * Lightweight and eco-friendly: no external library required
- *
- * Accessibility:
- * - role="img" with aria-label
- * - Each bar has aria-label with value
- * - Supports keyboard focus
- * - Works with screen readers
- *
- * Theming: Uses CSS variables for dark/light mode support
- */
+    * BarChart component - Pure SVG horizontal bar chart
+    * Lightweight and eco-friendly: no external library required
+    *
+    * Accessibility:
+    * - role="img" with aria-label
+    * - Each bar has aria-label with value
+    * - Supports keyboard focus
+    * - Works with screen readers
+    *
+    * Theming: Uses CSS variables for dark/light mode support
+    */
 
 export interface BarDataPoint {
-  label: string;
-  value: number;  // 0-100
-  id?: string;    // Optional link identifier
+    label: string;
+    value: number;  // 0-100
+    id?: string;    // Optional link identifier
 }
 
 interface Props {
-  id?: string;
-  title?: string;
-  maxValue?: number;
+    id?: string;
+    title?: string;
+    maxValue?: number;
 }
 
-const { id = 'barChart', title = 'Score Comparison', maxValue = 100 } = Astro.props;
+const {id = 'barChart', title = 'Score Comparison', maxValue = 100} = Astro.props;
 ---
 
 <div class="bar-chart-container" id={`${id}-container`}>
-  <h2 class="bar-chart-title" id={`${id}-title`}>{title}</h2>
+    <h2 class="bar-chart-title" id={`${id}-title`}>{title}</h2>
 
-  <div
-    class="bar-chart"
-    id={id}
-    role="list"
-    aria-labelledby={`${id}-title`}
-  >
-    <!-- Bars will be rendered by JS as list items -->
-  </div>
+    <div
+            class="bar-chart"
+            id={id}
+            role="list"
+            aria-labelledby={`${id}-title`}
+    >
+        <!-- Bars will be rendered by JS as list items -->
+    </div>
 
-  <p class="bar-chart-empty hidden" id={`${id}-empty`}>
-    No completed projects yet.
-  </p>
+    <p class="bar-chart-empty hidden" id={`${id}-empty`}>
+        No completed projects yet.
+    </p>
 </div>
 
 <style is:global>
-  .bar-chart-container {
-    width: 100%;
-  }
-
-  .bar-chart-title {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--color-text);
-    margin-bottom: 1rem;
-  }
-
-  .bar-chart {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .bar-chart-empty {
-    color: var(--color-text-muted);
-    font-size: 0.875rem;
-    text-align: center;
-    padding: 1rem;
-  }
-
-  .bar-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .bar-label {
-    flex: 0 0 100px;
-    font-size: 0.875rem;
-    color: var(--color-text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .bar-wrapper {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .bar-track {
-    flex: 1;
-    height: 20px;
-    background: var(--glass-bg);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
-  .bar-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.3s ease;
-    background: var(--color-primary);
-  }
-
-  .bar-value {
-    flex-shrink: 0;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--color-text);
-    min-width: 2.5rem;
-    text-align: right;
-  }
-
-  .bar-item:focus-within .bar-track {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-  }
-
-  .bar-item a {
-    text-decoration: none;
-    color: inherit;
-  }
-
-  .bar-item a:hover .bar-label {
-    color: var(--color-primary);
-  }
-
-  .bar-item a:focus {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-    border-radius: 4px;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .bar-fill {
-      transition: none;
+    .bar-chart-container {
+        width: 100%;
     }
-  }
+
+    .bar-chart-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--color-text);
+        margin-bottom: 1rem;
+    }
+
+    .bar-chart {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .bar-chart-empty {
+        color: var(--color-text-muted);
+        font-size: 0.875rem;
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .bar-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .bar-label {
+        flex: 0 0 100px;
+        font-size: 0.875rem;
+        color: var(--color-text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .bar-wrapper {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .bar-track {
+        flex: 1;
+        height: 20px;
+        background: var(--glass-bg);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+        background: var(--color-primary);
+    }
+
+    .bar-value {
+        flex-shrink: 0;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--color-text);
+        min-width: 2.5rem;
+        text-align: right;
+    }
+
+    .bar-item:focus-within .bar-track {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+    }
+
+    .bar-item a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .bar-item a:hover .bar-label {
+        color: var(--color-primary);
+    }
+
+    .bar-item a:focus {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+        border-radius: 4px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .bar-fill {
+            transition: none;
+        }
+    }
 
 </style>
 
 <script>
-  /**
-   * Initialize bar chart with data points
-   * @param chartId - The chart container ID
-   * @param data - Array of {label, value, id?} objects
-   * @param maxValue - Maximum value for the scale (default 100)
-   */
-  window.initBarChart = function(
-    chartId: string,
-    data: Array<{label: string; value: number; id?: string}>,
-    maxValue: number = 100
-  ) {
-    const container = document.getElementById(chartId);
-    const emptyMsg = document.getElementById(`${chartId}-empty`);
+    /**
+     * Initialize bar chart with data points
+     * @param chartId - The chart container ID
+     * @param data - Array of {label, value, id?} objects
+     * @param maxValue - Maximum value for the scale (default 100)
+     */
+    window.initBarChart = function (
+        chartId: string,
+        data: Array<{ label: string; value: number; id?: string }>,
+        maxValue: number = 100
+    ) {
+        const container = document.getElementById(chartId);
+        const emptyMsg = document.getElementById(`${chartId}-empty`);
 
-    if (!container) return;
+        if (!container) return;
 
-    // Clear previous content
-    container.innerHTML = '';
+        // Clear previous content
+        container.innerHTML = '';
 
-    if (!data || data.length === 0) {
-      container.classList.add('hidden');
-      emptyMsg?.classList.remove('hidden');
-      return;
-    }
+        if (!data || data.length === 0) {
+            container.classList.add('hidden');
+            emptyMsg?.classList.remove('hidden');
+            return;
+        }
 
-    container.classList.remove('hidden');
-    emptyMsg?.classList.add('hidden');
+        container.classList.remove('hidden');
+        emptyMsg?.classList.add('hidden');
 
-    // Sort by value descending
-    const sortedData = [...data].sort((a, b) => b.value - a.value);
+        // Sort by value descending
+        const sortedData = [...data].sort((a, b) => b.value - a.value);
 
-    sortedData.forEach((item) => {
-      const percentage = Math.min(100, (item.value / maxValue) * 100);
+        sortedData.forEach((item) => {
+            const percentage = Math.min(100, (item.value / maxValue) * 100);
 
-      const barItem = document.createElement('div');
-      barItem.className = 'bar-item';
-      barItem.setAttribute('role', 'listitem');
+            const barItem = document.createElement('div');
+            barItem.className = 'bar-item';
+            barItem.setAttribute('role', 'listitem');
 
-      // Build label element safely (no innerHTML to prevent XSS from project names)
-      let labelEl: HTMLElement;
-      if (item.id) {
-        labelEl = document.createElement('a');
-        (labelEl as HTMLAnchorElement).href = `/projects/view?id=${encodeURIComponent(item.id)}`;
-        labelEl.className = 'bar-label';
-        labelEl.title = item.label;
-        labelEl.setAttribute('aria-label', `${item.label}: score ${item.value} out of ${maxValue}`);
-      } else {
-        labelEl = document.createElement('span');
-        labelEl.className = 'bar-label';
-        labelEl.title = item.label;
-      }
-      labelEl.textContent = item.label;
+            // Build label element safely (no innerHTML to prevent XSS from project names)
+            let labelEl: HTMLElement;
+            if (item.id) {
+                labelEl = document.createElement('a');
+                (labelEl as HTMLAnchorElement).href = `/projects/view?id=${encodeURIComponent(item.id)}`;
+                labelEl.className = 'bar-label';
+                labelEl.title = item.label;
+                labelEl.setAttribute('aria-label', `${item.label}: score ${item.value} out of ${maxValue}`);
+            } else {
+                labelEl = document.createElement('span');
+                labelEl.className = 'bar-label';
+                labelEl.title = item.label;
+            }
+            labelEl.textContent = item.label;
 
-      // Build bar wrapper
-      const barWrapper = document.createElement('div');
-      barWrapper.className = 'bar-wrapper';
+            // Build bar wrapper
+            const barWrapper = document.createElement('div');
+            barWrapper.className = 'bar-wrapper';
 
-      const barTrack = document.createElement('div');
-      barTrack.className = 'bar-track';
+            const barTrack = document.createElement('div');
+            barTrack.className = 'bar-track';
 
-      const barFill = document.createElement('div');
-      barFill.className = 'bar-fill';
-      barFill.style.width = `${percentage}%`;
-      barFill.setAttribute('role', 'progressbar');
-      barFill.setAttribute('aria-valuenow', String(item.value));
-      barFill.setAttribute('aria-valuemin', '0');
-      barFill.setAttribute('aria-valuemax', String(maxValue));
-      barFill.setAttribute('aria-label', `${item.label}: ${item.value}`);
+            const barFill = document.createElement('div');
+            barFill.className = 'bar-fill';
+            barFill.style.width = `${percentage}%`;
+            barFill.setAttribute('role', 'progressbar');
+            barFill.setAttribute('aria-valuenow', String(item.value));
+            barFill.setAttribute('aria-valuemin', '0');
+            barFill.setAttribute('aria-valuemax', String(maxValue));
+            barFill.setAttribute('aria-label', `${item.label}: ${item.value}`);
 
-      barTrack.appendChild(barFill);
+            barTrack.appendChild(barFill);
 
-      const barValue = document.createElement('span');
-      barValue.className = 'bar-value';
-      barValue.textContent = String(item.value);
+            const barValue = document.createElement('span');
+            barValue.className = 'bar-value';
+            barValue.textContent = String(item.value);
 
-      barWrapper.appendChild(barTrack);
-      barWrapper.appendChild(barValue);
+            barWrapper.appendChild(barTrack);
+            barWrapper.appendChild(barValue);
 
-      barItem.appendChild(labelEl);
-      barItem.appendChild(barWrapper);
-      container.appendChild(barItem);
-    });
-  };
+            barItem.appendChild(labelEl);
+            barItem.appendChild(barWrapper);
+            container.appendChild(barItem);
+        });
+    };
 </script>
