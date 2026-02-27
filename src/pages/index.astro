@@ -3,10 +3,9 @@ import Layout from '../layouts/Layout.astro'
 import ProjectCard from '../components/ProjectCard.astro'
 import BarChart from '../components/BarChart.astro'
 import WelcomeHero from '../components/WelcomeHero.astro'
-import { EvaluationType, EVALUATION_TYPES, getAvailableEvaluationTypes } from '../types/evaluation'
+import { getAvailableEvaluationTypes } from '../types/evaluation'
 
 const evaluationTypes = getAvailableEvaluationTypes()
-const defaultEvalType = EvaluationType.API_GREEN_SCORE
 ---
 
 <Layout title="Dashboard">

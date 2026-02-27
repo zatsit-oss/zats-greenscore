@@ -117,9 +117,6 @@ export function migrateStorageIfNeeded(): void {
   safeSetItem(StorageKeys.STORAGE_VERSION, String(CURRENT_STORAGE_VERSION));
   migrationChecked = true;
 
-  console.log(
-    `Migrated ${migratedProjects.length} projects to new storage format`
-  );
 }
 
 // ============================================================================
