@@ -196,54 +196,6 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
     const projectId = urlParams.get("projectId");
     const evaluationType = (urlParams.get("evaluationType") || EvaluationType.API_GREEN_SCORE) as EvaluationType;
 
-    /**
-     * Check if a question is answered
-     * Checkbox: checked = answered. Number: non-empty = answered.
-     */
-    const isQuestionAnswered = (questionId: string): boolean => {
-        const input = auditForm?.querySelector(`input[name="${questionId}"]`) as HTMLInputElement | null;
-        if (!input) return false;
-        if (input.type === "checkbox") return input.checked;
-        if (input.type === "number") return input.value !== "";
-        return false;
-    };
-
-    /**
-     * Update question status icons and stepper section counters
-     */
-    const updateQuestionIcons = () => {
-        // Per-question icons
-        document.querySelectorAll('.question-status').forEach((statusEl) => {
-            const qId = statusEl.getAttribute('data-question-id');
-            if (!qId) return;
-            const answered = isQuestionAnswered(qId);
-            const iconPending = statusEl.querySelector('.icon-pending');
-            const iconAnswered = statusEl.querySelector('.icon-answered');
-            if (iconPending) iconPending.classList.toggle('hidden', answered);
-            if (iconAnswered) iconAnswered.classList.toggle('hidden', !answered);
-            statusEl.setAttribute('aria-label', answered ? 'Answered' : 'Not answered');
-        });
-
-        // Per-section counters in stepper
-        document.querySelectorAll('.step-progress-count[data-section-name]').forEach((el) => {
-            const sectionName = el.getAttribute('data-section-name');
-            if (!sectionName) return;
-            const stepIndex = Array.from(stepItems).findIndex(
-                item => item.getAttribute('data-section-name') === sectionName
-            );
-            const stepContent = steps[stepIndex] as HTMLElement | undefined;
-            if (!stepContent) return;
-            const inputs = stepContent.querySelectorAll('input[name]');
-            const questionNames = new Set<string>();
-            inputs.forEach(inp => questionNames.add((inp as HTMLInputElement).name));
-            const total = questionNames.size;
-            let answered = 0;
-            questionNames.forEach(name => {
-                if (isQuestionAnswered(name)) answered++;
-            });
-            el.textContent = `${answered}/${total}`;
-        });
-    };
 
     // Auto-save logic
     const collectAnswers = (): Record<string, boolean | string | number> => {
@@ -268,7 +220,6 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
         if (!projectId) return;
         const answers = collectAnswers();
         saveAuditProgress(projectId, evaluationType, answers);
-        updateQuestionIcons();
     };
 
     // Load answers logic
@@ -302,7 +253,6 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 
     // Load answers on init
     loadAnswers();
-    updateQuestionIcons();
 
     // Import questions for scoring
     import surveyQuestions from "../data/apigreenscore-survey-questions.json";
