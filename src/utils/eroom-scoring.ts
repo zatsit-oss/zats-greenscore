@@ -14,6 +14,21 @@ import type {
 } from '../types/eroom'
 import { ProjectRanking } from '../types/common'
 
+/** Score thresholds for interpretation levels */
+const INTERPRETATION_THRESHOLDS = {
+  MATURE: 25,
+  MODERATE: 50,
+  SIGNIFICANT: 75
+} as const
+
+/** Score thresholds for project ranking (A-E) */
+const RANKING_THRESHOLDS = {
+  A: 20,
+  B: 40,
+  C: 60,
+  D: 80
+} as const
+
 // Re-export types for consumers that imported from here
 export type {
   ImpactLevel,
@@ -210,21 +225,21 @@ export const getScoreInterpretation = (score: number): {
   description: string
   color: string
 } => {
-  if (score <= 25) {
+  if (score <= INTERPRETATION_THRESHOLDS.MATURE) {
     return {
       level: 'Mature',
       description: 'Very mature service, few optimizations needed',
       color: '#10b981' // green
     }
   }
-  if (score <= 50) {
+  if (score <= INTERPRETATION_THRESHOLDS.MODERATE) {
     return {
       level: 'Moderate',
       description: 'Some improvement opportunities identified',
       color: '#84cc16' // lime
     }
   }
-  if (score <= 75) {
+  if (score <= INTERPRETATION_THRESHOLDS.SIGNIFICANT) {
     return {
       level: 'Significant',
       description: 'Significant optimization potential',
@@ -244,10 +259,10 @@ export const getScoreInterpretation = (score: number): {
  */
 export const getEroomRanking = (score: number): ProjectRanking => {
   // Lower score = more mature = better ranking
-  if (score <= 20) return ProjectRanking.A
-  if (score <= 40) return ProjectRanking.B
-  if (score <= 60) return ProjectRanking.C
-  if (score <= 80) return ProjectRanking.D
+  if (score <= RANKING_THRESHOLDS.A) return ProjectRanking.A
+  if (score <= RANKING_THRESHOLDS.B) return ProjectRanking.B
+  if (score <= RANKING_THRESHOLDS.C) return ProjectRanking.C
+  if (score <= RANKING_THRESHOLDS.D) return ProjectRanking.D
   return ProjectRanking.E
 }
 

@@ -198,7 +198,11 @@ const levels = 4; // Concentric circles (25%, 50%, 75%, 100%)
             // Add legend item
             const legendItem = document.createElement('span');
             legendItem.className = 'legend-item';
-            legendItem.innerHTML = `${item.label}: <span class="legend-score">${item.score}%</span>`;
+            legendItem.appendChild(document.createTextNode(`${item.label}: `));
+            const scoreSpan = document.createElement('span');
+            scoreSpan.className = 'legend-score';
+            scoreSpan.textContent = `${item.score}%`;
+            legendItem.appendChild(scoreSpan);
             legendContainer.appendChild(legendItem);
         });
 
