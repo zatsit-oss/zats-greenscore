@@ -131,7 +131,12 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
             stepCurrentLabel.textContent = sectionNames[currentStep];
         }
         if (stepProgress) {
-            stepProgress.innerHTML = `<span class="sr-only">Step</span> ${currentStep + 1} / ${totalSteps}`;
+            stepProgress.textContent = '';
+            const srSpan = document.createElement('span');
+            srSpan.className = 'sr-only';
+            srSpan.textContent = 'Step';
+            stepProgress.appendChild(srSpan);
+            stepProgress.appendChild(document.createTextNode(` ${currentStep + 1} / ${totalSteps}`));
         }
         if (stepProgressBar) {
             stepProgressBar.style.width = `${((currentStep + 1) / totalSteps) * 100}%`;
