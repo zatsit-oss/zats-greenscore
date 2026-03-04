@@ -1,17 +1,8 @@
-import { ProjectRanking } from '../types/project.ts'
+import { ProjectRanking } from '../types/project'
+import type { Question, Answers } from '../types/apigreenscore'
 
-export interface Question {
-  section: string;
-  id: string;
-  question: string;
-  description: string;
-  points: number;
-  formula?: string;
-}
-
-export interface Answers {
-  [key: string]: boolean | string | number;
-}
+// Re-export types for backward compatibility
+export type { Question, Answers } from '../types/apigreenscore'
 
 const safeEvaluate = (formula: string, x: number): number => {
   try {
@@ -69,20 +60,20 @@ export const calculateProjectScore = (answers: Answers, questions: Question[]): 
   }
 }
 
+// Point thresholds for API Green Score rankings
+const RANKING_THRESHOLDS = {
+  A: 6000,
+  B: 3000,
+  C: 2000,
+  D: 1000
+} as const
+
 export const getRankingScore = (answers: Answers, questions: Question[]) => {
   const { points } = calculateProjectScore(answers, questions)
-  if (points >= 6000) {
-    return ProjectRanking.A
-  }
-  if (points >= 3000 && points < 6000) {
-    return ProjectRanking.B
-  }
-  if (points >= 2000 && points < 3000) {
-    return ProjectRanking.C
-  }
-  if (points >= 1000 && points < 2000) {
-    return ProjectRanking.D
-  }
+  if (points >= RANKING_THRESHOLDS.A) return ProjectRanking.A
+  if (points >= RANKING_THRESHOLDS.B) return ProjectRanking.B
+  if (points >= RANKING_THRESHOLDS.C) return ProjectRanking.C
+  if (points >= RANKING_THRESHOLDS.D) return ProjectRanking.D
   return ProjectRanking.E
 }
 

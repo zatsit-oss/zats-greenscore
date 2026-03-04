@@ -1,7 +1,7 @@
 {
   "name": "zats-greenscore",
-  "version": "0.0.1",
-  "description": "Outil de calcul d'empreinte digital. La tech au service de l'impact des entreprises. Travailler avec zatsit, c'est aussi améliorer son impact ! Découvrez ce que nous proposons.",
+  "version": "1.0.0",
+  "description": "Digital footprint calculator for eco-design evaluation of digital projects",
   "private": true,
   "scripts": {
     "dev": "astro dev",
@@ -10,7 +10,11 @@
     "astro": "astro",
     "tauri": "tauri",
     "dev:desktop": "tauri dev",
-    "build:desktop": "tauri build"
+    "build:desktop": "tauri build",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.17",
@@ -19,7 +23,10 @@
     "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@tauri-apps/cli": "^2.9.6",
+    "@types/node": "^25.3.3",
+    "vitest": "^4.0.18",
     "xlsx": "^0.18.5"
   }
 }

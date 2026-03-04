@@ -1,0 +1,50 @@
+---
+import {getAvailableEvaluationTypes} from '../types/evaluation'
+
+const evaluationTypes = getAvailableEvaluationTypes()
+---
+
+<section class="welcome-hero" aria-labelledby="welcome-heading">
+    <div class="glass-card max-w-3xl mx-auto text-center py-12 px-6 sm:px-10">
+        <!-- Heading -->
+        <h2
+                id="welcome-heading"
+                class="text-3xl sm:text-4xl font-extrabold mb-3 text-transparent bg-clip-text bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)]"
+        >
+            Welcome to Zats Green Score
+        </h2>
+        <p class="text-lg text-muted mb-10 max-w-xl mx-auto">
+            Evaluate the eco-design maturity of your digital projects.
+        </p>
+
+        <!-- Evaluation type cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10 text-left">
+            {evaluationTypes.map((evalType) => (
+                    <div class="eval-type-card rounded-lg p-5 border border-[var(--color-border)] bg-[var(--color-surface)]">
+                        <h3 class="text-base font-bold text-[var(--color-text)] mb-2">
+                            {evalType.name}
+                        </h3>
+                        <p class="text-sm text-muted leading-relaxed">
+                            {evalType.description}
+                        </p>
+                        <p class="text-xs text-muted mt-2">
+                            Source: {evalType.source} v{evalType.version}
+                        </p>
+                    </div>
+            ))}
+        </div>
+
+        <!-- CTA -->
+        <a href="/projects/new" class="btn btn-primary text-base px-6 py-3 inline-block">
+            + Create your first project
+        </a>
+
+        <!-- Footer links -->
+        <p class="text-sm text-muted mt-8">
+            Learn more:
+            <a href="/doc" class="underline hover:text-[var(--color-primary)] transition-colors">Documentation</a>
+            &middot;
+            <a href="/about" class="underline hover:text-[var(--color-primary)] transition-colors">About</a>
+        </p>
+    </div>
+</section>

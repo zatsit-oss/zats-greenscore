@@ -1,27 +1,36 @@
 ---
 import AuditQuestion from "./AuditQuestion.astro";
 
+interface AuditQuestion {
+    id: string;
+    section: string;
+    question: string;
+    description: string;
+    tooltip?: string;
+}
+
 interface Props {
     sectionName: string;
-    questions: any[];
+    questions: AuditQuestion[];
     index: number;
 }
 
-const { sectionName, questions, index } = Astro.props;
+const {sectionName, questions, index} = Astro.props;
 ---
 
 <div
-    class="step-content p-4 sm:p-8 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] animate-[fadeIn_0.3s_ease]"
-    data-step={index}
-    style={index === 0 ? "" : "display: none;"}
+        class="step-content p-4 sm:p-8 rounded-xl bg-[var(--glass-bg)] backdrop-blur-md border border-[var(--glass-border)] animate-[fadeIn_0.3s_ease]"
+        data-step={index}
+        style={index === 0 ? "" : "display: none;"}
 >
     <h2
-        class="text-2xl font-bold text-[var(--color-primary)] mb-6 pb-2 border-b border-[var(--color-border)]"
+            class="text-2xl font-bold text-[var(--color-primary)] mb-6 pb-2 border-b border-[var(--color-border)]"
     >
         {sectionName}
     </h2>
     <div class="flex flex-col gap-8">
-        {questions.map((q) => <AuditQuestion question={q} />)}
+        {questions.map((q) =>
+                <AuditQuestion question={q}/>)}
     </div>
 </div>
 
@@ -34,6 +43,12 @@ const { sectionName, questions, index } = Astro.props;
         to {
             opacity: 1;
             transform: translateY(0);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .step-content {
+            animation: none !important;
         }
     }
 </style>

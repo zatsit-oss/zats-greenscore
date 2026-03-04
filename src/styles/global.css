@@ -1,19 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #10b981;
-  --color-primary-hover: #059669;
-  --color-secondary: #3b82f6;
   --color-accent: #f59e0b;
 
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
 }
 
-:root {
-  /* Light Theme Defaults (Zatsit Blue) */
+/* Light theme values (shared between :root default and [data-theme="light"]) */
+:root,
+[data-theme="light"] {
   --color-bg: #ffffff;
   --color-text: #1c1e21;
   --color-surface: #f8fafc;
@@ -37,9 +35,9 @@
   --color-text-gradient: linear-gradient(45deg, #0f15fd, #2a0a89);
 }
 
-/* Dark Theme (Zatsit Orange) */
+/* Dark theme values (shared between @media preference and [data-theme="dark"]) */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --color-bg: #1b1b1d;
     --color-text: #e3e3e3;
     --color-surface: rgba(255, 255, 255, 0.05);
@@ -87,30 +85,6 @@
   --color-text-gradient: linear-gradient(45deg, #f1be51, #ffd580);
 }
 
-[data-theme="light"] {
-  --color-bg: #ffffff;
-  --color-text: #1c1e21;
-  --color-surface: #f8fafc;
-  --color-border: #cbd5e1;
-  --color-text-muted: #475569;
-  --color-status-completed: #047857;
-  --color-status-inprogress: #92400e;
-  --color-status-pending: #334155;
-  --color-score-excellent: #047857;
-  --color-score-good: #4d7c0f;
-  --color-score-average: #92400e;
-  --color-score-poor: #b91c1c;
-  --color-on-primary: #ffffff;
-  --glass-bg: rgba(255, 255, 255, 0.9);
-  --glass-border: rgba(15, 21, 253, 0.1);
-  --card-bg: #f8fafc;
-  --color-primary: #0f15fd;
-  --color-primary-hover: #0a0ecc;
-  --color-primary-gradient: linear-gradient(180deg, #0f15fd 0%, #2a0a89 100%);
-  --color-secondary: #0f15fd;
-  --color-text-gradient: linear-gradient(45deg, #0f15fd, #2a0a89);
-}
-
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
@@ -118,7 +92,11 @@ body {
   @apply antialiased;
 }
 
-/* Custom Utilities to be replaced or kept if needed */
+/* ============================================================================
+   REUSABLE COMPONENTS
+   ============================================================================ */
+
+/* Glass effect base */
 .glass {
   background: var(--glass-bg);
   backdrop-filter: blur(10px);
@@ -126,11 +104,107 @@ body {
   border: 1px solid var(--glass-border);
 }
 
+/* Glass card - used for content sections */
+.glass-card {
+  @apply p-6 rounded-xl;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
+
+/* Form elements */
+.form-select,
+.form-input {
+  @apply px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer;
+  @apply focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:ring-offset-2;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.form-select:focus,
+.form-input:focus {
+  border-color: var(--color-primary);
+}
+
+/* Status badges */
+.status-badge {
+  @apply text-sm px-3 py-1 rounded-full font-semibold uppercase tracking-wider border;
+}
+
+.status-badge--completed {
+  @apply bg-emerald-500/10 border-emerald-500/20;
+  color: var(--color-status-completed);
+}
+
+.status-badge--in-progress {
+  @apply bg-amber-500/10 border-amber-500/20;
+  color: var(--color-status-inprogress);
+}
+
+.status-badge--pending {
+  @apply bg-slate-500/10 border-slate-500/20;
+  color: var(--color-status-pending);
+}
+
+/* Buttons */
+.btn {
+  @apply px-4 py-2 rounded-lg font-medium transition-colors;
+  @apply focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-primary);
+}
+
+.btn-danger {
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.btn-danger:hover {
+  background-color: #ef4444;
+  border-color: #ef4444;
+  color: white;
+}
+
+/* Text utilities */
 .text-gradient {
   background: var(--color-text-gradient);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+/* Links */
+.link-back {
+  @apply text-sm inline-flex items-center gap-2 transition-colors;
+  color: var(--color-text-muted);
+}
+
+.link-back:hover {
+  color: var(--color-primary);
 }
 
 button:hover {
@@ -148,7 +222,8 @@ button:hover {
   opacity: 1;
 }
 
-svg {
+/* SVG sizing only for leaf icons in project cards */
+.leaf svg {
   width: 100%;
   height: 100%;
 }
@@ -190,6 +265,17 @@ svg {
 .toast.show {
   transform: translateY(0);
   opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    transition: none;
+    transform: none;
+  }
+
+  .toast.show {
+    transform: none;
+  }
 }
 
 .toast-success {
