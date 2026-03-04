@@ -1,40 +1,82 @@
 ---
-interface Props {
-    sections: Record<string, any[]>;
+interface AuditQuestion {
+    id: string;
+    section: string;
+    question: string;
+    description: string;
+    tooltip?: string;
 }
 
-const { sections } = Astro.props;
+interface Props {
+    sections: Record<string, AuditQuestion[]>;
+}
+
+const {sections} = Astro.props;
+const sectionNames = Object.keys(sections);
+const totalSections = sectionNames.length;
 ---
 
-<div class="flex justify-between mb-12 relative">
-    <div
-        class="absolute top-6 left-0 right-0 h-0.5 bg-[var(--color-border)] z-0 -translate-y-1/2"
-    >
+<nav class="mb-8" aria-label="Audit progress">
+    <!-- Desktop: Full stepper -->
+    <div class="hidden md:flex justify-between relative">
+        <div
+                class="absolute top-6 left-0 right-0 h-0.5 bg-[var(--color-border)] z-0 -translate-y-1/2"
+                aria-hidden="true"
+        >
+        </div>
+        {
+            sectionNames.map((sectionName, index) => (
+                    <div
+                            class="step-item relative z-10 flex flex-col items-center gap-2 bg-[var(--color-bg)] px-2 cursor-pointer"
+                            data-step={index}
+                            data-section-name={sectionName}
+                            role="button"
+                            tabindex="0"
+                            aria-label={`Go to ${sectionName}`}
+                            aria-current={index === 0 ? "step" : undefined}
+                    >
+                        <div class="step-circle w-12 h-12 rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex items-center justify-center font-bold text-[var(--color-text-muted)] transition-all duration-300">
+                            {index + 1}
+                        </div>
+                        <span class="step-label text-sm font-medium text-[var(--color-text)] transition-colors duration-300">
+                        {sectionName}
+                    </span>
+                    </div>
+            ))
+        }
     </div>
-    {
-        Object.keys(sections).map((sectionName, index) => (
+
+    <!-- Mobile: Compact progress -->
+    <div class="md:hidden">
+        <div class="flex items-center justify-between mb-2">
+            <span class="step-current-label text-sm font-medium text-[var(--color-primary)]">
+                {sectionNames[0]}
+            </span>
+            <span class="step-progress text-sm text-[var(--color-text-muted)]" aria-live="polite">
+                <span class="sr-only">Step</span> 1 / {totalSections}
+            </span>
+        </div>
+        <div
+                class="h-2 bg-[var(--color-surface)] rounded-full overflow-hidden"
+                role="progressbar"
+                aria-valuenow={1}
+                aria-valuemin={1}
+                aria-valuemax={totalSections}
+                aria-label="Audit progress"
+        >
             <div
-                class="step-item relative z-10 flex flex-col items-center gap-2 bg-[var(--color-bg)] px-2"
-                data-step={index}
-            >
-                <div class="step-circle w-12 h-12 rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex items-center justify-center font-bold text-[var(--color-text-muted)] transition-all duration-300">
-                    {index + 1}
-                </div>
-                <span class="step-label text-sm font-medium text-[var(--color-text-muted)] mt-2 transition-colors duration-300">
-                    {sectionName}
-                </span>
-            </div>
-        ))
-    }
-</div>
+                    class="step-progress-bar h-full bg-[var(--color-primary)] transition-all duration-300"
+                    style={`width: ${(1 / totalSections) * 100}%`}
+            ></div>
+        </div>
+    </div>
+</nav>
 
 <style>
     /* Active State */
     .step-item.active .step-circle {
         border-color: var(--color-primary);
-        background-color: var(--color-primary);
-        color: #ffffff;
-        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 15%, transparent);
         transform: scale(1.1);
     }
 
@@ -45,9 +87,7 @@ const { sections } = Astro.props;
 
     /* Completed State */
     .step-item.completed .step-circle {
-        background-color: var(--color-primary);
-        border-color: var(--color-primary);
-        color: #ffffff;
+        border-color: #f59e0b;
     }
 
     .step-item.completed .step-label {

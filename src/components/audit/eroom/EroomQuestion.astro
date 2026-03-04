@@ -1,0 +1,173 @@
+---
+import type {EroomQuestion, EvaluationScaleType, AnswerOption} from '../../../types/eroom'
+import {STANDARD_ANSWER_OPTIONS, EASE_OF_CHANGE_OPTIONS} from '../../../types/eroom'
+import EroomImpactBadge from './EroomImpactBadge.astro'
+
+interface Props {
+    question: EroomQuestion
+    scaleType: EvaluationScaleType
+}
+
+const {question: q, scaleType} = Astro.props
+
+// Get answer options based on scale type
+const getAnswerOptions = (): AnswerOption[] | null => {
+    switch (scaleType) {
+        case 'standard':
+            return STANDARD_ANSWER_OPTIONS
+        case 'easeOfChange':
+            return EASE_OF_CHANGE_OPTIONS
+        default:
+            return null
+    }
+}
+
+const answerOptions = getAnswerOptions()
+const isQuickDiagnosis = scaleType === 'quickDiagnosis'
+---
+
+<div
+        class="relative p-4 rounded-lg bg-white/5 border border-transparent hover:border-[var(--color-border)] transition-colors"
+>
+    <!-- Header: Status icon + ID + Impact Badge -->
+    <div class="flex items-center gap-3 mb-3">
+    <span
+            class="question-status flex-shrink-0"
+            data-question-id={q.id}
+            role="img"
+            aria-label="Not answered"
+    >
+      <svg class="icon-pending w-5 h-5 text-amber-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01"/>
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+      </svg>
+      <svg class="icon-answered w-5 h-5 text-emerald-400 hidden" xmlns="http://www.w3.org/2000/svg" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"/>
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+      </svg>
+    </span>
+        <span
+                class="font-mono text-sm text-[var(--color-status-inprogress)] bg-amber-500/10 px-1.5 py-0.5 rounded flex-shrink-0"
+        >
+      {q.id}
+    </span>
+        <EroomImpactBadge level={q.impactLevel}/>
+    </div>
+
+    <!-- Question Title -->
+    <h3 class="text-base font-semibold text-[var(--color-text)] leading-snug mb-2">
+        {q.criteria}
+    </h3>
+
+    <!-- Accordion for additional info -->
+    {(q.additionalExplanation || q.waysOfEvaluation) && (
+            <div class="mb-4 flex flex-col gap-2">
+                {q.additionalExplanation && (
+                        <details class="group text-sm accordion" id={`context-${q.id}`}>
+                            <summary
+                                    class="cursor-pointer list-none flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
+                                    aria-expanded="false"
+                                    aria-controls={`context-content-${q.id}`}
+                            >
+                                <span class="chevron text-xs" aria-hidden="true">&#9654;</span>
+                                <span class="font-medium">Context</span>
+                            </summary>
+                            <p id={`context-content-${q.id}`} class="mt-2 ml-5 text-[var(--color-text-muted)]">
+                                {q.additionalExplanation}
+                            </p>
+                        </details>
+                )}
+
+                {q.waysOfEvaluation && (
+                        <details class="group text-sm accordion" id={`eval-${q.id}`}>
+                            <summary
+                                    class="cursor-pointer list-none flex items-center gap-2 text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors"
+                                    aria-expanded="false"
+                                    aria-controls={`eval-content-${q.id}`}
+                            >
+                                <span class="chevron text-xs" aria-hidden="true">&#9654;</span>
+                                <span class="font-medium">How to evaluate</span>
+                            </summary>
+                            <p id={`eval-content-${q.id}`} class="mt-2 ml-5 text-[var(--color-text-muted)]">
+                                {q.waysOfEvaluation}
+                            </p>
+                        </details>
+                )}
+            </div>
+    )}
+
+    <!-- Answer Input -->
+    <fieldset class="mt-4 border-none p-0 m-0">
+        <legend class="sr-only">{q.criteria}</legend>
+        {isQuickDiagnosis ? (
+            <!-- Quick Diagnosis: Numeric scale 1-5 as radio list -->
+                <div class="flex flex-col gap-2">
+                    {q.evaluationScale?.map((option) => (
+                            <label class="flex items-start gap-3 cursor-pointer group">
+                                <input
+                                        type="radio"
+                                        name={q.id}
+                                        value={option.value}
+                                        class="mt-1 w-4 h-4 accent-[var(--color-primary)]"
+                                />
+                                <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-slate-600/30 flex items-center justify-center text-sm font-bold text-[var(--color-text)] flex-shrink-0"
+                    aria-hidden="true">
+                {option.value}
+              </span>
+                                    <span class="text-sm text-[var(--color-text-muted)] group-hover:text-[var(--color-text)]">
+                {option.label}
+              </span>
+                                </div>
+                            </label>
+                    ))}
+                </div>
+        ) : (
+            <!-- Standard / Ease of Change: Qualitative options as radio list -->
+                <div class="flex flex-col gap-2">
+                    {answerOptions?.map((option) => (
+                            <label class="flex items-center gap-3 cursor-pointer group">
+                                <input
+                                        type="radio"
+                                        name={q.id}
+                                        value={option.id}
+                                        class="w-4 h-4 accent-[var(--color-primary)]"
+                                />
+                                <span class="text-base" aria-hidden="true">{option.emoji}</span>
+                                <span class="text-sm text-[var(--color-text-muted)] group-hover:text-[var(--color-text)]">{option.label}</span>
+                            </label>
+                    ))}
+                </div>
+        )}
+    </fieldset>
+</div>
+
+<style>
+    .accordion summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .accordion[open] .chevron {
+        transform: rotate(90deg);
+    }
+
+    .chevron {
+        transition: transform 0.2s ease;
+        display: inline-block;
+    }
+</style>
+
+<script>
+    // Update aria-expanded when details toggle
+    document.querySelectorAll('details.accordion').forEach(details => {
+        details.addEventListener('toggle', () => {
+            const summary = details.querySelector('summary');
+            if (summary) {
+                summary.setAttribute('aria-expanded', details.open ? 'true' : 'false');
+            }
+        });
+    });
+</script>

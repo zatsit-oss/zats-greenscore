@@ -1,0 +1,99 @@
+{
+  "title": "Documentation",
+  "subtitle": "Learn how to use Zats Green Score to evaluate your projects.",
+  "tableOfContents": [
+    { "id": "getting-started", "label": "Getting Started" },
+    { "id": "create-project", "label": "Creating a Project" },
+    { "id": "evaluation-types", "label": "Evaluation Types" },
+    { "id": "understanding-scores", "label": "Understanding Scores" },
+    { "id": "faq", "label": "FAQ" }
+  ],
+  "sections": {
+    "gettingStarted": {
+      "id": "getting-started",
+      "title": "Getting Started",
+      "steps": [
+        "Click **\"+ New Project\"** in the navigation bar",
+        "Enter your project name and description",
+        "Select an evaluation type (API Green Score or EROOM)",
+        "Complete the questionnaire",
+        "View your results and recommendations"
+      ]
+    },
+    "createProject": {
+      "id": "create-project",
+      "title": "Creating a Project",
+      "description": "A project represents a digital service, API, or application you want to evaluate. Each project can have multiple evaluations of different types.",
+      "fields": [
+        { "name": "Name", "description": "A short, descriptive name for your project" },
+        { "name": "Description", "description": "Details about what the project does" },
+        { "name": "Evaluation Type", "description": "The methodology to use for assessment" }
+      ]
+    },
+    "evaluationTypes": {
+      "id": "evaluation-types",
+      "title": "Evaluation Types",
+      "types": [
+        {
+          "name": "API Green Score",
+          "borderColor": "primary",
+          "description": "Evaluates API design and implementation against eco-design best practices.",
+          "sections": "Architecture, Design, Usage, Logs",
+          "scoring": "Higher score = Better eco-design (0-100)"
+        },
+        {
+          "name": "EROOM (EOF v1.1)",
+          "borderColor": "amber",
+          "description": "Measures optimization potential across 6 categories plus a quick diagnosis.",
+          "categories": "Product, Architecture, Infrastructure, Storage & Data, Algo & Code, Ease of Change",
+          "scoring": "Lower score = More mature service (0-100%)"
+        }
+      ]
+    },
+    "understandingScores": {
+      "id": "understanding-scores",
+      "title": "Understanding Scores",
+      "apiGreenScore": {
+        "title": "API Green Score Rankings",
+        "rankings": [
+          { "grade": "A", "range": "90-100", "color": "emerald" },
+          { "grade": "B", "range": "75-89", "color": "lime" },
+          { "grade": "C", "range": "50-74", "color": "amber" },
+          { "grade": "D", "range": "25-49", "color": "orange" },
+          { "grade": "E", "range": "0-24", "color": "red" }
+        ]
+      },
+      "eroom": {
+        "title": "EROOM Score Interpretation",
+        "ranges": [
+          { "range": "0-25%", "color": "emerald", "description": "Very mature service, few optimizations needed" },
+          { "range": "25-50%", "color": "lime", "description": "Some improvement opportunities identified" },
+          { "range": "50-75%", "color": "amber", "description": "Significant optimization potential" },
+          { "range": "75-100%", "color": "red", "description": "High optimization potential - priority actions needed" }
+        ]
+      }
+    },
+    "faq": {
+      "id": "faq",
+      "title": "Frequently Asked Questions",
+      "questions": [
+        {
+          "question": "Where is my data stored?",
+          "answer": "All data is stored locally in your browser's localStorage. Nothing is sent to external servers. Your evaluations remain private and on your device."
+        },
+        {
+          "question": "Can I have multiple evaluations on one project?",
+          "answer": "Yes! Each project can have both an API Green Score evaluation and an EROOM evaluation. Use the evaluation type selector on the project view page to switch between them."
+        },
+        {
+          "question": "Is my progress saved automatically?",
+          "answer": "Yes, your answers are saved automatically as you complete the questionnaire. You can leave and come back at any time."
+        },
+        {
+          "question": "Can I export my results?",
+          "answer": "Export functionality is planned for a future release. For now, you can view your results on the project detail page."
+        }
+      ]
+    }
+  }
+}

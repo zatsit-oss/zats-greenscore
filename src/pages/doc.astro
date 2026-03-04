@@ -1,0 +1,213 @@
+---
+import Layout from '../layouts/Layout.astro';
+import docContent from '../data/doc-content.json';
+
+const {title, subtitle, tableOfContents, sections} = docContent;
+
+// Color mapping for Tailwind classes
+const colorClasses: Record<string, { bg: string; lightColor: string; darkColor: string }> = {
+    emerald: {bg: 'bg-emerald-500/20', lightColor: '#065f46', darkColor: '#6ee7b7'},
+    lime: {bg: 'bg-lime-500/20', lightColor: '#3f6212', darkColor: '#bef264'},
+    amber: {bg: 'bg-amber-500/20', lightColor: '#92400e', darkColor: '#fcd34d'},
+    orange: {bg: 'bg-orange-500/20', lightColor: '#9a3412', darkColor: '#fdba74'},
+    red: {bg: 'bg-red-500/20', lightColor: '#991b1b', darkColor: '#fca5a5'}
+};
+
+const getBorderClass = (color: string) => {
+    if (color === 'primary') return 'border-[var(--color-primary)]';
+    if (color === 'amber') return 'border-amber-500';
+    return 'border-[var(--color-border)]';
+};
+
+// Parse **bold** markup into typed parts (avoids set:html)
+interface TextPart {
+    type: 'text' | 'bold';
+    content: string
+}
+
+function parseBoldMarkup(text: string): TextPart[] {
+    const parts: TextPart[] = [];
+    const regex = /\*\*(.*?)\*\*/g;
+    let lastIndex = 0;
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+        if (match.index > lastIndex) {
+            parts.push({type: 'text', content: text.slice(lastIndex, match.index)});
+        }
+        parts.push({type: 'bold', content: match[1]});
+        lastIndex = match.index + match[0].length;
+    }
+    if (lastIndex < text.length) {
+        parts.push({type: 'text', content: text.slice(lastIndex)});
+    }
+    return parts;
+}
+---
+
+<Layout title="Documentation">
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-8">
+            <a href="/" class="link-back mb-4">
+                &larr; Back to Dashboard
+            </a>
+            <h1 class="text-3xl font-bold mb-4">{title}</h1>
+            <p class="text-muted text-lg">{subtitle}</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <nav class="glass-card mb-8" aria-label="Table of contents">
+            <h2 class="text-lg font-semibold mb-4">Contents</h2>
+            <ul class="space-y-2 text-muted">
+                {tableOfContents.map((item: { id: string; label: string }) => (
+                        <li>
+                            <a href={`#${item.id}`} class="text-[var(--color-primary)] hover:underline">
+                                {item.label}
+                            </a>
+                        </li>
+                ))}
+            </ul>
+        </nav>
+
+        <!-- Getting Started -->
+        <section id={sections.gettingStarted.id} class="glass-card mb-8">
+            <h2 class="text-xl font-semibold mb-4">{sections.gettingStarted.title}</h2>
+            <ol class="list-decimal list-inside space-y-3 text-muted">
+                {sections.gettingStarted.steps.map((step: string) => (
+                        <li>
+                            {parseBoldMarkup(step).map((part) =>
+                                part.type === 'bold' ? <strong>{part.content}</strong> : part.content
+                            )}
+                        </li>
+                ))}
+            </ol>
+        </section>
+
+        <!-- Creating a Project -->
+        <section id={sections.createProject.id} class="glass-card mb-8">
+            <h2 class="text-xl font-semibold mb-4">{sections.createProject.title}</h2>
+            <p class="text-muted leading-relaxed mb-4">{sections.createProject.description}</p>
+            <div class="bg-white/5 rounded-lg p-4 border border-[var(--color-border)]">
+                <h3 class="font-medium mb-2">Project Fields</h3>
+                <ul class="text-muted text-sm space-y-1">
+                    {sections.createProject.fields.map((field: { name: string; description: string }) => (
+                            <li><strong>{field.name}:</strong> {field.description}</li>
+                    ))}
+                </ul>
+            </div>
+        </section>
+
+        <!-- Evaluation Types -->
+        <section id={sections.evaluationTypes.id} class="glass-card mb-8">
+            <h2 class="text-xl font-semibold mb-4">{sections.evaluationTypes.title}</h2>
+            <div class="space-y-6">
+                {sections.evaluationTypes.types.map((type: {
+                    name: string;
+                    borderColor: string;
+                    description: string;
+                    sections?: string;
+                    categories?: string;
+                    scoring: string
+                }) => (
+                        <div class={`border-l-4 ${getBorderClass(type.borderColor)} pl-4`}>
+                            <h3 class="text-lg font-medium mb-2">{type.name}</h3>
+                            <p class="text-muted leading-relaxed mb-3">{type.description}</p>
+                            {type.sections && (
+                                    <div class="text-sm text-muted">
+                                        <strong>Sections:</strong> {type.sections}
+                                    </div>
+                            )}
+                            {type.categories && (
+                                    <div class="text-sm text-muted">
+                                        <strong>Categories:</strong> {type.categories}
+                                    </div>
+                            )}
+                            <div class="text-sm text-muted mt-1">
+                                <strong>Scoring:</strong> {type.scoring}
+                            </div>
+                        </div>
+                ))}
+            </div>
+        </section>
+
+        <!-- Understanding Scores -->
+        <section id={sections.understandingScores.id} class="glass-card mb-8">
+            <h2 class="text-xl font-semibold mb-4">{sections.understandingScores.title}</h2>
+            <div class="space-y-6">
+                <div>
+                    <h3 class="font-medium mb-3">{sections.understandingScores.apiGreenScore.title}</h3>
+                    <div class="grid grid-cols-5 gap-2 text-center text-sm" role="list"
+                         aria-label="Score rankings from A to E">
+                        {sections.understandingScores.apiGreenScore.rankings.map((ranking: {
+                            grade: string;
+                            range: string;
+                            color: string
+                        }) => (
+                                <div
+                                        class={`p-2 rounded ${colorClasses[ranking.color].bg} grade-text`}
+                                        style={`--grade-light: ${colorClasses[ranking.color].lightColor}; --grade-dark: ${colorClasses[ranking.color].darkColor};`}
+                                        role="listitem"
+                                        aria-label={`Grade ${ranking.grade}: ${ranking.range} points`}
+                                >
+                                    <div class="font-bold" aria-hidden="true">{ranking.grade}</div>
+                                    <div class="text-xs" aria-hidden="true">{ranking.range}</div>
+                                </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-medium mb-3">{sections.understandingScores.eroom.title}</h3>
+                    <div class="space-y-2 text-sm">
+                        {sections.understandingScores.eroom.ranges.map((range: {
+                            range: string;
+                            color: string;
+                            description: string
+                        }) => (
+                                <div class="flex items-center gap-3">
+                <span
+                        class="w-20 font-medium grade-text"
+                        style={`--grade-light: ${colorClasses[range.color].lightColor}; --grade-dark: ${colorClasses[range.color].darkColor};`}
+                >{range.range}</span>
+                                    <span class="text-muted">{range.description}</span>
+                                </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id={sections.faq.id} class="glass-card">
+
+            <h2 class="text-xl font-semibold mb-4">{sections.faq.title}</h2>
+            <div class="space-y-6">
+                {sections.faq.questions.map((faq: { question: string; answer: string }) => (
+                        <details class="group">
+                            <summary
+                                    class="cursor-pointer font-medium text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors">
+                                {faq.question}
+                            </summary>
+                            <p class="mt-2 text-muted text-sm pl-4">{faq.answer}</p>
+                        </details>
+                ))}
+            </div>
+        </section>
+    </div>
+</Layout>
+
+<style>
+    /* Theme-adaptive grade colors using per-element CSS variables */
+    .grade-text {
+        color: var(--grade-light);
+    }
+
+    :global([data-theme="dark"]) .grade-text {
+        color: var(--grade-dark);
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :global(:root:not([data-theme="light"])) .grade-text {
+            color: var(--grade-dark);
+        }
+    }
+</style>
