@@ -1,6 +1,17 @@
 # zats-greenscore 🌱
 
-A dynamic, **Astro**-based web application designed to assess the eco-conception score of digital projects.  
+[![GitHub release](https://img.shields.io/github/v/release/zatsit-oss/zats-greenscore)](https://github.com/zatsit-oss/zats-greenscore/releases)
+[![License](https://img.shields.io/github/license/zatsit-oss/zats-greenscore)](LICENSE)
+[![Deploy to Firebase Hosting](https://img.shields.io/github/actions/workflow/status/zatsit-oss/zats-greenscore/firebase-hosting-merge.yml?label=deploy)](https://github.com/zatsit-oss/zats-greenscore/actions)
+[![Release Desktop App](https://img.shields.io/github/actions/workflow/status/zatsit-oss/zats-greenscore/release-desktop.yml?label=desktop%20build)](https://github.com/zatsit-oss/zats-greenscore/actions)
+[![Astro](https://img.shields.io/badge/Astro-5.x-bc52ee?logo=astro&logoColor=white)](https://astro.build)
+[![Tauri](https://img.shields.io/badge/Tauri-2.x-24c8d8?logo=tauri&logoColor=white)](https://tauri.app)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Playwright](https://img.shields.io/badge/Playwright-e2e-2ead33?logo=playwright&logoColor=white)](https://playwright.dev)
+[![Vitest](https://img.shields.io/badge/Vitest-165%20tests-6e9f18?logo=vitest&logoColor=white)](https://vitest.dev)
+[![WCAG](https://img.shields.io/badge/WCAG-AA%20compliant-228b22)](https://www.w3.org/WAI/WCAG21/quickref/)
+
+A dynamic, **Astro**-based web application designed to assess the eco-conception score of digital projects.
 
 This project is inspired by the [API Green Score](https://github.com/API-Green-Score/APIGreenScore) initiative, leveraging their questionnaire from the provided Excel file to create an interactive and user-friendly experience. Please read their README file to understand the project philosphy.
 
