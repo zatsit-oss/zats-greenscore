@@ -18,8 +18,8 @@ A hybrid **web + desktop** application for evaluating the eco-design of digital 
 ## 🚀 Features
 
 - **Multi-Evaluation Support:** Run different evaluation types on a single project
-  - [API Green Score](https://github.com/API-Green-Score/APIGreenScore) — API eco-design assessment
-  - [EROOM](https://eroom.greenspector.com/) — Optimization Framework for digital services (based on EROOM 1.1)
+  - [API Green Score](https://github.com/API-Green-Score/APIGreenScore) : API eco-design assessment
+  - [EROOM](https://eroom.greenspector.com/) : Optimization Framework for digital services (based on EROOM 1.1)
 - **Project Management:** Create, track, and compare multiple projects from a dashboard
 - **Real-Time Scoring:** Instantly calculates scores with ranking (A to E) and radar/bar chart visualizations
 - **Score Interpretation:** Contextual feedback on your results with improvement guidance
@@ -171,4 +171,5 @@ For questions, suggestions, or feedback, reach out to us at support@zatsit.fr.
 
 ## 🌟 Acknowledgments
 
-We extend our gratitude to the API Green Score team for their foundational work in promoting eco-conception in digital projects.
+- [API Green Score](https://github.com/API-Green-Score/APIGreenScore) for their foundational work in promoting eco-design of APIs.
+- [Boavizta](https://boavizta.org/) for the [EROOM](https://boavizta.org/eroom/la-genese) Optimization Framework used in this project.
