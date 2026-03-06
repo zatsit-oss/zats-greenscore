@@ -49,7 +49,10 @@
         {
           "name": "EROOM Framework",
           "url": "https://boavizta.org/",
-          "linkText": "Boavizta"
+          "linkText": "Boavizta",
+          "license": "CC BY-SA 4.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+          "notice": "The EROOM evaluation data is based on the EROOM Optimization Framework by Boavizta, licensed under CC BY-SA 4.0. The original content (questions, answers, and scoring) has been kept as-is, only the format was changed from Google Sheets to a web application."
         },
         {
           "name": "Developed by",

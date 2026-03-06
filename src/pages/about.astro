@@ -78,7 +78,7 @@ const evaluationTypes = sections.evaluationTypes.types.map(
         <section class="glass-card">
             <h2 class="text-xl font-semibold mb-4">{sections.credits.title}</h2>
             <ul class="text-muted space-y-2">
-                {sections.credits.items.map((item: { name: string; url: string; linkText: string }) => (
+                {sections.credits.items.map((item: { name: string; url: string; linkText: string; license?: string; licenseUrl?: string; notice?: string }) => (
                         <li>
                             <strong>{item.name}</strong> -{' '}
                             <a
@@ -89,6 +89,22 @@ const evaluationTypes = sections.evaluationTypes.types.map(
                             >
                                 {item.linkText}<span class="sr-only"> (opens in new tab)</span>
                             </a>
+                            {item.license && item.licenseUrl && (
+                                <span>
+                                    {' '} — Licensed under{' '}
+                                    <a
+                                        href={item.licenseUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="text-[var(--color-primary)] underline"
+                                    >
+                                        {item.license}<span class="sr-only"> (opens in new tab)</span>
+                                    </a>
+                                </span>
+                            )}
+                            {item.notice && (
+                                <p class="text-sm text-muted mt-1">{item.notice}</p>
+                            )}
                         </li>
                 ))}
             </ul>

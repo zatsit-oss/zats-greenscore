@@ -163,7 +163,11 @@ Contributions are welcome! Contributing rules will come soon.
 
 ## 📝 License
 
-This project is licensed under the MIT License. Feel free to use, modify, and share it.
+This project uses a dual licensing model:
+
+- **Source code** is licensed under the [MIT License](LICENSE).
+- **EROOM evaluation data** (`src/data/eroom-data-model-1-1.json`) is based on the [EROOM Optimization Framework](https://boavizta.org/eroom/la-genese) by [Boavizta](https://boavizta.org/), licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). 
+The original content (questions, answers, and scoring methodology) has been kept as-is — only the format was changed, from the original Google Sheets to a web application. Any derivative work using this data must be shared under the same CC BY-SA 4.0 license.
 
 ## 📧 Contact
 
