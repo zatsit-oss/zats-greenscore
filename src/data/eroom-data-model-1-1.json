@@ -3,8 +3,11 @@
   "title": "EROOM Optimization Framework",
   "description": "Data model for the EOF (EROOM Optimization Framework) v1.1 - Digital service maturity evaluation",
   "version": "1.1",
-  "license": "CC-BY-SA",
+  "license": "CC-BY-SA-4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
   "source": "Boavizta",
+  "sourceUrl": "https://boavizta.org/eroom/la-genese",
+  "modifications": "Original content (questions, answers, scoring) kept as-is. Format changed from Google Sheets to web application.",
   "metadata": {
     "impactLevels": {
       "Decisive": {
