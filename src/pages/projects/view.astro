@@ -298,7 +298,7 @@ const evaluationTypes = getAvailableEvaluationTypes()
                         }
                     // Don't reset existing data - audit page will load existing answers
                     // Score will only be recalculated when user submits the audit
-                    const auditPage = evalType === EvaluationType.EROOM ? '/audit-eroom' : '/audit'
+                    const auditPage = evalType === EvaluationType.EROOM ? '/audit-eroom' : '/audit-apigreenscore'
                     window.location.href = `${auditPage}?projectId=${project.id}`
                     })
                 }

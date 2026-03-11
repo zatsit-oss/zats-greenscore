@@ -1,7 +1,7 @@
 /**
  * Audit Service - Business logic for audit operations
  *
- * Extracts business logic from audit pages (audit.astro, audit-eroom.astro)
+ * Extracts business logic from audit pages (audit-apigreenscore.astro, audit-eroom.astro)
  * so that pages only handle DOM interactions.
  *
  * Architecture: Pages (DOM) → audit-service (business) → project-service (storage)

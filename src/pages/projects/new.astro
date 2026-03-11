@@ -120,7 +120,7 @@ const evaluationTypes = getAvailableEvaluationTypes()
                     const params = new URLSearchParams()
                     params.append('projectId', newProject.id)
 
-                    const auditPage = evaluationType === EvaluationType.EROOM ? '/audit-eroom' : '/audit'
+                    const auditPage = evaluationType === EvaluationType.EROOM ? '/audit-eroom' : '/audit-apigreenscore'
                     window.location.href = `${auditPage}?${params.toString()}`
                 }
             })
