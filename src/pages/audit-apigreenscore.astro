@@ -82,7 +82,8 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 <script>
     import type {Question} from "../types/apigreenscore";
     import {EvaluationType} from "../types/evaluation";
-    import {saveAuditProgress, finalizeApiGreenScoreEvaluation} from "../services/audit-service";
+    import {saveAuditProgress} from "../services/audit-service";
+    import {finalizeApiGreenScoreEvaluation} from "../services/evaluation-service";
     import {getProject} from "../services/project-service";
 
     let currentStep = 0;
