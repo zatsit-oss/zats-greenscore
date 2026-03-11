@@ -7,10 +7,7 @@
  * Architecture note: This is a "port" in hexagonal architecture terms.
  * The implementation (localStorage) can be swapped for an API adapter later.
  *
- * TODO: Create a similar service for Project View page
- * - getProjectEvaluations(projectId) - Get all evaluations for a project
- * - getProjectEvaluationTypes(projectId) - Get available types for selector
- * - addEvaluationToProject(projectId, evalType) - Add new evaluation type
+ * See also: project-view-service.ts for Project View page aggregation.
  */
 
 import type {Project} from '../types/project';
