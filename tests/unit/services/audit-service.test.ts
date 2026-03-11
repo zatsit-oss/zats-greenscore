@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { Project } from '../../../src/types/project'
 import type { Evaluation } from '../../../src/types/evaluation'
 import { EvaluationType, EvaluationStatus } from '../../../src/types/evaluation'
-import { ProjectRanking } from '../../../src/types/common'
 import type { EroomCategory } from '../../../src/types/eroom'
 
 // Mock project-service
