@@ -11,7 +11,7 @@ test.describe('API Green Score Audit', () => {
     await page.fill('#description', 'Test audit flow');
     await page.selectOption('#evaluationType', 'apigreenscore');
     await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(/\/audit\?projectId=/);
+    await expect(page).toHaveURL(/\/audit-apigreenscore\?projectId=/);
     await page.waitForLoadState('networkidle');
   });
 
