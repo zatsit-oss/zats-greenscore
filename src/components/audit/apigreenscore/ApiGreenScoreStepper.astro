@@ -1,5 +1,5 @@
 ---
-interface AuditQuestion {
+interface ApiGreenScoreQuestion {
     id: string;
     section: string;
     question: string;
@@ -8,7 +8,7 @@ interface AuditQuestion {
 }
 
 interface Props {
-    sections: Record<string, AuditQuestion[]>;
+    sections: Record<string, ApiGreenScoreQuestion[]>;
 }
 
 const {sections} = Astro.props;

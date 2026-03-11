@@ -64,15 +64,8 @@ export const formatDate = (dateString: string): string => {
     });
 };
 
-
-/**
- * Callback for delete button click
- */
 export type OnDeleteCallback = (projectId: string, projectName: string) => void;
 
-/*
- * Helper to populate a card element with project data.
- */
 export const populateCard = (
     card: HTMLElement,
     data: ProjectWithEvaluation,

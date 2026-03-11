@@ -1,7 +1,7 @@
 ---
-import AuditQuestion from "./AuditQuestion.astro";
+import ApiGreenScoreQuestion from "./ApiGreenScoreQuestion.astro";
 
-interface AuditQuestion {
+interface ApiGreenScoreQuestionData {
     id: string;
     section: string;
     question: string;
@@ -11,7 +11,7 @@ interface AuditQuestion {
 
 interface Props {
     sectionName: string;
-    questions: AuditQuestion[];
+    questions: ApiGreenScoreQuestionData[];
     index: number;
 }
 
@@ -30,7 +30,7 @@ const {sectionName, questions, index} = Astro.props;
     </h2>
     <div class="flex flex-col gap-8">
         {questions.map((q) =>
-                <AuditQuestion question={q}/>)}
+                <ApiGreenScoreQuestion question={q}/>)}
     </div>
 </div>
 

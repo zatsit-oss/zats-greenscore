@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro'
-import {EvaluationType, EVALUATION_TYPES, getAvailableEvaluationTypes} from '../../types/evaluation'
+import {getAvailableEvaluationTypes} from '../../types/evaluation'
 
 const evaluationTypes = getAvailableEvaluationTypes()
 ---
@@ -120,7 +120,7 @@ const evaluationTypes = getAvailableEvaluationTypes()
                     const params = new URLSearchParams()
                     params.append('projectId', newProject.id)
 
-                    const auditPage = evaluationType === EvaluationType.EROOM ? '/audit-eroom' : '/audit'
+                    const auditPage = evaluationType === EvaluationType.EROOM ? '/audit-eroom' : '/audit-apigreenscore'
                     window.location.href = `${auditPage}?${params.toString()}`
                 }
             })

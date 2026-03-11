@@ -101,7 +101,7 @@ export type ScoreRanking = "A" | "B" | "C" | "D" | "E"
 
 ### Data
 - Static data: `src/data/`
-- Questions JSON: `src/data/surveyQuestions.json`
+- Questions JSON: `src/data/apigreenscore-survey-questions.json`, `src/data/eroom-data-model-1-1.json`
 
 ### Utils
 - Scoring logic: `src/utils/scoring.ts`
