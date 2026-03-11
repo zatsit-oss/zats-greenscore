@@ -10,7 +10,6 @@ import {ProjectRanking} from './common';
 
 /**
  * Available evaluation types
- * For now only API_GREEN_SCORE, EROOM will be added later
  */
 export enum EvaluationType {
     API_GREEN_SCORE = 'apigreenscore',
