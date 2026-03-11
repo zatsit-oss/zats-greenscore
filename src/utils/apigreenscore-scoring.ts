@@ -12,7 +12,6 @@ const safeEvaluate = (formula: string, x: number): number => {
       return 0
     }
 
-    // Replace 'x' with the value
     const expression = formula.replace(/x/g, x.toString())
 
     // Use Function constructor for evaluation (safer than eval, but still requires sanitized input)
