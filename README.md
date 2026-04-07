@@ -101,6 +101,8 @@ npm run preview
 | `npm run build:desktop`   | Build native desktop app (DMG, EXE, DEB)          |
 | `npm run test:run`        | Run unit tests (Vitest)                           |
 | `npm run test:e2e`        | Run e2e tests (Playwright)                        |
+| `npm run lint`            | Run ESLint check                                  |
+| `npm run lint:fix`        | Run ESLint with auto-fix                          |
 
 ## 🚀 Project Structure
 

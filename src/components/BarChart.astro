@@ -21,10 +21,9 @@ export interface BarDataPoint {
 interface Props {
     id?: string;
     title?: string;
-    maxValue?: number;
 }
 
-const {id = 'barChart', title = 'Score Comparison', maxValue = 100} = Astro.props;
+const {id = 'barChart', title = 'Score Comparison'} = Astro.props;
 ---
 
 <div class="bar-chart-container" id={`${id}-container`}>
