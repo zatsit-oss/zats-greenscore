@@ -10,6 +10,7 @@
 import type {Project} from '../types/project';
 import type {Evaluation} from '../types/evaluation';
 import {EvaluationType, EvaluationStatus, EVALUATION_TYPES, createEmptyEvaluation} from '../types/evaluation';
+import type {PreliminaryConfig} from '../types/evaluation';
 import type {Question} from '../types/apigreenscore';
 import type {EroomCategory} from '../types/eroom';
 import {getProject, saveProject} from './project-service';
@@ -20,6 +21,15 @@ import {getScoreInterpretation} from '../utils/eroom-scoring';
 // ============================================================================
 // TYPES
 // ============================================================================
+
+export interface PreliminaryDisplayData {
+    score: number;
+    details: ScoreDetails;
+    label: string;
+    recommendation: string;
+    blocking: boolean;
+    blocked: boolean;
+}
 
 export interface EvaluationDisplayData {
     evaluation: Evaluation | undefined;
@@ -33,11 +43,45 @@ export interface EvaluationDisplayData {
     progress: { answered: number; total: number } | null;
     auditPageUrl: string;
     editButtonText: string;
+    preliminary: PreliminaryDisplayData | null;
 }
 
 // ============================================================================
 // FUNCTIONS
 // ============================================================================
+
+/**
+ * Build the recommendation message based on score and config thresholds
+ */
+function getPreliminaryRecommendation(score: number, config: PreliminaryConfig): string {
+    if (score <= config.thresholds.low) return config.recommendations.low
+    if (score <= config.thresholds.high) return config.recommendations.medium
+    return config.recommendations.high
+}
+
+/**
+ * Build preliminary display data from evaluation and type config
+ * Returns null if the evaluation type has no preliminary step or no score yet
+ */
+function buildPreliminaryDisplayData(
+    evaluation: Evaluation | undefined,
+    evalType: EvaluationType
+): PreliminaryDisplayData | null {
+    const config = EVALUATION_TYPES[evalType].preliminary
+    if (!config) return null
+
+    const score = evaluation?.preliminaryScore
+    if (score === undefined || score === null) return null
+
+    return {
+        score,
+        details: getScoreDetailsByType(score, evalType),
+        label: config.label,
+        recommendation: getPreliminaryRecommendation(score, config),
+        blocking: config.blocking,
+        blocked: config.blocking && config.minScore !== undefined && score < config.minScore,
+    }
+}
 
 /**
  * Determine the initial evaluation type to display for a project
@@ -114,18 +158,28 @@ export function getEvaluationDisplayData(
         };
     }
 
+    // Preliminary assessment
+    const preliminary = buildPreliminaryDisplayData(evaluation, evalType)
+    const hasPreliminary = evalMeta.preliminary !== undefined
+
+    // Adapt score title when a preliminary step exists
+    const scoreTitle = hasPreliminary
+        ? `Advanced Diagnosis Score`
+        : `Current ${evalMeta?.shortName || evalMeta?.name || 'Score'}`
+
     return {
         evaluation,
         isCompleted,
         status,
-        scoreTitle: `Current ${evalMeta?.shortName || evalMeta?.name || 'Score'}`,
+        scoreTitle,
         score,
         scoreDetails,
         scoreContext,
         chartData,
         progress,
         auditPageUrl: getAuditPageUrl(evalType, project.id),
-        editButtonText: evaluation ? 'Edit Evaluation' : 'Start Evaluation'
+        editButtonText: evaluation ? 'Edit Evaluation' : 'Start Evaluation',
+        preliminary,
     };
 }
 

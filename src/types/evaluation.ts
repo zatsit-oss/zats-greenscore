@@ -25,6 +25,31 @@ export enum EvaluationStatus {
 // EVALUATION METADATA
 // ============================================================================
 
+// ============================================================================
+// PRELIMINARY ASSESSMENT CONFIG
+// ============================================================================
+
+export interface PreliminaryConfig {
+    /** Display label for this preliminary step (e.g. "Quick Diagnosis") */
+    label: string;
+    /** If true, the user must reach minScore before accessing advanced steps */
+    blocking: boolean;
+    /** Minimum score required to proceed (only used when blocking is true) */
+    minScore?: number;
+    /** Score thresholds for recommendation messages */
+    thresholds: { low: number; high: number };
+    /** Recommendation messages based on score vs thresholds */
+    recommendations: {
+        low: string;
+        medium: string;
+        high: string;
+    };
+}
+
+// ============================================================================
+// EVALUATION TYPE METADATA
+// ============================================================================
+
 export interface EvaluationTypeInfo {
     id: EvaluationType;
     name: string;
@@ -32,6 +57,8 @@ export interface EvaluationTypeInfo {
     description: string;
     source: string;
     version: string;
+    /** Optional preliminary assessment step configuration */
+    preliminary?: PreliminaryConfig;
 }
 
 export const EVALUATION_TYPES: Record<EvaluationType, EvaluationTypeInfo> = {
@@ -49,7 +76,17 @@ export const EVALUATION_TYPES: Record<EvaluationType, EvaluationTypeInfo> = {
         shortName: 'EROOM Score',
         description: 'EROOM Optimization Framework - Digital service optimization potential assessment',
         source: 'Boavizta',
-        version: '1.1'
+        version: '1.1',
+        preliminary: {
+            label: 'Quick Diagnosis',
+            blocking: false,
+            thresholds: { low: 25, high: 50 },
+            recommendations: {
+                low: 'Service appears mature. Advanced diagnosis is optional.',
+                medium: 'Moderate optimization potential. Advanced diagnosis recommended.',
+                high: 'Significant optimization potential. Advanced diagnosis strongly recommended.',
+            }
+        }
     }
 };
 
@@ -75,6 +112,8 @@ export interface Evaluation {
     completedAt?: string;
     answeredQuestions?: number;
     totalQuestions?: number;
+    /** Score from the preliminary assessment step (0-100), if applicable */
+    preliminaryScore?: number | null;
 }
 
 // ============================================================================

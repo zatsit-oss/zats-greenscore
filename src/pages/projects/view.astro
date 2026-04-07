@@ -77,8 +77,24 @@ const evaluationTypes = getAvailableEvaluationTypes()
                 </div>
             </div>
 
-            <div class="md:col-span-1">
-                <div class="glass-card text-center">
+            <div class="md:col-span-1 space-y-6">
+                <!-- Preliminary Assessment Card (hidden by default) -->
+                <div class="glass-card text-center hidden" id="preliminaryCard" role="region" aria-labelledby="preliminaryTitle">
+                    <h3 class="text-base font-medium text-muted mb-4" id="preliminaryTitle">Quick Diagnosis</h3>
+                    <div class="flex justify-center mb-3">
+                        <div
+                            class="w-24 h-24 rounded-full border-6 flex items-center justify-center bg-white/5 shadow-[0_0_16px_rgba(0,0,0,0.1)]"
+                            id="preliminaryCircle"
+                        >
+                            <span class="text-4xl font-extrabold" id="preliminaryScore">--</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-muted" id="preliminaryLabel">Level</p>
+                    <p class="text-xs text-muted mt-3 leading-relaxed" id="preliminaryRecommendation"></p>
+                </div>
+
+                <!-- Advanced / Main Score Card -->
+                <div class="glass-card text-center" id="advancedCard" role="region" aria-labelledby="scoreTitle">
                     <h3 class="text-base font-medium text-muted mb-4" id="scoreTitle">Current Score</h3>
                     <div class="flex justify-center mb-4">
                         <div
@@ -161,6 +177,15 @@ const evaluationTypes = getAvailableEvaluationTypes()
         const scoreCircleEl = document.getElementById('scoreCircle')
         const scoreContextEl = document.getElementById('scoreContext')
         const chartCard = document.getElementById('chartCard')
+        const chartTitleEl = chartCard?.querySelector('h2')
+
+        // Preliminary card elements
+        const preliminaryCard = document.getElementById('preliminaryCard')
+        const preliminaryTitleEl = document.getElementById('preliminaryTitle')
+        const preliminaryScoreEl = document.getElementById('preliminaryScore')
+        const preliminaryCircleEl = document.getElementById('preliminaryCircle')
+        const preliminaryLabelEl = document.getElementById('preliminaryLabel')
+        const preliminaryRecommendationEl = document.getElementById('preliminaryRecommendation')
         const deleteBtn = document.getElementById('deleteBtn')
         const deleteModal = document.getElementById('deleteModal')
         const deleteProjectNameEl = document.getElementById('deleteProjectName')
@@ -248,6 +273,32 @@ const evaluationTypes = getAvailableEvaluationTypes()
                     scoreContextEl.classList.add('hidden')
                     }
                 }
+
+            // Preliminary Assessment Card
+            if (preliminaryCard) {
+                if (displayData.preliminary) {
+                    const { score: pScore, details, label, recommendation } = displayData.preliminary
+                    preliminaryCard.classList.remove('hidden')
+                    if (preliminaryTitleEl) preliminaryTitleEl.textContent = label
+                    if (preliminaryScoreEl) preliminaryScoreEl.textContent = pScore.toString()
+                    if (preliminaryLabelEl) preliminaryLabelEl.textContent = details.text
+                    if (preliminaryCircleEl) {
+                        preliminaryCircleEl.style.borderColor = details.color
+                        preliminaryCircleEl.style.boxShadow = `0 0 16px ${details.shadow}`
+                        preliminaryCircleEl.style.backgroundColor = details.shadow
+                    }
+                    if (preliminaryRecommendationEl) preliminaryRecommendationEl.textContent = recommendation
+                } else {
+                    preliminaryCard.classList.add('hidden')
+                }
+            }
+
+            // Chart title adapts when a preliminary step exists
+            if (chartTitleEl) {
+                chartTitleEl.textContent = displayData.preliminary
+                    ? 'Advanced Diagnosis - Score by Section'
+                    : 'Score by Section'
+            }
 
             // Radar Chart
             if (chartCard) {
