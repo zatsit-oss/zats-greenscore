@@ -2,7 +2,8 @@
 import Layout from "../layouts/Layout.astro";
 import apiGreenScoreQuestions from "../data/apigreenscore-survey-questions.json";
 import AuditStepper from "../components/audit/AuditStepper.astro";
-import AuditSection from "../components/audit/AuditSection.astro";
+import type {AuditStep} from "../components/audit/AuditStepper.astro";
+import ApiGreenScoreSection from "../components/audit/apigreenscore/ApiGreenScoreSection.astro";
 import AuditNavigation from "../components/audit/AuditNavigation.astro";
 import {EvaluationType, EVALUATION_TYPES} from "../types/evaluation";
 
@@ -33,6 +34,12 @@ const urlParams = new URLSearchParams(Astro.url.search);
 const projectId = urlParams.get("projectId");
 const evaluationType = urlParams.get("evaluationType") || EvaluationType.API_GREEN_SCORE;
 const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
+
+const sectionNames = Object.keys(sections);
+const auditSteps: AuditStep[] = sectionNames.map((sectionName) => ({
+    label: sectionName,
+    dataAttributes: { 'data-section-name': sectionName },
+}));
 ---
 
 <Layout title={`Audit - ${evaluationInfo?.name || 'API Green Score'}`}>
@@ -58,14 +65,14 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
         </div>
 
         <!-- Stepper -->
-        <AuditStepper sections={sections}/>
+        <AuditStepper steps={auditSteps} />
 
         <form class="flex flex-col gap-8 pb-24" id="auditForm" data-project-id={projectId}
               data-evaluation-type={evaluationType}>
             {
                 Object.entries(sections).map(
                     ([sectionName, sectionQuestions], index) => (
-                            <AuditSection
+                            <ApiGreenScoreSection
                                     sectionName={sectionName}
                                     questions={sectionQuestions}
                                     index={index}
@@ -82,7 +89,8 @@ const evaluationInfo = EVALUATION_TYPES[evaluationType as EvaluationType];
 <script>
     import type {Question} from "../types/apigreenscore";
     import {EvaluationType} from "../types/evaluation";
-    import {saveAuditProgress, finalizeApiGreenScoreEvaluation} from "../services/audit-service";
+    import {saveAuditProgress} from "../services/audit-service";
+    import {finalizeApiGreenScoreEvaluation} from "../services/evaluation-service";
     import {getProject} from "../services/project-service";
 
     let currentStep = 0;

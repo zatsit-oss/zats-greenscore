@@ -1,72 +1,91 @@
 ---
-interface AuditQuestion {
-    id: string;
-    section: string;
-    question: string;
-    description: string;
-    tooltip?: string;
+export interface AuditStep {
+    label: string
+    icon?: string
+    variant?: 'default' | 'highlight'
+    progress?: { total: number; dataId?: string }
+    dataAttributes?: Record<string, string>
 }
 
 interface Props {
-    sections: Record<string, AuditQuestion[]>;
+    steps: AuditStep[]
+    ariaLabel?: string
 }
 
-const {sections} = Astro.props;
-const sectionNames = Object.keys(sections);
-const totalSections = sectionNames.length;
+const { steps, ariaLabel = 'Audit progress' } = Astro.props
+const totalSteps = steps.length
 ---
 
-<nav class="mb-8" aria-label="Audit progress">
+<nav class="mb-8" aria-label={ariaLabel}>
     <!-- Desktop: Full stepper -->
     <div class="hidden md:flex justify-between relative">
         <div
-                class="absolute top-6 left-0 right-0 h-0.5 bg-[var(--color-border)] z-0 -translate-y-1/2"
-                aria-hidden="true"
-        >
-        </div>
-        {
-            sectionNames.map((sectionName, index) => (
-                    <div
-                            class="step-item relative z-10 flex flex-col items-center gap-2 bg-[var(--color-bg)] px-2 cursor-pointer"
-                            data-step={index}
-                            data-section-name={sectionName}
-                            role="button"
-                            tabindex="0"
-                            aria-label={`Go to ${sectionName}`}
-                            aria-current={index === 0 ? "step" : undefined}
+            class="absolute top-5 left-0 right-0 h-0.5 bg-[var(--color-border)] z-0"
+            aria-hidden="true"
+        ></div>
+        {steps.map((step, index) => (
+            <div
+                class:list={[
+                    'step-item relative z-10 flex flex-col items-center gap-1 bg-[var(--color-bg)] px-2 cursor-pointer'
+                ]}
+                data-step={index}
+                {...(step.dataAttributes || {})}
+                role="button"
+                tabindex="0"
+                aria-label={`Go to ${step.label}`}
+                aria-current={index === 0 ? 'step' : undefined}
+            >
+                <div
+                    class:list={[
+                        'step-circle w-10 h-10 rounded-full flex items-center justify-center text-lg transition-all duration-300 border-2',
+                        step.variant === 'highlight'
+                            ? 'bg-amber-500/10 border-amber-500/30'
+                            : 'bg-[var(--color-surface)] border-[var(--color-border)]',
+                        !step.icon && 'font-bold text-[var(--color-text-muted)]'
+                    ]}
+                >
+                    {step.icon
+                        ? <span aria-hidden="true">{step.icon}</span>
+                        : <span>{index + 1}</span>
+                    }
+                </div>
+                {step.progress && (
+                    <span
+                        class="step-progress-count text-[10px] font-medium text-[var(--color-text-muted)] tabular-nums"
+                        data-category-id={step.progress.dataId}
+                        data-total={step.progress.total}
                     >
-                        <div class="step-circle w-12 h-12 rounded-full bg-[var(--color-surface)] border-2 border-[var(--color-border)] flex items-center justify-center font-bold text-[var(--color-text-muted)] transition-all duration-300">
-                            {index + 1}
-                        </div>
-                        <span class="step-label text-sm font-medium text-[var(--color-text)] transition-colors duration-300">
-                        {sectionName}
+                        0/{step.progress.total}
                     </span>
-                    </div>
-            ))
-        }
+                )}
+                <span class="step-label text-xs font-medium text-[var(--color-text)] text-center max-w-[80px] leading-tight transition-colors duration-300">
+                    {step.label}
+                </span>
+            </div>
+        ))}
     </div>
 
     <!-- Mobile: Compact progress -->
     <div class="md:hidden">
         <div class="flex items-center justify-between mb-2">
             <span class="step-current-label text-sm font-medium text-[var(--color-primary)]">
-                {sectionNames[0]}
+                {steps[0]?.icon && <span aria-hidden="true">{steps[0].icon}</span>} {steps[0]?.label}
             </span>
             <span class="step-progress text-sm text-[var(--color-text-muted)]" aria-live="polite">
-                <span class="sr-only">Step</span> 1 / {totalSections}
+                <span class="sr-only">Step</span> 1 / {totalSteps}
             </span>
         </div>
         <div
-                class="h-2 bg-[var(--color-surface)] rounded-full overflow-hidden"
-                role="progressbar"
-                aria-valuenow={1}
-                aria-valuemin={1}
-                aria-valuemax={totalSections}
-                aria-label="Audit progress"
+            class="h-2 bg-[var(--color-surface)] rounded-full overflow-hidden"
+            role="progressbar"
+            aria-valuenow={1}
+            aria-valuemin={1}
+            aria-valuemax={totalSteps}
+            aria-label={ariaLabel}
         >
             <div
-                    class="step-progress-bar h-full bg-[var(--color-primary)] transition-all duration-300"
-                    style={`width: ${(1 / totalSections) * 100}%`}
+                class="step-progress-bar h-full bg-[var(--color-primary)] transition-all duration-300"
+                style={`width: ${(1 / totalSteps) * 100}%`}
             ></div>
         </div>
     </div>

@@ -96,10 +96,6 @@ describe('calculateProjectScore', () => {
 // ============================================================================
 
 describe('getRankingScore', () => {
-  const allQuestions: Question[] = [
-    makeQuestion({ id: 'q1', points: 10000 })
-  ]
-
   it('returns A for points >= 6000', () => {
     expect(getRankingScore({ q1: true }, [makeQuestion({ id: 'q1', points: 6000 })])).toBe(ProjectRanking.A)
     expect(getRankingScore({ q1: true }, [makeQuestion({ id: 'q1', points: 10000 })])).toBe(ProjectRanking.A)

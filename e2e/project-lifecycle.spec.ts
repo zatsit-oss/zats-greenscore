@@ -22,7 +22,7 @@ test.describe('Project Lifecycle', () => {
     await page.click('button[type="submit"]');
 
     // Should redirect directly to audit page
-    await expect(page).toHaveURL(/\/audit\?projectId=/);
+    await expect(page).toHaveURL(/\/audit-apigreenscore\?projectId=/);
   });
 
   test('should create a new EROOM project and redirect to audit', async ({ page }) => {
@@ -44,7 +44,7 @@ test.describe('Project Lifecycle', () => {
     await page.fill('#description', 'Visible on dashboard');
     await page.selectOption('#evaluationType', 'apigreenscore');
     await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(/\/audit\?projectId=/);
+    await expect(page).toHaveURL(/\/audit-apigreenscore\?projectId=/);
 
     // Go to dashboard
     await page.goto('/');

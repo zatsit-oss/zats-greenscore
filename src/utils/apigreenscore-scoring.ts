@@ -7,12 +7,11 @@ export type { Question, Answers } from '../types/apigreenscore'
 const safeEvaluate = (formula: string, x: number): number => {
   try {
     // Basic safety check: allow only numbers, x, basic operators, and parens
-    if (!/^[\d\s\.\+\-\*\/\(\)x]+$/.test(formula)) {
+    if (!/^[\d\s.+\-*/()x]+$/.test(formula)) {
       console.error(`Invalid formula format: ${formula}`)
       return 0
     }
 
-    // Replace 'x' with the value
     const expression = formula.replace(/x/g, x.toString())
 
     // Use Function constructor for evaluation (safer than eval, but still requires sanitized input)
@@ -42,7 +41,7 @@ export const calculateProjectScore = (answers: Answers, questions: Question[]): 
     else if (q.formula && (typeof answer === 'string' || typeof answer === 'number')) {
       const x = Number(answer)
       if (!isNaN(x)) {
-        let calculatedPoints = (q.points * Math.max(0, Math.min(100, safeEvaluate(q.formula, x)))) / 100
+        const calculatedPoints = (q.points * Math.max(0, Math.min(100, safeEvaluate(q.formula, x)))) / 100
         totalPointsCapped += calculatedPoints
       }
     }

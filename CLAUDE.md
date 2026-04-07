@@ -36,7 +36,7 @@ Project-specific guidelines for AI assistants working on this codebase.
 
 ## Project Overview
 
-**zats-greenscore** is a hybrid web/desktop application for evaluating eco-design of digital projects. It implements the API Green Score questionnaire.
+**zats-greenscore** is a hybrid web/desktop application for evaluating eco-design of digital projects. It supports multiple evaluation frameworks: API Green Score and EROOM.
 
 - **Repository**: https://github.com/zatsit-oss/zats-greenscore
 - **License**: MIT
@@ -47,13 +47,15 @@ Project-specific guidelines for AI assistants working on this codebase.
 src/
 ├── components/         # Astro components
 │   └── audit/          # Audit questionnaire components
+│       └── eroom/      # EROOM-specific components
+├── data/               # Static data (apigreenscore-survey-questions.json, eroom-data-model-1-1.json)
 ├── layouts/            # Page layouts
 ├── pages/              # File-based routing
 │   └── projects/       # Project management pages
+├── services/           # Business logic (hexagonal architecture)
 ├── types/              # TypeScript interfaces
-├── utils/              # Utility functions (scoring, toast, ui)
-├── data/               # Static data (surveyQuestions.json)
-└── styles/             # CSS styles
+├── utils/              # Scoring, storage, UI helpers
+└── styles/             # Global CSS
 
 src-tauri/
 ├── src/                # Rust source code
@@ -64,6 +66,8 @@ src-tauri/
 ├── icons/              # App icons (all platforms)
 └── capabilities/       # Tauri permissions
 
+tests/                  # Unit tests (Vitest)
+e2e/                    # E2E tests (Playwright)
 public/                 # Static assets
 ```
 
@@ -102,16 +106,14 @@ interface Project {
   description: string
   createdAt: string
   updatedAt: string
-  status: "InProgress" | "Completed"
-  score?: number
-  ranking?: "A" | "B" | "C" | "D" | "E"
-  answers?: Record<string, boolean | string | number>
+  evaluations: Partial<Record<EvaluationType, Evaluation>>
+  appVersion?: string
 }
 ```
 
 ### Storage
-- **Web**: LocalStorage (projects, answers)
-- **Questions**: Static JSON (`src/data/surveyQuestions.json`)
+- **Web**: LocalStorage (projects, evaluations)
+- **Questions**: Static JSON (`src/data/apigreenscore-survey-questions.json`, `src/data/eroom-data-model-1-1.json`)
 
 ## npm Scripts
 
@@ -121,4 +123,9 @@ npm run build            # Production build
 npm run preview          # Preview production build
 npm run dev:desktop      # Desktop dev with hot reload
 npm run build:desktop    # Build desktop app
+npm run lint             # ESLint check
+npm run lint:fix         # ESLint auto-fix
+npm run test             # Unit tests (watch mode)
+npm run test:run         # Unit tests (single run)
+npm run test:e2e         # E2E tests (Playwright)
 ```

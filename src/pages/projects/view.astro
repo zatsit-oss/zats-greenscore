@@ -133,15 +133,13 @@ const evaluationTypes = getAvailableEvaluationTypes()
 </Layout>
 
 <script>
-    import { getProject, saveProject, deleteProject } from '../../services/project-service'
-        import { EvaluationType, EvaluationStatus, EVALUATION_TYPES, createEmptyEvaluation } from '../../types/evaluation'
+    import { getProject, deleteProject } from '../../services/project-service'
+        import { EvaluationType } from '../../types/evaluation'
         import type { Project } from '../../types/project'
-        import { getScoreDetailsByType, prepareChartData } from '../../services/evaluation-service'
-        // API Green Score imports
+        import { getInitialEvaluationType, getEvaluationDisplayData, ensureEvaluationExists } from '../../services/project-view-service'
+        // Data imports for chart preparation
         import type { Question } from '../../types/apigreenscore'
         import surveyQuestions from '../../data/apigreenscore-survey-questions.json'
-        // EROOM imports
-        import { getScoreInterpretation } from '../../utils/eroom-scoring'
         import type { EroomCategory } from '../../types/eroom'
         import eroomData from '../../data/eroom-data-model-1-1.json'
 
@@ -188,35 +186,36 @@ const evaluationTypes = getAvailableEvaluationTypes()
             * Update the UI for a specific evaluation type
             */
             const updateEvaluationDisplay = (project: Project, evalType: EvaluationType) => {
-            const evaluation = project.evaluations[evalType]
+            const displayData = getEvaluationDisplayData(
+                project,
+                evalType,
+                surveyQuestions as Question[],
+                eroomCategories
+            )
 
-            // Score Title - adapt to evaluation type
+            // Score Title
             if (scoreTitleEl) {
-                const evalMeta = EVALUATION_TYPES[evalType]
-                scoreTitleEl.textContent = `Current ${evalMeta?.shortName || evalMeta?.name || 'Score'}`
+                scoreTitleEl.textContent = displayData.scoreTitle
                 }
 
             // Status Badge
             if (statusEl) {
-                if (evaluation) {
-                    const isCompleted = evaluation.status === EvaluationStatus.COMPLETED
-                    statusEl.textContent = isCompleted ? 'Completed' : 'In Progress'
-                    let statusClasses = 'text-sm px-3 py-1 rounded-full font-semibold uppercase tracking-wider border'
-                    statusClasses += isCompleted
-                        ? ' bg-emerald-500/10 text-[var(--color-status-completed)] border-emerald-500/20'
-                        : ' bg-amber-500/10 text-[var(--color-status-inprogress)] border-amber-500/20'
-                    statusEl.className = statusClasses
-                    } else {
-                    statusEl.textContent = 'Not Started'
-                    statusEl.className = 'text-sm px-3 py-1 rounded-full font-semibold uppercase tracking-wider border bg-slate-500/10 text-[var(--color-text-muted)] border-slate-500/20'
-                    }
+                statusEl.textContent = displayData.status
+                let statusClasses = 'text-sm px-3 py-1 rounded-full font-semibold uppercase tracking-wider border'
+                if (displayData.status === 'Completed') {
+                    statusClasses += ' bg-emerald-500/10 text-[var(--color-status-completed)] border-emerald-500/20'
+                } else if (displayData.status === 'In Progress') {
+                    statusClasses += ' bg-amber-500/10 text-[var(--color-status-inprogress)] border-amber-500/20'
+                } else {
+                    statusClasses += ' bg-slate-500/10 text-[var(--color-text-muted)] border-slate-500/20'
+                }
+                statusEl.className = statusClasses
                 }
 
             // Progress counter
             if (progressCounterEl) {
-                if (evaluation && evaluation.answeredQuestions !== undefined && evaluation.totalQuestions !== undefined
-                    && evaluation.status !== EvaluationStatus.COMPLETED) {
-                    progressCounterEl.textContent = `Answers: ${evaluation.answeredQuestions}/${evaluation.totalQuestions}`;
+                if (displayData.progress) {
+                    progressCounterEl.textContent = `Answers: ${displayData.progress.answered}/${displayData.progress.total}`;
                     progressCounterEl.classList.remove('hidden');
                     } else {
                     progressCounterEl.classList.add('hidden');
@@ -224,82 +223,59 @@ const evaluationTypes = getAvailableEvaluationTypes()
                 }
 
             // Score
-            const score = evaluation?.score ?? null
             if (scoreEl && scoreLabelEl && scoreCircleEl) {
-                if (score !== null) {
-                    scoreEl.textContent = score.toString()
-                    const details = getScoreDetailsByType(score, evalType)
-                    scoreLabelEl.textContent = details.text
-                    scoreCircleEl.style.borderColor = details.color
-                    scoreCircleEl.style.boxShadow = `0 0 20px ${details.shadow}`
-                    scoreCircleEl.style.backgroundColor = details.shadow
+                if (displayData.score !== null && displayData.scoreDetails) {
+                    scoreEl.textContent = displayData.score.toString()
+                    scoreLabelEl.textContent = displayData.scoreDetails.text
+                    scoreCircleEl.style.borderColor = displayData.scoreDetails.color
+                    scoreCircleEl.style.boxShadow = `0 0 20px ${displayData.scoreDetails.shadow}`
+                    scoreCircleEl.style.backgroundColor = displayData.scoreDetails.shadow
                     } else {
                     scoreEl.textContent = '--'
-                    scoreLabelEl.textContent = evaluation ? 'Not Calculated' : 'Not Started'
+                    scoreLabelEl.textContent = displayData.evaluation ? 'Not Calculated' : 'Not Started'
                     scoreCircleEl.style.borderColor = '#94a3b8'
                     scoreCircleEl.style.boxShadow = 'none'
                     scoreCircleEl.style.backgroundColor = 'transparent'
                     }
                 }
 
-            // Score context - explain EROOM inverted interpretation
+            // Score context
             if (scoreContextEl) {
-                if (evalType === EvaluationType.EROOM && score !== null) {
-                    const interpretation = getScoreInterpretation(score)
-                    scoreContextEl.textContent = interpretation.description
+                if (displayData.scoreContext) {
+                    scoreContextEl.textContent = displayData.scoreContext
                     scoreContextEl.classList.remove('hidden')
                     } else {
                     scoreContextEl.classList.add('hidden')
                     }
                 }
 
-            // Radar Chart - Score by Section
+            // Radar Chart
             if (chartCard) {
-                if (evaluation?.answers && Object.keys(evaluation.answers).length > 0) {
-                    const chartData = prepareChartData(
-                        evaluation.answers,
-                        evalType,
-                        evalType === EvaluationType.API_GREEN_SCORE ? surveyQuestions as Question[] : undefined,
-                        evalType === EvaluationType.EROOM ? eroomCategories : undefined
-                        )
-
-                    if (chartData.length > 0) {
-                        chartCard.classList.remove('hidden')
-                        requestAnimationFrame(() => {
-                            if (typeof window.initRadarChart === 'function') {
-                                window.initRadarChart('sectionRadarChart', chartData)
-                                }
-                            })
-                        } else {
-                        chartCard.classList.add('hidden')
-                        }
+                if (displayData.chartData.length > 0) {
+                    chartCard.classList.remove('hidden')
+                    requestAnimationFrame(() => {
+                        if (typeof window.initRadarChart === 'function') {
+                            window.initRadarChart('sectionRadarChart', displayData.chartData)
+                            }
+                        })
                     } else {
                     chartCard.classList.add('hidden')
                     }
                 }
 
-            // Edit Button - update click handler
-            // Re-query the button from DOM to get current element (after previous cloneNode operations)
+            // Edit Button
             const currentEditBtn = document.getElementById('editBtn') as HTMLButtonElement | null
             if (currentEditBtn) {
                 currentEditBtn.classList.remove('hidden')
-                // Update button text based on evaluation state
-                currentEditBtn.textContent = evaluation ? 'Edit Evaluation' : 'Start Evaluation'
+                currentEditBtn.textContent = displayData.editButtonText
 
                 // Remove old listeners by cloning and replacing
                 const newEditBtn = currentEditBtn.cloneNode(true) as HTMLButtonElement
                 currentEditBtn.parentNode?.replaceChild(newEditBtn, currentEditBtn)
 
                 newEditBtn.addEventListener('click', () => {
-                    if (!evaluation) {
-                        // Create new evaluation for this type only if it doesn't exist
-                        project.evaluations[evalType] = createEmptyEvaluation(evalType)
-                        saveProject(project)
-                        }
-                    // Don't reset existing data - audit page will load existing answers
-                    // Score will only be recalculated when user submits the audit
-                    const auditPage = evalType === EvaluationType.EROOM ? '/audit-eroom' : '/audit'
-                    window.location.href = `${auditPage}?projectId=${project.id}`
+                    ensureEvaluationExists(project.id, evalType)
+                    window.location.href = displayData.auditPageUrl
                     })
                 }
 
@@ -317,11 +293,7 @@ const evaluationTypes = getAvailableEvaluationTypes()
             const project = getProject(projectId)
 
             if (project) {
-                // Determine initial evaluation type
-                const projectEvalTypes = Object.keys(project.evaluations) as EvaluationType[]
-                const initialEvalType = requestedEvalType && project.evaluations[requestedEvalType]
-                    ? requestedEvalType
-                    : projectEvalTypes[0] || EvaluationType.API_GREEN_SCORE
+                const initialEvalType = getInitialEvaluationType(project, requestedEvalType)
 
                 // Update static project info
                 document.title = `${project.name} - Project Details`
@@ -335,7 +307,6 @@ const evaluationTypes = getAvailableEvaluationTypes()
                 if (evalTypeSelect) {
                     evalTypeSelect.value = initialEvalType
 
-                    // Listen for evaluation type changes
                     evalTypeSelect.addEventListener('change', () => {
                         const selectedType = evalTypeSelect.value as EvaluationType
                         updateEvaluationDisplay(project, selectedType)
@@ -351,7 +322,6 @@ const evaluationTypes = getAvailableEvaluationTypes()
 
                     let previouslyFocusedElement: HTMLElement | null = null
 
-                    // Open modal
                     deleteBtn.addEventListener('click', () => {
                         previouslyFocusedElement = document.activeElement as HTMLElement
                         deleteProjectNameEl.textContent = `"${project.name}"`
@@ -360,7 +330,6 @@ const evaluationTypes = getAvailableEvaluationTypes()
                         cancelDeleteBtn.focus()
                         })
 
-                    // Close modal
                     const closeModal = () => {
                         deleteModal.classList.add('hidden')
                         deleteModal.classList.remove('flex')
@@ -369,12 +338,10 @@ const evaluationTypes = getAvailableEvaluationTypes()
 
                     cancelDeleteBtn.addEventListener('click', closeModal)
 
-                    // Close on backdrop click
                     deleteModal.addEventListener('click', (e) => {
                         if (e.target === deleteModal) closeModal()
                         })
 
-                    // Focus trap and Escape key
                     const handleKeyDown = (e: KeyboardEvent) => {
                         if (!deleteModal.classList.contains('flex')) return
 
@@ -402,7 +369,6 @@ const evaluationTypes = getAvailableEvaluationTypes()
 
                     document.addEventListener('keydown', handleKeyDown)
 
-                    // Confirm delete
                     confirmDeleteBtn.addEventListener('click', () => {
                         deleteProject(project.id)
                         window.location.href = '/'
