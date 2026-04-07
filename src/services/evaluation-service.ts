@@ -14,7 +14,7 @@ import type {Answers, Question} from '../types/apigreenscore';
 import type {EroomAnswerValue, EroomCategory} from '../types/eroom';
 import {getProject, saveProject} from './project-service';
 import {calculateProjectScore, getRankingScore, calculateScoresBySection} from '../utils/apigreenscore-scoring';
-import {calculateEroomGlobalScore, getEroomRanking, getScoreInterpretation, validateEroomCompletion} from '../utils/eroom-scoring';
+import {calculateEroomGlobalScore, calculateQuickDiagnosisScore, getEroomRanking, getScoreInterpretation, validateEroomCompletion} from '../utils/eroom-scoring';
 
 // ============================================================================
 // TYPES
@@ -42,6 +42,25 @@ export interface EroomFinalizeResult extends FinalizeResult {
     isComplete: boolean;
     answeredQuestions: number;
     totalQuestions: number;
+}
+
+// ============================================================================
+// PRELIMINARY SCORE
+// ============================================================================
+
+/**
+ * Calculate the preliminary score from the quick diagnosis category (category 0)
+ * Returns null if no quick diagnosis category exists
+ */
+function computePreliminaryScore(
+    answers: Record<string, EroomAnswerValue>,
+    allCategories: EroomCategory[]
+): number | null {
+    const preliminaryCategory = allCategories.find(c => !c.includeInScore)
+    if (!preliminaryCategory) return null
+
+    const { score } = calculateQuickDiagnosisScore(answers, preliminaryCategory.questions)
+    return score
 }
 
 // ============================================================================
@@ -125,6 +144,7 @@ export function finalizeEroomEvaluation(
     evaluation.answers = answers as EvaluationAnswers;
     evaluation.score = globalScore;
     evaluation.ranking = ranking;
+    evaluation.preliminaryScore = computePreliminaryScore(answers, allCategories);
     evaluation.answeredQuestions = validation.answeredQuestions;
     evaluation.totalQuestions = validation.totalQuestions;
 
@@ -194,6 +214,28 @@ export function saveEroomProgressiveScore(
     project.updatedAt = new Date().toISOString();
     saveProject(project);
     return true;
+}
+
+/**
+ * Save the preliminary score for an EROOM evaluation
+ * Called explicitly when the user clicks "Quick Evaluate", not during auto-save
+ */
+export function saveEroomPreliminaryScore(
+    projectId: string,
+    answers: Record<string, EroomAnswerValue>,
+    allCategories: EroomCategory[]
+): number | null {
+    const project = getProject(projectId);
+    if (!project) return null;
+
+    const evaluation = project.evaluations[EvaluationType.EROOM];
+    if (!evaluation) return null;
+
+    const score = computePreliminaryScore(answers, allCategories);
+    evaluation.preliminaryScore = score;
+
+    saveProject(project);
+    return score;
 }
 
 // ============================================================================

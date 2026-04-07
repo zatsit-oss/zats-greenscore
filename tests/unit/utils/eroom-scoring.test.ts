@@ -143,28 +143,45 @@ describe('calculateQuickDiagnosisScore', () => {
     expect(result.totalCount).toBe(3)
   })
 
-  it('calculates average score on 0-100 scale', () => {
+  it('calculates optimization potential on 0-100 scale', () => {
     const answers = { q1: 3, q2: 4, q3: 5 }
     const result = calculateQuickDiagnosisScore(answers, questions)
-    // avg = (3+4+5)/3 = 4, scaled to 0-100 = 4*20 = 80
-    expect(result.score).toBe(80)
+    // potential = (5-3)+(5-4)+(5-5) = 2+1+0 = 3, max = 3*4 = 12
+    // score = 3/12 * 100 = 25
+    expect(result.score).toBe(25)
     expect(result.answeredCount).toBe(3)
   })
 
-  it('ignores null/undefined answers', () => {
-    const answers = { q1: 5, q2: null, q3: undefined as unknown as number }
+  it('treats unanswered questions as 0 potential', () => {
+    const answers = { q1: 1, q2: null, q3: undefined as unknown as number }
     const result = calculateQuickDiagnosisScore(answers, questions)
-    // only q1 counted: 5*20 = 100
-    expect(result.score).toBe(100)
+    // potential = (5-1) = 4, max = 3*4 = 12
+    // score = 4/12 * 100 = 33
+    expect(result.score).toBe(33)
     expect(result.answeredCount).toBe(1)
   })
 
   it('ignores out of range values', () => {
-    const answers = { q1: 0, q2: 6, q3: 3 }
+    const answers = { q1: 0, q2: 6, q3: 2 }
     const result = calculateQuickDiagnosisScore(answers, questions)
-    // only q3: 3*20 = 60
-    expect(result.score).toBe(60)
+    // only q3 valid: potential = (5-2) = 3, max = 3*4 = 12
+    // score = 3/12 * 100 = 25
+    expect(result.score).toBe(25)
     expect(result.answeredCount).toBe(1)
+  })
+
+  it('returns 100 when all answers are 1 (max optimization potential)', () => {
+    const answers = { q1: 1, q2: 1, q3: 1 }
+    const result = calculateQuickDiagnosisScore(answers, questions)
+    // potential = 4+4+4 = 12, max = 12 → 100%
+    expect(result.score).toBe(100)
+  })
+
+  it('returns 0 when all answers are 5 (fully mastered)', () => {
+    const answers = { q1: 5, q2: 5, q3: 5 }
+    const result = calculateQuickDiagnosisScore(answers, questions)
+    // potential = 0+0+0 = 0, max = 12 → 0%
+    expect(result.score).toBe(0)
   })
 })
 
