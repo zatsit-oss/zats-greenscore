@@ -186,6 +186,21 @@ export const calculateQuickDiagnosisScore = (
 }
 
 /**
+ * Check if at least one advanced category (includeInScore: true) has any answer.
+ * Used to gate the advanced summary display: while only the quick diagnosis
+ * (category 0) has been answered, the advanced score and radar must stay hidden.
+ */
+export const hasAdvancedAnswers = (
+  answers: EroomAnswers,
+  categories: EroomCategory[]
+): boolean => {
+  return categories.some((category) => {
+    if (!category.includeInScore) return false
+    return category.questions.some((question) => isAnswerPresent(answers[question.id]))
+  })
+}
+
+/**
  * Calculate global EROOM score.
  * Uses total earned / total max for standard categories (1-5).
  * Ease of Change (category 6) is calculated but excluded from global score.

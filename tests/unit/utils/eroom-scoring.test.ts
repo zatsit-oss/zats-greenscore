@@ -5,6 +5,7 @@ import {
   calculateEroomGlobalScore,
   getScoreInterpretation,
   getEroomRanking,
+  hasAdvancedAnswers,
   validateEroomCompletion
 } from '../../../src/utils/eroom-scoring'
 import type { EroomCategory } from '../../../src/types/eroom'
@@ -246,6 +247,79 @@ describe('calculateEroomGlobalScore', () => {
     // But both categories are in categoryScores
     expect(result.categoryScores).toHaveLength(2)
     expect(result.categoryScores[1].score).toBeGreaterThan(0) // ease of change has a score
+  })
+})
+
+// ============================================================================
+// hasAdvancedAnswers
+// ============================================================================
+
+describe('hasAdvancedAnswers', () => {
+  // Use distinct question IDs between quick (qd*) and advanced (adv*) categories
+  // so the test does not accidentally rely on ID collisions.
+  const quickCat: EroomCategory = {
+    id: '0',
+    name: 'Quick Diagnosis',
+    icon: '🔍',
+    description: 'preliminary',
+    includeInScore: false,
+    evaluationScaleType: 'quickDiagnosis',
+    questions: [
+      { id: 'qd1', criteria: 'QD1', impactLevel: 'Moderate', impactWeight: 1 },
+      { id: 'qd2', criteria: 'QD2', impactLevel: 'Moderate', impactWeight: 1 }
+    ]
+  }
+  const standardCat: EroomCategory = {
+    id: '1',
+    name: 'Standard',
+    icon: '🔧',
+    description: 'advanced',
+    includeInScore: true,
+    evaluationScaleType: 'standard',
+    questions: [
+      { id: 'adv1', criteria: 'ADV1', impactLevel: 'Moderate', impactWeight: 1 },
+      { id: 'adv2', criteria: 'ADV2', impactLevel: 'Moderate', impactWeight: 1 }
+    ]
+  }
+  const eoChangeCat: EroomCategory = {
+    id: '6',
+    name: 'Ease of Change',
+    icon: '🔄',
+    description: 'advanced',
+    includeInScore: true,
+    evaluationScaleType: 'easeOfChange',
+    questions: [
+      { id: 'eoc1', criteria: 'EOC1', impactLevel: 'Moderate', impactWeight: 1 }
+    ]
+  }
+
+  it('returns false when no answers exist', () => {
+    expect(hasAdvancedAnswers({}, [quickCat, standardCat])).toBe(false)
+  })
+
+  it('returns false when only quick diagnosis (category 0) has answers', () => {
+    const answers = { qd1: 3, qd2: 4 }
+    expect(hasAdvancedAnswers(answers, [quickCat, standardCat])).toBe(false)
+  })
+
+  it('returns true when an advanced category has at least one answer', () => {
+    const answers = { qd1: 3, adv1: 'improvement_potential' as const }
+    expect(hasAdvancedAnswers(answers, [quickCat, standardCat])).toBe(true)
+  })
+
+  it('treats to_evaluate as a present answer', () => {
+    const answers = { adv1: 'to_evaluate' as const }
+    expect(hasAdvancedAnswers(answers, [standardCat])).toBe(true)
+  })
+
+  it('ignores null/undefined answers', () => {
+    const answers = { adv1: null, adv2: undefined as unknown as string }
+    expect(hasAdvancedAnswers(answers, [standardCat])).toBe(false)
+  })
+
+  it('returns true when ease of change category has an answer', () => {
+    const answers = { eoc1: 'easy_to_change' as const }
+    expect(hasAdvancedAnswers(answers, [quickCat, eoChangeCat])).toBe(true)
   })
 })
 
