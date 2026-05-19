@@ -12,11 +12,11 @@ import type {Evaluation} from '../types/evaluation';
 import {EvaluationType, EvaluationStatus, EVALUATION_TYPES, createEmptyEvaluation} from '../types/evaluation';
 import type {PreliminaryConfig} from '../types/evaluation';
 import type {Question} from '../types/apigreenscore';
-import type {EroomCategory} from '../types/eroom';
+import type {EroomAnswerValue, EroomCategory} from '../types/eroom';
 import {getProject, saveProject} from './project-service';
 import {getScoreDetailsByType, prepareChartData} from './evaluation-service';
 import type {ScoreDetails, ChartDataPoint} from './evaluation-service';
-import {getScoreInterpretation} from '../utils/eroom-scoring';
+import {getScoreInterpretation, hasAdvancedAnswers} from '../utils/eroom-scoring';
 
 // ============================================================================
 // TYPES
@@ -117,7 +117,7 @@ export function getEvaluationDisplayData(
 ): EvaluationDisplayData {
     const evaluation = project.evaluations[evalType];
     const evalMeta = EVALUATION_TYPES[evalType];
-    const score = evaluation?.score ?? null;
+    const storedScore = evaluation?.score ?? null;
 
     // Status
     let status: EvaluationDisplayData['status'] = 'Not Started';
@@ -126,6 +126,13 @@ export function getEvaluationDisplayData(
         isCompleted = evaluation.status === EvaluationStatus.COMPLETED;
         status = isCompleted ? 'Completed' : 'In Progress';
     }
+
+    // Advanced summary gating: when an evaluation type has a preliminary step,
+    // the advanced score / chart / context must stay hidden until at least one
+    // advanced-category question has been answered. This prevents "step 0 alone"
+    // from displaying a misleading score of 0 or an empty radar chart.
+    const advancedAvailable = isAdvancedSummaryAvailable(evaluation, evalType, eroomCategories);
+    const score = advancedAvailable ? storedScore : null;
 
     // Score details
     const scoreDetails = score !== null ? getScoreDetailsByType(score, evalType) : null;
@@ -136,9 +143,9 @@ export function getEvaluationDisplayData(
         scoreContext = getScoreInterpretation(score).description;
     }
 
-    // Chart data
+    // Chart data — only built when the advanced summary is unlocked
     let chartData: ChartDataPoint[] = [];
-    if (evaluation?.answers && Object.keys(evaluation.answers).length > 0) {
+    if (advancedAvailable && evaluation?.answers) {
         chartData = prepareChartData(
             evaluation.answers,
             evalType,
@@ -181,6 +188,34 @@ export function getEvaluationDisplayData(
         editButtonText: evaluation ? 'Edit Evaluation' : 'Start Evaluation',
         preliminary,
     };
+}
+
+/**
+ * Decide whether the advanced summary (score, context, radar) should be shown.
+ * - For evaluation types without a preliminary step: available as soon as there's any answer.
+ * - For EROOM (preliminary step): requires at least one answer in a scored category (1-6).
+ */
+function isAdvancedSummaryAvailable(
+    evaluation: Evaluation | undefined,
+    evalType: EvaluationType,
+    eroomCategories?: EroomCategory[]
+): boolean {
+    if (!evaluation?.answers) return false
+
+    const evalMeta = EVALUATION_TYPES[evalType]
+    if (!evalMeta.preliminary) {
+        return Object.keys(evaluation.answers).length > 0
+    }
+
+    if (evalType === EvaluationType.EROOM && eroomCategories) {
+        return hasAdvancedAnswers(
+            evaluation.answers as Record<string, EroomAnswerValue>,
+            eroomCategories
+        )
+    }
+
+    // Preliminary configured but no category info available: fall back to "any answer".
+    return Object.keys(evaluation.answers).length > 0
 }
 
 /**
