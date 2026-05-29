@@ -152,30 +152,52 @@ export const calculateCategoryScore = (
 
 /**
  * Calculate Quick Diagnosis score (category 0)
- * Returns average of all answered questions (1-5 scale)
- * Lower score = higher optimization potential
+ * Measures optimization potential: how much room for improvement exists.
+ * Formula: sum(maxScale - answer) / (totalQuestions * scaleRange) * 100
+ * - Answer 1 (not mastered) → full optimization potential (4/4)
+ * - Answer 5 (mastered)     → no optimization potential (0/4)
+ * - Unanswered questions contribute 0 potential.
  */
 export const calculateQuickDiagnosisScore = (
   answers: EroomAnswers,
   questions: EroomQuestion[]
 ): { score: number; answeredCount: number; totalCount: number } => {
-  let totalScore = 0
+  const maxPerQuestion = 5
+  const minPerQuestion = 1
+  const scaleRange = maxPerQuestion - minPerQuestion // 4
+  let totalPotential = 0
   let answeredCount = 0
 
   questions.forEach((question) => {
     const answer = answers[question.id]
-    if (typeof answer === 'number' && answer >= 1 && answer <= 5) {
-      totalScore += answer
+    if (typeof answer === 'number' && answer >= minPerQuestion && answer <= maxPerQuestion) {
+      totalPotential += maxPerQuestion - answer
       answeredCount++
     }
   })
 
+  const maxPotential = questions.length * scaleRange
+
   return {
-    // Scale factor converts 1-5 range to 0-100 percentage
-    score: answeredCount > 0 ? Math.round((totalScore / answeredCount) * (100 / 5)) : 0,
+    score: maxPotential > 0 ? Math.round((totalPotential / maxPotential) * 100) : 0,
     answeredCount,
     totalCount: questions.length
   }
+}
+
+/**
+ * Check if at least one advanced category (includeInScore: true) has any answer.
+ * Used to gate the advanced summary display: while only the quick diagnosis
+ * (category 0) has been answered, the advanced score and radar must stay hidden.
+ */
+export const hasAdvancedAnswers = (
+  answers: EroomAnswers,
+  categories: EroomCategory[]
+): boolean => {
+  return categories.some((category) => {
+    if (!category.includeInScore) return false
+    return category.questions.some((question) => isAnswerPresent(answers[question.id]))
+  })
 }
 
 /**
