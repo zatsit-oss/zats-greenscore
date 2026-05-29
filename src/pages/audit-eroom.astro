@@ -66,18 +66,66 @@ const auditSteps: AuditStep[] = categories.map((category) => ({
             <AuditNavigation/>
         </form>
     </div>
+
+    <!-- Quick Diagnosis: Intro Modal -->
+    <div id="introModal"
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+         role="dialog" aria-modal="true" aria-labelledby="introModalTitle">
+        <div class="glass-card max-w-lg w-full mx-4 p-6" role="document">
+            <h2 id="introModalTitle" class="text-xl font-bold mb-3">Quick Diagnosis</h2>
+            <p class="text-muted mb-2">
+                Before diving into the detailed evaluation, start with the <strong>quick diagnosis</strong>.
+            </p>
+            <p class="text-muted mb-2">
+                Rate each question from 1 to 5 based on available information:
+            </p>
+            <ul class="text-sm text-muted mb-4 list-disc pl-5 space-y-1">
+                <li><strong>1</strong> = not mastered / unknown</li>
+                <li><strong>5</strong> = mastered, measured, optimized</li>
+            </ul>
+            <p class="text-sm text-muted mb-6">
+                If the quick score is very low, a detailed evaluation may not be necessary.
+            </p>
+            <div class="flex justify-end">
+                <button class="btn btn-primary" id="introModalClose">Start Quick Diagnosis</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Diagnosis: Result Modal -->
+    <div id="quickResultModal"
+         class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+         role="dialog" aria-modal="true" aria-labelledby="quickResultTitle">
+        <div class="glass-card max-w-md w-full mx-4 p-6 text-center" role="document">
+            <h2 id="quickResultTitle" class="text-xl font-bold mb-4">Quick Diagnosis Result</h2>
+            <div class="flex justify-center mb-4">
+                <div class="w-24 h-24 rounded-full border-6 flex items-center justify-center bg-white/5"
+                     id="quickResultCircle">
+                    <span class="text-4xl font-extrabold" id="quickResultScore">--</span>
+                </div>
+            </div>
+            <p class="text-sm text-muted mb-1" id="quickResultLabel">Level</p>
+            <p class="text-sm text-muted mt-3 leading-relaxed" id="quickResultRecommendation"></p>
+            <div class="flex justify-center gap-3 mt-6">
+                <a id="quickResultBackLink" href="/" class="btn btn-secondary">Back to Project</a>
+                <button class="btn btn-primary" id="quickResultContinue">Continue Advanced Diagnosis</button>
+            </div>
+        </div>
+    </div>
 </Layout>
 
 <script>
-    import {EvaluationType} from "../types/evaluation";
-    import {saveEroomProgressiveScore, finalizeEroomEvaluation} from "../services/evaluation-service";
+    import {EvaluationType, EVALUATION_TYPES} from "../types/evaluation";
+    import {saveEroomProgressiveScore, saveEroomPreliminaryScore, finalizeEroomEvaluation, getScoreDetailsByType} from "../services/evaluation-service";
     import {getProject} from "../services/project-service";
-    import {validateEroomCompletion} from "../utils/eroom-scoring";
+    import {validateEroomCompletion, calculateQuickDiagnosisScore} from "../utils/eroom-scoring";
     import type {EroomCategory, EroomAnswerValue} from "../types/eroom";
     import eroomData from "../data/eroom-data-model-1-1.json";
     import {showToast} from "../utils/toast";
 
     const categories = eroomData.categories as EroomCategory[];
+    const preliminaryConfig = EVALUATION_TYPES[EvaluationType.EROOM].preliminary!;
+    const preliminaryCategory = categories.find(c => !c.includeInScore)!;
     const progressCounter = document.getElementById("progressCounter");
 
     let currentStep = 0;
@@ -143,7 +191,11 @@ const auditSteps: AuditStep[] = categories.map((category) => ({
             if (nextBtn) nextBtn.style.display = "none";
             if (submitBtn) submitBtn.style.display = "block";
         } else {
-            if (nextBtn) nextBtn.style.display = "block";
+            if (nextBtn) {
+                nextBtn.style.display = "block";
+                // Step 0 = quick diagnosis → special label
+                nextBtn.textContent = currentStep === 0 ? 'Quick Evaluate' : 'Next';
+            }
             if (submitBtn) submitBtn.style.display = "none";
         }
 
@@ -151,7 +203,96 @@ const auditSteps: AuditStep[] = categories.map((category) => ({
         window.scrollTo({top: 0, behavior: "smooth"});
     }
 
+    // ========================================================================
+    // QUICK DIAGNOSIS MODALS
+    // ========================================================================
+
+    const introModal = document.getElementById("introModal");
+    const introModalClose = document.getElementById("introModalClose");
+    const quickResultModal = document.getElementById("quickResultModal");
+    const quickResultContinue = document.getElementById("quickResultContinue");
+    const quickResultBackLink = document.getElementById("quickResultBackLink") as HTMLAnchorElement | null;
+
+    // Set back link to project view
+    const urlParamsClient = new URLSearchParams(window.location.search);
+    const projectIdParam = urlParamsClient.get("projectId");
+    if (quickResultBackLink && projectIdParam) {
+        quickResultBackLink.href = `/projects/view?id=${projectIdParam}&evaluationType=eroom`;
+    }
+
+    /**
+     * Show the quick diagnosis result modal with score and recommendation
+     */
+    function showQuickResultModal() {
+        const answers = collectAnswers();
+        const { score } = calculateQuickDiagnosisScore(answers, preliminaryCategory.questions);
+        const details = getScoreDetailsByType(score, EvaluationType.EROOM);
+
+        // Determine recommendation from config thresholds
+        let recommendation: string;
+        if (score <= preliminaryConfig.thresholds.low) {
+            recommendation = preliminaryConfig.recommendations.low;
+        } else if (score <= preliminaryConfig.thresholds.high) {
+            recommendation = preliminaryConfig.recommendations.medium;
+        } else {
+            recommendation = preliminaryConfig.recommendations.high;
+        }
+
+        // Update modal content
+        const scoreEl = document.getElementById("quickResultScore");
+        const circleEl = document.getElementById("quickResultCircle");
+        const labelEl = document.getElementById("quickResultLabel");
+        const recoEl = document.getElementById("quickResultRecommendation");
+
+        if (scoreEl) scoreEl.textContent = score.toString();
+        if (labelEl) labelEl.textContent = details.text;
+        if (circleEl) {
+            circleEl.style.borderColor = details.color;
+            circleEl.style.boxShadow = `0 0 16px ${details.shadow}`;
+            circleEl.style.backgroundColor = details.shadow;
+        }
+        if (recoEl) recoEl.textContent = recommendation;
+
+        // Show modal
+        if (quickResultModal) {
+            quickResultModal.classList.remove("hidden");
+            quickResultModal.classList.add("flex");
+            quickResultContinue?.focus();
+        }
+    }
+
+    // Intro modal: close and focus on first question
+    introModalClose?.addEventListener("click", () => {
+        if (introModal) {
+            introModal.classList.add("hidden");
+            introModal.classList.remove("flex");
+        }
+        // Focus the first interactive element in the audit form
+        const firstInput = document.querySelector('.step-content[data-step="0"] input') as HTMLElement | null;
+        firstInput?.focus();
+    });
+
+    // Quick result modal: continue to advanced diagnosis
+    quickResultContinue?.addEventListener("click", () => {
+        if (quickResultModal) {
+            quickResultModal.classList.add("hidden");
+            quickResultModal.classList.remove("flex");
+        }
+        currentStep = 1;
+        updateUI();
+    });
+
+    // Next button: intercept at step 0 to show quick result modal
     nextBtn?.addEventListener("click", () => {
+        if (currentStep === 0) {
+            // Save answers + preliminary score, then show result
+            saveAnswers();
+            if (projectId) {
+                saveEroomPreliminaryScore(projectId, collectAnswers(), categories);
+            }
+            showQuickResultModal();
+            return;
+        }
         if (currentStep < totalSteps - 1) {
             currentStep++;
             updateUI();
@@ -300,6 +441,24 @@ const auditSteps: AuditStep[] = categories.map((category) => ({
 
     // Load answers on init
     loadAnswers();
+
+    // Check if quick diagnosis was already completed
+    const hasPreliminaryScore = (() => {
+        if (!projectId) return false;
+        const project = getProject(projectId);
+        const evaluation = project?.evaluations[evaluationType];
+        return evaluation?.preliminaryScore !== undefined && evaluation?.preliminaryScore !== null;
+    })();
+
+    if (hasPreliminaryScore) {
+        // Skip intro modal and start at step 1 (advanced diagnosis)
+        if (introModal) {
+            introModal.classList.add("hidden");
+            introModal.classList.remove("flex");
+        }
+        currentStep = 1;
+        updateUI();
+    }
 
     // Initialize progress counter
     updateProgress(collectAnswers());

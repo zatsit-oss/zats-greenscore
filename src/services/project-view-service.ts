@@ -10,16 +10,26 @@
 import type {Project} from '../types/project';
 import type {Evaluation} from '../types/evaluation';
 import {EvaluationType, EvaluationStatus, EVALUATION_TYPES, createEmptyEvaluation} from '../types/evaluation';
+import type {PreliminaryConfig} from '../types/evaluation';
 import type {Question} from '../types/apigreenscore';
-import type {EroomCategory} from '../types/eroom';
+import type {EroomAnswerValue, EroomCategory} from '../types/eroom';
 import {getProject, saveProject} from './project-service';
 import {getScoreDetailsByType, prepareChartData} from './evaluation-service';
 import type {ScoreDetails, ChartDataPoint} from './evaluation-service';
-import {getScoreInterpretation} from '../utils/eroom-scoring';
+import {getScoreInterpretation, hasAdvancedAnswers} from '../utils/eroom-scoring';
 
 // ============================================================================
 // TYPES
 // ============================================================================
+
+export interface PreliminaryDisplayData {
+    score: number;
+    details: ScoreDetails;
+    label: string;
+    recommendation: string;
+    blocking: boolean;
+    blocked: boolean;
+}
 
 export interface EvaluationDisplayData {
     evaluation: Evaluation | undefined;
@@ -33,11 +43,45 @@ export interface EvaluationDisplayData {
     progress: { answered: number; total: number } | null;
     auditPageUrl: string;
     editButtonText: string;
+    preliminary: PreliminaryDisplayData | null;
 }
 
 // ============================================================================
 // FUNCTIONS
 // ============================================================================
+
+/**
+ * Build the recommendation message based on score and config thresholds
+ */
+function getPreliminaryRecommendation(score: number, config: PreliminaryConfig): string {
+    if (score <= config.thresholds.low) return config.recommendations.low
+    if (score <= config.thresholds.high) return config.recommendations.medium
+    return config.recommendations.high
+}
+
+/**
+ * Build preliminary display data from evaluation and type config
+ * Returns null if the evaluation type has no preliminary step or no score yet
+ */
+function buildPreliminaryDisplayData(
+    evaluation: Evaluation | undefined,
+    evalType: EvaluationType
+): PreliminaryDisplayData | null {
+    const config = EVALUATION_TYPES[evalType].preliminary
+    if (!config) return null
+
+    const score = evaluation?.preliminaryScore
+    if (score === undefined || score === null) return null
+
+    return {
+        score,
+        details: getScoreDetailsByType(score, evalType),
+        label: config.label,
+        recommendation: getPreliminaryRecommendation(score, config),
+        blocking: config.blocking,
+        blocked: config.blocking && config.minScore !== undefined && score < config.minScore,
+    }
+}
 
 /**
  * Determine the initial evaluation type to display for a project
@@ -73,7 +117,7 @@ export function getEvaluationDisplayData(
 ): EvaluationDisplayData {
     const evaluation = project.evaluations[evalType];
     const evalMeta = EVALUATION_TYPES[evalType];
-    const score = evaluation?.score ?? null;
+    const storedScore = evaluation?.score ?? null;
 
     // Status
     let status: EvaluationDisplayData['status'] = 'Not Started';
@@ -82,6 +126,13 @@ export function getEvaluationDisplayData(
         isCompleted = evaluation.status === EvaluationStatus.COMPLETED;
         status = isCompleted ? 'Completed' : 'In Progress';
     }
+
+    // Advanced summary gating: when an evaluation type has a preliminary step,
+    // the advanced score / chart / context must stay hidden until at least one
+    // advanced-category question has been answered. This prevents "step 0 alone"
+    // from displaying a misleading score of 0 or an empty radar chart.
+    const advancedAvailable = isAdvancedSummaryAvailable(evaluation, evalType, eroomCategories);
+    const score = advancedAvailable ? storedScore : null;
 
     // Score details
     const scoreDetails = score !== null ? getScoreDetailsByType(score, evalType) : null;
@@ -92,9 +143,9 @@ export function getEvaluationDisplayData(
         scoreContext = getScoreInterpretation(score).description;
     }
 
-    // Chart data
+    // Chart data — only built when the advanced summary is unlocked
     let chartData: ChartDataPoint[] = [];
-    if (evaluation?.answers && Object.keys(evaluation.answers).length > 0) {
+    if (advancedAvailable && evaluation?.answers) {
         chartData = prepareChartData(
             evaluation.answers,
             evalType,
@@ -114,19 +165,57 @@ export function getEvaluationDisplayData(
         };
     }
 
+    // Preliminary assessment
+    const preliminary = buildPreliminaryDisplayData(evaluation, evalType)
+    const hasPreliminary = evalMeta.preliminary !== undefined
+
+    // Adapt score title when a preliminary step exists
+    const scoreTitle = hasPreliminary
+        ? `Advanced Diagnosis Score`
+        : `Current ${evalMeta?.shortName || evalMeta?.name || 'Score'}`
+
     return {
         evaluation,
         isCompleted,
         status,
-        scoreTitle: `Current ${evalMeta?.shortName || evalMeta?.name || 'Score'}`,
+        scoreTitle,
         score,
         scoreDetails,
         scoreContext,
         chartData,
         progress,
         auditPageUrl: getAuditPageUrl(evalType, project.id),
-        editButtonText: evaluation ? 'Edit Evaluation' : 'Start Evaluation'
+        editButtonText: evaluation ? 'Edit Evaluation' : 'Start Evaluation',
+        preliminary,
     };
+}
+
+/**
+ * Decide whether the advanced summary (score, context, radar) should be shown.
+ * - For evaluation types without a preliminary step: available as soon as there's any answer.
+ * - For EROOM (preliminary step): requires at least one answer in a scored category (1-6).
+ */
+function isAdvancedSummaryAvailable(
+    evaluation: Evaluation | undefined,
+    evalType: EvaluationType,
+    eroomCategories?: EroomCategory[]
+): boolean {
+    if (!evaluation?.answers) return false
+
+    const evalMeta = EVALUATION_TYPES[evalType]
+    if (!evalMeta.preliminary) {
+        return Object.keys(evaluation.answers).length > 0
+    }
+
+    if (evalType === EvaluationType.EROOM && eroomCategories) {
+        return hasAdvancedAnswers(
+            evaluation.answers as Record<string, EroomAnswerValue>,
+            eroomCategories
+        )
+    }
+
+    // Preliminary configured but no category info available: fall back to "any answer".
+    return Object.keys(evaluation.answers).length > 0
 }
 
 /**
