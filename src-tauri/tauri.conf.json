@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "zats-greenscore",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "identifier": "com.zatsit.greenscore",
   "build": {
     "frontendDist": "../dist",

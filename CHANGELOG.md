@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.1.0] - 2026-05-29
+
+### Added
+
+- EROOM preliminary step support via generic `PreliminaryConfig` on evaluation types (label, thresholds, blocking flag, recommendations)
+- Dedicated Quick Diagnosis card on project view, distinct from the advanced score
+- `preliminaryScore` persisted on evaluations
+
+### Changed
+
+- Separated EROOM Quick Diagnosis (category 0) from Advanced Diagnosis (categories 1-6)
+- Advanced score, interpretation and radar chart now stay hidden until at least one advanced question is answered
+- Advanced summary cards explicitly labeled "Advanced Diagnosis"
+- CC BY-SA 4.0 attribution added for EROOM data
+- README updated with badges and new information
+
 ## [1.0.0] - 2026-03-04
 
 ### Added
