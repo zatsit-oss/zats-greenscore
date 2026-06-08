@@ -59,22 +59,22 @@
           "maxScorePerQuestion": "impactWeight (Decisive=3, Significant=2, Moderate=1)"
         },
         "easeOfChange": {
-          "description": "For category 6 (Ease of change)",
+          "description": "For category 6 (Ease of change) - calculated but excluded from the global score",
           "rules": {
-            "hard_to_change": {
+            "easy_to_change": {
               "contributesToScore": true,
-              "scoreValue": "impactWeight",
-              "description": "Hard to change = optimization potential identified"
+              "scoreValue": "impactWeight * 0.75",
+              "description": "Easy to change = highly actionable optimization potential"
             },
             "moderate_effort": {
               "contributesToScore": true,
               "scoreValue": "impactWeight * 0.5",
-              "description": "Moderate effort = partial optimization potential"
+              "description": "Moderate effort = partially actionable optimization potential"
             },
-            "easy_to_change": {
-              "contributesToScore": false,
-              "scoreValue": 0,
-              "description": "Easy to change = no blocker for optimization"
+            "hard_to_change": {
+              "contributesToScore": true,
+              "scoreValue": "impactWeight * 0.25",
+              "description": "Hard to change = low actionable optimization potential"
             },
             "not_applicable": {
               "contributesToScore": false,
@@ -92,7 +92,8 @@
         }
       },
       "categoryScore": "SUM(questionScores) / SUM(maxPossibleScores) * 100",
-      "globalScore": "AVERAGE(categoryScores) for categories 1-6"
+      "globalScore": "SUM(earnedScores) / SUM(maxPossibleScores) over standard categories 1-5 (Ease of Change excluded)",
+      "referenceImplementation": "src/utils/eroom-scoring.ts is authoritative; scoring weights are the derived 2/1.5/1 (= (impactWeight + 1) / 2), verified against the reference EOF spreadsheet"
     },
     "interpretation": {
       "highPercentage": "High improvement potential (technical, organizational or environmental)",
@@ -1142,7 +1143,7 @@
   ],
   "synthesis": {
     "description": "Overview of optimisation potential across all criteria",
-    "globalScoreFormula": "SUM(categoryScores) / numberOfCategories",
+    "globalScoreFormula": "SUM(earnedScores) / SUM(maxPossibleScores) over standard categories 1-5 (Ease of Change excluded)",
     "radarChart": {
       "type": "radar",
       "axes": [
