@@ -85,35 +85,23 @@ export const populateCard = (
         if (el) el.textContent = value;
     };
 
-    // Check if any evaluation is completed
-    const completedEvaluations = allEvaluations.filter(e => e.isCompleted);
-    const hasAnyCompleted = completedEvaluations.length > 0;
+    // Check if the project is fully evaluated (every evaluation completed).
+    // The card shows all evaluations, so the status reflects the whole project:
+    // "Completed" only when nothing is left in progress.
+    const allCompleted = allEvaluations.length > 0 && allEvaluations.every(e => e.isCompleted);
 
-    // Status badge - show "Completed" if at least one evaluation is complete
-    const statusText = hasAnyCompleted ? 'Completed' : 'In Progress';
+    // Status badge - show "Completed" only if every evaluation is complete
+    const statusText = allCompleted ? 'Completed' : 'In Progress';
     set(".status-badge", statusText);
 
     // Update status badge style
     const statusBadge = card.querySelector('.status-badge');
     if (statusBadge) {
         statusBadge.className = 'status-badge text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider border';
-        if (hasAnyCompleted) {
+        if (allCompleted) {
             statusBadge.classList.add('bg-emerald-500/10', 'text-[var(--color-status-completed)]', 'border-emerald-500/20');
         } else {
             statusBadge.classList.add('bg-amber-500/10', 'text-[var(--color-status-inprogress)]', 'border-amber-500/20');
-        }
-    }
-
-    // Progress counter - show for evaluations with progress tracking
-    const progressEl = card.querySelector('.progress-counter') as HTMLElement;
-    if (progressEl) {
-        // Find an in-progress evaluation with progress data
-        const evalWithProgress = allEvaluations.find(
-            e => !e.isCompleted && e.answeredQuestions !== undefined && e.totalQuestions !== undefined
-        );
-        if (evalWithProgress) {
-            progressEl.textContent = `Answers: ${evalWithProgress.answeredQuestions}/${evalWithProgress.totalQuestions}`;
-            progressEl.classList.remove('hidden');
         }
     }
 
@@ -131,33 +119,43 @@ export const populateCard = (
         });
     }
 
-    // Score badges - show all completed evaluations
+    // Score badges - one slot per evaluation, labelled with its type (e.g. "GS",
+    // "EROOM"). A completed evaluation shows its numeric score; one still in
+    // progress shows a muted dashed "--" placeholder. EROOM's partial progressive
+    // score stays hidden until completion to avoid a misleading number.
     const scorePending = card.querySelector('.score-pending') as HTMLElement;
 
-    if (hasAnyCompleted) {
-        // Hide pending badge
+    if (allEvaluations.length > 0) {
+        // Each evaluation gets its own labelled slot, so the generic pending badge
+        // is not needed.
         if (scorePending) scorePending.classList.add('hidden');
 
-        // Show score for each completed evaluation
         allEvaluations.forEach(evalSummary => {
+            const scoreItem = card.querySelector(`.score-item[data-eval-type="${evalSummary.type}"]`) as HTMLElement;
+            if (!scoreItem) return;
+            scoreItem.classList.remove('hidden');
+
+            const scoreBadge = scoreItem.querySelector('.score-badge') as HTMLElement;
+            if (!scoreBadge) return;
+
+            const typeName = getEvaluationTypeName(evalSummary.type);
+
             if (evalSummary.isCompleted && evalSummary.score !== null) {
-                const scoreItem = card.querySelector(`.score-item[data-eval-type="${evalSummary.type}"]`) as HTMLElement;
-                if (scoreItem) {
-                    scoreItem.classList.remove('hidden');
-                    const scoreBadge = scoreItem.querySelector('.score-badge') as HTMLElement;
-                    if (scoreBadge) {
-                        scoreBadge.textContent = evalSummary.score.toString();
-                        const typeName = getEvaluationTypeName(evalSummary.type);
-                        scoreBadge.setAttribute('aria-label', `${typeName}: ${evalSummary.score}`);
-                        const color = getScoreColor(evalSummary.score, evalSummary.type);
-                        scoreBadge.style.borderColor = color;
-                        scoreBadge.style.color = color;
-                    }
-                }
+                // Completed: numeric score coloured by its grade
+                scoreBadge.textContent = evalSummary.score.toString();
+                scoreBadge.setAttribute('aria-label', `${typeName}: ${evalSummary.score}`);
+                const color = getScoreColor(evalSummary.score, evalSummary.type);
+                scoreBadge.style.borderColor = color;
+                scoreBadge.style.color = color;
+            } else {
+                // In progress: muted dashed placeholder
+                scoreBadge.textContent = '--';
+                scoreBadge.setAttribute('aria-label', `${typeName}: not scored yet`);
+                scoreBadge.classList.add('border-dashed', 'border-slate-400', 'text-slate-400');
             }
         });
     } else {
-        // Show pending badge
+        // Defensive: no evaluations at all - show the generic pending badge
         if (scorePending) scorePending.classList.remove('hidden');
     }
 };
