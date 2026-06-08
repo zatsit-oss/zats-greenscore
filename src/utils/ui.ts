@@ -85,19 +85,20 @@ export const populateCard = (
         if (el) el.textContent = value;
     };
 
-    // Check if any evaluation is completed
-    const completedEvaluations = allEvaluations.filter(e => e.isCompleted);
-    const hasAnyCompleted = completedEvaluations.length > 0;
+    // Check if the project is fully evaluated (every evaluation completed).
+    // The card shows all evaluations, so the status reflects the whole project:
+    // "Completed" only when nothing is left in progress.
+    const allCompleted = allEvaluations.length > 0 && allEvaluations.every(e => e.isCompleted);
 
-    // Status badge - show "Completed" if at least one evaluation is complete
-    const statusText = hasAnyCompleted ? 'Completed' : 'In Progress';
+    // Status badge - show "Completed" only if every evaluation is complete
+    const statusText = allCompleted ? 'Completed' : 'In Progress';
     set(".status-badge", statusText);
 
     // Update status badge style
     const statusBadge = card.querySelector('.status-badge');
     if (statusBadge) {
         statusBadge.className = 'status-badge text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider border';
-        if (hasAnyCompleted) {
+        if (allCompleted) {
             statusBadge.classList.add('bg-emerald-500/10', 'text-[var(--color-status-completed)]', 'border-emerald-500/20');
         } else {
             statusBadge.classList.add('bg-amber-500/10', 'text-[var(--color-status-inprogress)]', 'border-amber-500/20');
