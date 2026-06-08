@@ -119,18 +119,19 @@ export const populateCard = (
         });
     }
 
-    // Score badges - show any evaluation that has a score (completed or in-progress).
-    // EROOM computes a progressive score during the audit, so its badge can appear
-    // before completion; API Green Score has no score until finalized (score === null).
+    // Score badges - show a score only for completed evaluations.
+    // EROOM computes a progressive score during the audit, but a partial score
+    // (e.g. from a few answers) would be misleading on the dashboard, so the
+    // score stays hidden ("--") until the evaluation is fully completed.
     const scorePending = card.querySelector('.score-pending') as HTMLElement;
-    const evaluationsWithScore = allEvaluations.filter(e => e.score !== null);
+    const completedWithScore = allEvaluations.filter(e => e.isCompleted && e.score !== null);
 
-    if (evaluationsWithScore.length > 0) {
+    if (completedWithScore.length > 0) {
         // Hide pending badge
         if (scorePending) scorePending.classList.add('hidden');
 
-        // Show score for each evaluation that has one
-        evaluationsWithScore.forEach(evalSummary => {
+        // Show score for each completed evaluation
+        completedWithScore.forEach(evalSummary => {
             const scoreItem = card.querySelector(`.score-item[data-eval-type="${evalSummary.type}"]`) as HTMLElement;
             if (scoreItem) {
                 scoreItem.classList.remove('hidden');
@@ -138,8 +139,7 @@ export const populateCard = (
                 if (scoreBadge) {
                     scoreBadge.textContent = evalSummary.score!.toString();
                     const typeName = getEvaluationTypeName(evalSummary.type);
-                    const inProgressSuffix = evalSummary.isCompleted ? '' : ' (in progress)';
-                    scoreBadge.setAttribute('aria-label', `${typeName}: ${evalSummary.score}${inProgressSuffix}`);
+                    scoreBadge.setAttribute('aria-label', `${typeName}: ${evalSummary.score}`);
                     const color = getScoreColor(evalSummary.score!, evalSummary.type);
                     scoreBadge.style.borderColor = color;
                     scoreBadge.style.color = color;
