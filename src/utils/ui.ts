@@ -119,35 +119,43 @@ export const populateCard = (
         });
     }
 
-    // Score badges - show a score only for completed evaluations.
-    // EROOM computes a progressive score during the audit, but a partial score
-    // (e.g. from a few answers) would be misleading on the dashboard, so the
-    // score stays hidden ("--") until the evaluation is fully completed.
+    // Score badges - one slot per evaluation, labelled with its type (e.g. "GS",
+    // "EROOM"). A completed evaluation shows its numeric score; one still in
+    // progress shows a muted dashed "--" placeholder. EROOM's partial progressive
+    // score stays hidden until completion to avoid a misleading number.
     const scorePending = card.querySelector('.score-pending') as HTMLElement;
-    const completedWithScore = allEvaluations.filter(e => e.isCompleted && e.score !== null);
 
-    if (completedWithScore.length > 0) {
-        // Hide pending badge
+    if (allEvaluations.length > 0) {
+        // Each evaluation gets its own labelled slot, so the generic pending badge
+        // is not needed.
         if (scorePending) scorePending.classList.add('hidden');
 
-        // Show score for each completed evaluation
-        completedWithScore.forEach(evalSummary => {
+        allEvaluations.forEach(evalSummary => {
             const scoreItem = card.querySelector(`.score-item[data-eval-type="${evalSummary.type}"]`) as HTMLElement;
-            if (scoreItem) {
-                scoreItem.classList.remove('hidden');
-                const scoreBadge = scoreItem.querySelector('.score-badge') as HTMLElement;
-                if (scoreBadge) {
-                    scoreBadge.textContent = evalSummary.score!.toString();
-                    const typeName = getEvaluationTypeName(evalSummary.type);
-                    scoreBadge.setAttribute('aria-label', `${typeName}: ${evalSummary.score}`);
-                    const color = getScoreColor(evalSummary.score!, evalSummary.type);
-                    scoreBadge.style.borderColor = color;
-                    scoreBadge.style.color = color;
-                }
+            if (!scoreItem) return;
+            scoreItem.classList.remove('hidden');
+
+            const scoreBadge = scoreItem.querySelector('.score-badge') as HTMLElement;
+            if (!scoreBadge) return;
+
+            const typeName = getEvaluationTypeName(evalSummary.type);
+
+            if (evalSummary.isCompleted && evalSummary.score !== null) {
+                // Completed: numeric score coloured by its grade
+                scoreBadge.textContent = evalSummary.score.toString();
+                scoreBadge.setAttribute('aria-label', `${typeName}: ${evalSummary.score}`);
+                const color = getScoreColor(evalSummary.score, evalSummary.type);
+                scoreBadge.style.borderColor = color;
+                scoreBadge.style.color = color;
+            } else {
+                // In progress: muted dashed placeholder
+                scoreBadge.textContent = '--';
+                scoreBadge.setAttribute('aria-label', `${typeName}: not scored yet`);
+                scoreBadge.classList.add('border-dashed', 'border-slate-400', 'text-slate-400');
             }
         });
     } else {
-        // Show pending badge
+        // Defensive: no evaluations at all - show the generic pending badge
         if (scorePending) scorePending.classList.remove('hidden');
     }
 };
