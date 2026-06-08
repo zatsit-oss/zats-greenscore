@@ -104,19 +104,6 @@ export const populateCard = (
         }
     }
 
-    // Progress counter - show for evaluations with progress tracking
-    const progressEl = card.querySelector('.progress-counter') as HTMLElement;
-    if (progressEl) {
-        // Find an in-progress evaluation with progress data
-        const evalWithProgress = allEvaluations.find(
-            e => !e.isCompleted && e.answeredQuestions !== undefined && e.totalQuestions !== undefined
-        );
-        if (evalWithProgress) {
-            progressEl.textContent = `Answers: ${evalWithProgress.answeredQuestions}/${evalWithProgress.totalQuestions}`;
-            progressEl.classList.remove('hidden');
-        }
-    }
-
     set(".project-name", project.name);
     set(".project-desc", project.description || "");
     set(".project-date", formatDate(project.updatedAt));
@@ -131,28 +118,30 @@ export const populateCard = (
         });
     }
 
-    // Score badges - show all completed evaluations
+    // Score badges - show any evaluation that has a score (completed or in-progress).
+    // EROOM computes a progressive score during the audit, so its badge can appear
+    // before completion; API Green Score has no score until finalized (score === null).
     const scorePending = card.querySelector('.score-pending') as HTMLElement;
+    const evaluationsWithScore = allEvaluations.filter(e => e.score !== null);
 
-    if (hasAnyCompleted) {
+    if (evaluationsWithScore.length > 0) {
         // Hide pending badge
         if (scorePending) scorePending.classList.add('hidden');
 
-        // Show score for each completed evaluation
-        allEvaluations.forEach(evalSummary => {
-            if (evalSummary.isCompleted && evalSummary.score !== null) {
-                const scoreItem = card.querySelector(`.score-item[data-eval-type="${evalSummary.type}"]`) as HTMLElement;
-                if (scoreItem) {
-                    scoreItem.classList.remove('hidden');
-                    const scoreBadge = scoreItem.querySelector('.score-badge') as HTMLElement;
-                    if (scoreBadge) {
-                        scoreBadge.textContent = evalSummary.score.toString();
-                        const typeName = getEvaluationTypeName(evalSummary.type);
-                        scoreBadge.setAttribute('aria-label', `${typeName}: ${evalSummary.score}`);
-                        const color = getScoreColor(evalSummary.score, evalSummary.type);
-                        scoreBadge.style.borderColor = color;
-                        scoreBadge.style.color = color;
-                    }
+        // Show score for each evaluation that has one
+        evaluationsWithScore.forEach(evalSummary => {
+            const scoreItem = card.querySelector(`.score-item[data-eval-type="${evalSummary.type}"]`) as HTMLElement;
+            if (scoreItem) {
+                scoreItem.classList.remove('hidden');
+                const scoreBadge = scoreItem.querySelector('.score-badge') as HTMLElement;
+                if (scoreBadge) {
+                    scoreBadge.textContent = evalSummary.score!.toString();
+                    const typeName = getEvaluationTypeName(evalSummary.type);
+                    const inProgressSuffix = evalSummary.isCompleted ? '' : ' (in progress)';
+                    scoreBadge.setAttribute('aria-label', `${typeName}: ${evalSummary.score}${inProgressSuffix}`);
+                    const color = getScoreColor(evalSummary.score!, evalSummary.type);
+                    scoreBadge.style.borderColor = color;
+                    scoreBadge.style.color = color;
                 }
             }
         });
