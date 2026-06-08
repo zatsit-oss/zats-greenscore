@@ -22,19 +22,24 @@ export const getEvaluationTypeName = (type: EvaluationType): string => {
     return EVALUATION_TYPES[type]?.name || type;
 };
 
+// Ranking thresholds expressed on the displayed 0-100 score. The official API
+// Green Score grades on raw points (max 6000): A>=6000, B>=3000, C>=2000,
+// D>=1000. Since the displayed score is points/6000*100, those bands map to the
+// percentage thresholds below (A=100, B=50, C=33, D=17), keeping the badge
+// colour consistent with the letter grade.
 export const RankingResult = {
-    A: { text: ProjectRanking.A, minScore: 90, color: 'var(--color-score-excellent)', ecoLabelClass: 'text-emerald-400' },
-    B: { text: ProjectRanking.B, minScore: 75, color: 'var(--color-score-good)', ecoLabelClass: 'text-lime-400' },
-    C: { text: ProjectRanking.C, minScore: 50, color: 'var(--color-score-average)' , ecoLabelClass: 'text-amber-400' },
-    D: { text: ProjectRanking.D, minScore: 25, color: 'var(--color-score-poor)' , ecoLabelClass: 'text-orange-400' },
+    A: { text: ProjectRanking.A, minScore: 100, color: 'var(--color-score-excellent)', ecoLabelClass: 'text-emerald-400' },
+    B: { text: ProjectRanking.B, minScore: 50, color: 'var(--color-score-good)', ecoLabelClass: 'text-lime-400' },
+    C: { text: ProjectRanking.C, minScore: 33, color: 'var(--color-score-average)' , ecoLabelClass: 'text-amber-400' },
+    D: { text: ProjectRanking.D, minScore: 17, color: 'var(--color-score-poor)' , ecoLabelClass: 'text-orange-400' },
     E: { text: ProjectRanking.E, minScore: 0, color: 'var(--color-score-poor)', ecoLabelClass: 'text-red-400' }
 };
 
 export const getRanking = (score: number): typeof RankingResult[keyof typeof RankingResult] => {
-    if (score >= 90) return RankingResult.A;
-    if (score >= 75) return RankingResult.B;
-    if (score >= 50) return RankingResult.C;
-    if (score >= 25) return RankingResult.D;
+    if (score >= 100) return RankingResult.A;
+    if (score >= 50) return RankingResult.B;
+    if (score >= 33) return RankingResult.C;
+    if (score >= 17) return RankingResult.D;
     return RankingResult.E;
 }
 

@@ -55,12 +55,13 @@
       "title": "Understanding Scores",
       "apiGreenScore": {
         "title": "API Green Score Rankings",
+        "note": "For simplicity, the score is normalized to a percentage of the maximum achievable score. An A corresponds to the maximum score (100%).",
         "rankings": [
-          { "grade": "A", "range": "90-100", "color": "emerald" },
-          { "grade": "B", "range": "75-89", "color": "lime" },
-          { "grade": "C", "range": "50-74", "color": "amber" },
-          { "grade": "D", "range": "25-49", "color": "orange" },
-          { "grade": "E", "range": "0-24", "color": "red" }
+          { "grade": "A", "range": "100%", "color": "emerald" },
+          { "grade": "B", "range": "50-99%", "color": "lime" },
+          { "grade": "C", "range": "33-49%", "color": "amber" },
+          { "grade": "D", "range": "17-32%", "color": "orange" },
+          { "grade": "E", "range": "0-16%", "color": "red" }
         ]
       },
       "eroom": {
