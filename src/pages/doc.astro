@@ -135,6 +135,9 @@ function parseBoldMarkup(text: string): TextPart[] {
             <div class="space-y-6">
                 <div>
                     <h3 class="font-medium mb-3">{sections.understandingScores.apiGreenScore.title}</h3>
+                    {sections.understandingScores.apiGreenScore.note && (
+                            <p class="text-sm text-muted mb-3">{sections.understandingScores.apiGreenScore.note}</p>
+                    )}
                     <div class="grid grid-cols-5 gap-2 text-center text-sm" role="list"
                          aria-label="Score rankings from A to E">
                         {sections.understandingScores.apiGreenScore.rankings.map((ranking: {
@@ -146,7 +149,7 @@ function parseBoldMarkup(text: string): TextPart[] {
                                         class={`p-2 rounded ${colorClasses[ranking.color].bg} grade-text`}
                                         style={`--grade-light: ${colorClasses[ranking.color].lightColor}; --grade-dark: ${colorClasses[ranking.color].darkColor};`}
                                         role="listitem"
-                                        aria-label={`Grade ${ranking.grade}: ${ranking.range} points`}
+                                        aria-label={`Grade ${ranking.grade}: ${ranking.range}`}
                                 >
                                     <div class="font-bold" aria-hidden="true">{ranking.grade}</div>
                                     <div class="text-xs" aria-hidden="true">{ranking.range}</div>

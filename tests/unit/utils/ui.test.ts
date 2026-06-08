@@ -15,30 +15,32 @@ import { EvaluationType } from '../../../src/types/evaluation'
 // getRanking
 // ============================================================================
 
+// Thresholds mirror the official API Green Score point bands mapped onto the
+// 0-100 displayed score: A=100, B>=50, C>=33, D>=17, E<17.
 describe('getRanking', () => {
-  it('returns A for score >= 90', () => {
-    expect(getRanking(90)).toBe(RankingResult.A)
+  it('returns A only for a perfect score (100)', () => {
     expect(getRanking(100)).toBe(RankingResult.A)
+    expect(getRanking(99)).toBe(RankingResult.B)
   })
 
-  it('returns B for score >= 75 and < 90', () => {
-    expect(getRanking(75)).toBe(RankingResult.B)
-    expect(getRanking(89)).toBe(RankingResult.B)
+  it('returns B for score >= 50 and < 100', () => {
+    expect(getRanking(50)).toBe(RankingResult.B)
+    expect(getRanking(99)).toBe(RankingResult.B)
   })
 
-  it('returns C for score >= 50 and < 75', () => {
-    expect(getRanking(50)).toBe(RankingResult.C)
-    expect(getRanking(74)).toBe(RankingResult.C)
+  it('returns C for score >= 33 and < 50', () => {
+    expect(getRanking(33)).toBe(RankingResult.C)
+    expect(getRanking(49)).toBe(RankingResult.C)
   })
 
-  it('returns D for score >= 25 and < 50', () => {
-    expect(getRanking(25)).toBe(RankingResult.D)
-    expect(getRanking(49)).toBe(RankingResult.D)
+  it('returns D for score >= 17 and < 33', () => {
+    expect(getRanking(17)).toBe(RankingResult.D)
+    expect(getRanking(32)).toBe(RankingResult.D)
   })
 
-  it('returns E for score < 25', () => {
+  it('returns E for score < 17', () => {
     expect(getRanking(0)).toBe(RankingResult.E)
-    expect(getRanking(24)).toBe(RankingResult.E)
+    expect(getRanking(16)).toBe(RankingResult.E)
   })
 })
 
@@ -64,7 +66,8 @@ describe('getScoreColor', () => {
   })
 
   it('uses getRanking color for API_GREEN_SCORE', () => {
-    expect(getScoreColor(95, EvaluationType.API_GREEN_SCORE)).toBe('var(--color-score-excellent)')
+    expect(getScoreColor(100, EvaluationType.API_GREEN_SCORE)).toBe('var(--color-score-excellent)')
+    expect(getScoreColor(60, EvaluationType.API_GREEN_SCORE)).toBe('var(--color-score-good)')
     expect(getScoreColor(10, EvaluationType.API_GREEN_SCORE)).toBe('var(--color-score-poor)')
   })
 })
