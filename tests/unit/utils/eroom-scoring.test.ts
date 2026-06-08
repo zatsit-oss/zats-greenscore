@@ -76,30 +76,45 @@ describe('calculateCategoryScore', () => {
     expect(result.answeredQuestions).toBe(3)
   })
 
-  it('includes not_applicable in denominator with score 0', () => {
+  it('excludes not_applicable from the denominator (excludeFromMax)', () => {
     const answers = {
       q1: 'improvement_potential' as const, // scoringWeight 2
-      q2: 'not_applicable' as const,        // scoringWeight 1.5, earned 0
+      q2: 'not_applicable' as const,        // excluded from score AND max
       q3: 'strength_confirmed' as const     // scoringWeight 1, earned 0
     }
     const result = calculateCategoryScore(answers, makeCategory())
-    // earned = 2, max = 2 + 1.5 + 1 = 4.5 (not_applicable included in max)
+    // earned = 2, max = 2 + 1 = 3 (not_applicable excluded from max)
     expect(result.earnedScore).toBe(2)
-    expect(result.maxPossibleScore).toBe(4.5)
-    expect(result.answeredQuestions).toBe(3) // not_applicable counts as actively answered
+    expect(result.maxPossibleScore).toBe(3)
+    expect(result.score).toBe(67) // Math.round(2/3 * 100)
+    expect(result.answeredQuestions).toBe(3) // not_applicable still counts as actively answered
   })
 
-  it('scores evaluation_in_progress as half weight', () => {
+  it('counts unanswered (blank) questions in the denominator', () => {
+    // Only one question answered out of three: the two blanks stay in the max,
+    // so a partially answered category yields a low score (the real-world bug).
     const answers = {
-      q1: 'evaluation_in_progress' as const, // scoringWeight 2 × 0.5 = 1
+      q1: 'improvement_potential' as const // scoringWeight 2; q2, q3 left blank
+    }
+    const result = calculateCategoryScore(answers, makeCategory())
+    // earned = 2, max = 2 + 1.5 + 1 = 4.5 (blanks included)
+    expect(result.earnedScore).toBe(2)
+    expect(result.maxPossibleScore).toBe(4.5)
+    expect(result.score).toBe(44) // Math.round(2/4.5 * 100)
+    expect(result.answeredQuestions).toBe(1)
+  })
+
+  it('excludes evaluation_in_progress from the calculation', () => {
+    const answers = {
+      q1: 'evaluation_in_progress' as const, // excluded from score AND max
       q2: 'improvement_potential' as const,   // scoringWeight 1.5
       q3: 'strength_confirmed' as const       // scoringWeight 1, earned 0
     }
     const result = calculateCategoryScore(answers, makeCategory())
-    // earned = 1 + 1.5 + 0 = 2.5, max = 2 + 1.5 + 1 = 4.5
-    expect(result.earnedScore).toBe(2.5)
-    expect(result.maxPossibleScore).toBe(4.5)
-    expect(result.score).toBe(56) // Math.round(2.5/4.5 * 100)
+    // earned = 1.5, max = 1.5 + 1 = 2.5 (evaluation_in_progress excluded)
+    expect(result.earnedScore).toBe(1.5)
+    expect(result.maxPossibleScore).toBe(2.5)
+    expect(result.score).toBe(60) // Math.round(1.5/2.5 * 100)
     expect(result.answeredQuestions).toBe(2) // evaluation_in_progress not counted as actively answered
   })
 

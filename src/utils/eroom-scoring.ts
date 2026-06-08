@@ -55,24 +55,34 @@ const getScoringWeight = (impactWeight: number): number => {
 
 /**
  * Check if an answer is present (not null/undefined).
- * All present answers (including to_evaluate, not_applicable) count in the denominator.
  */
 const isAnswerPresent = (answer: EroomAnswerValue): boolean => {
   return answer !== null && answer !== undefined
 }
 
 /**
+ * Answers that exclude a question from the score calculation entirely (EOF
+ * `excludeFromMax`): the question counts neither in the earned score nor in the
+ * maximum. Every other state - including unanswered (blank) - stays in the
+ * denominator as untapped optimization potential.
+ */
+const isExcludedFromMax = (answer: EroomAnswerValue): boolean => {
+  return (
+    answer === 'not_applicable' ||
+    answer === 'to_evaluate' ||
+    answer === 'evaluation_in_progress'
+  )
+}
+
+/**
  * Calculate score contribution for a standard category answer (categories 1-5)
  * - improvement_potential: full scoring weight
- * - evaluation_in_progress: half scoring weight
- * - strength_confirmed, to_evaluate, not_applicable: 0
+ * - strength_confirmed: 0
+ * (not_applicable / to_evaluate / evaluation_in_progress are excluded upstream)
  */
 const calculateStandardScore = (answer: EroomAnswerValue, scoringWeight: number): number => {
   if (answer === 'improvement_potential') {
     return scoringWeight
-  }
-  if (answer === 'evaluation_in_progress') {
-    return scoringWeight * 0.5
   }
   return 0
 }
@@ -99,8 +109,10 @@ const calculateEaseOfChangeScore = (answer: EroomAnswerValue, scoringWeight: num
 
 /**
  * Calculate score for a single category.
- * All present answers (including to_evaluate, not_applicable) count in the denominator.
- * Only null/undefined answers are excluded entirely.
+ * The maximum (denominator) is the sum of weights of every question EXCEPT those
+ * marked not_applicable / to_evaluate / evaluation_in_progress (excludeFromMax).
+ * Unanswered (blank) questions stay in the denominator: they represent untapped
+ * optimization potential, so a partially answered category yields a low score.
  */
 export const calculateCategoryScore = (
   answers: EroomAnswers,
@@ -114,18 +126,23 @@ export const calculateCategoryScore = (
     const answer = answers[question.id]
     const scoringWeight = getScoringWeight(question.impactWeight)
 
-    // Only null/undefined are excluded entirely
-    if (!isAnswerPresent(answer)) {
+    // Track actively answered questions for progress display (a definite answer,
+    // i.e. anything present except the "pending" markers)
+    if (
+      isAnswerPresent(answer) &&
+      answer !== 'to_evaluate' &&
+      answer !== 'evaluation_in_progress'
+    ) {
+      answeredQuestions++
+    }
+
+    // Questions explicitly excluded from the max count neither in score nor max
+    if (isExcludedFromMax(answer)) {
       return
     }
 
-    // All present answers contribute to the denominator
+    // Every remaining question (including blank/unanswered) contributes to the max
     maxPossibleScore += scoringWeight
-
-    // Track actively answered questions for progress display
-    if (answer !== 'to_evaluate' && answer !== 'evaluation_in_progress') {
-      answeredQuestions++
-    }
 
     if (category.evaluationScaleType === 'standard') {
       earnedScore += calculateStandardScore(answer, scoringWeight)
