@@ -43,15 +43,27 @@ function calculateScore(answers: Record<string, Answer>): number {
 
 ### Étape 3 : Attribution du ranking
 
+Le ranking A–E suit la grille officielle API Green Score, basée sur les **points bruts** (maximum atteignable : 6000 points) :
+
+| Grade | Libellé | Points bruts | Score normalisé |
+|-------|---------|--------------|-----------------|
+| A | Excellent | ≥ 6000 | 100% |
+| B | Acceptable | ≥ 3000 | 50–99% |
+| C | Average | ≥ 2000 | 33–49% |
+| D | Poor | ≥ 1000 | 17–32% |
+| E | Very Poor | < 1000 | 0–16% |
+
 ```typescript
-function getRanking(score: number): Ranking {
-  if (score >= 80) return 'A'
-  if (score >= 60) return 'B'
-  if (score >= 40) return 'C'
-  if (score >= 20) return 'D'
+function getRankingScore(points: number): Ranking {
+  if (points >= 6000) return 'A'
+  if (points >= 3000) return 'B'
+  if (points >= 2000) return 'C'
+  if (points >= 1000) return 'D'
   return 'E'
 }
 ```
+
+> **Note** : le score affiché est normalisé en pourcentage du maximum (`points / 6000 × 100`) pour plus de simplicité. La **lettre** est en revanche calculée sur les **points bruts** : un A nécessite donc le score maximum (100%).
 
 ## Distribution des points
 
@@ -118,7 +130,7 @@ Points = (1 - (x / 100)) * 100
 
 ## Implémentation
 
-Le code de scoring se trouve dans `src/utils/scoring.ts`.
+Le code de scoring se trouve dans `src/utils/apigreenscore-scoring.ts` (et `src/utils/eroom-scoring.ts` pour EROOM).
 
 ## Évolutions futures
 
