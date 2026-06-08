@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.1.1] - 2026-06-08
+
+### Fixed
+
+- EROOM scoring: corrected the score denominator to match the EOF reference model — partially answered categories were massively over-scored (e.g. 57% instead of 9%). Unanswered questions now count as untapped potential, and not_applicable / to_evaluate / in-progress answers are excluded from the maximum
+- API Green Score: aligned badge colour, documentation and spec with the official point-based ranking bands (the grade letter and badge colour could disagree)
+- Dashboard: removed the EROOM response counter that showed even for never-started evaluations; the EROOM score now stays hidden ("--") until the evaluation is complete; in-progress score badges are labelled by evaluation type
+- Dashboard: a project is marked "Completed" only when all of its evaluations are complete
+
+### Documentation
+
+- Corrected the EROOM data-model scoring metadata to match the verified implementation (Ease of Change mapping, global score over standard categories 1-5)
+
 ## [1.1.0] - 2026-05-29
 
 ### Added

@@ -1,6 +1,6 @@
 {
   "name": "zats-greenscore",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Digital footprint calculator for eco-design evaluation of digital projects",
   "private": true,
   "scripts": {
