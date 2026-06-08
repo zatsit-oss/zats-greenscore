@@ -1,12 +1,15 @@
 ---
 import "../styles/global.css";
 import ThemeToggle from "../components/ThemeToggle.astro";
+import pkg from "../../package.json";
 
 interface Props {
     title: string;
 }
 
 const {title} = Astro.props;
+// App version, read at build time from package.json (single source of truth)
+const appVersion = pkg.version;
 ---
 
 <!doctype html>
@@ -209,6 +212,15 @@ const {title} = Astro.props;
         <div class="text-center space-y-1">
             <p>
                 &copy; {new Date().getFullYear()} zatsit. All rights reserved.
+            </p>
+            <p class="opacity-70">
+                <a
+                        href="https://github.com/zatsit-oss/zats-greenscore/releases"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="hover:text-[var(--color-primary)] transition-colors"
+                        aria-label={`Application version ${appVersion} (release notes, opens in new tab)`}
+                >v{appVersion}</a>
             </p>
         </div>
     </div>
