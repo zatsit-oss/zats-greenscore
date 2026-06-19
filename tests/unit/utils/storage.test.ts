@@ -171,6 +171,57 @@ describe('storage', () => {
   })
 
   // ============================================================================
+  // restoreProject
+  // ============================================================================
+
+  describe('restoreProject', () => {
+    it('writes the project verbatim, preserving updatedAt', async () => {
+      localStorage.setItem('storageVersion', '2')
+      localStorage.setItem('projects', JSON.stringify([]))
+      const { restoreProject, getAllProjects } = await importStorage()
+
+      const project = {
+        id: 'restored1',
+        name: 'Backup',
+        description: 'Desc',
+        createdAt: '2024-01-01',
+        updatedAt: '2024-03-15',
+        evaluations: {},
+        appVersion: '1.0.0'
+      }
+      restoreProject(project)
+
+      const projects = getAllProjects()
+      expect(projects).toHaveLength(1)
+      // Unlike saveProject, restoreProject must not bump these.
+      expect(projects[0].updatedAt).toBe('2024-03-15')
+      expect(projects[0].createdAt).toBe('2024-01-01')
+      expect(projects[0].appVersion).toBe('1.0.0')
+    })
+
+    it('updates an existing project in place without bumping updatedAt', async () => {
+      const existing = {
+        id: 'r2',
+        name: 'Original',
+        description: 'Old',
+        createdAt: '2020-01-01',
+        updatedAt: '2020-01-01',
+        evaluations: {}
+      }
+      localStorage.setItem('storageVersion', '2')
+      localStorage.setItem('projects', JSON.stringify([existing]))
+      const { restoreProject, getAllProjects } = await importStorage()
+
+      restoreProject({ ...existing, description: 'New', updatedAt: '2024-06-01' })
+
+      const projects = getAllProjects()
+      expect(projects).toHaveLength(1)
+      expect(projects[0].description).toBe('New')
+      expect(projects[0].updatedAt).toBe('2024-06-01')
+    })
+  })
+
+  // ============================================================================
   // deleteProject
   // ============================================================================
 
