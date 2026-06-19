@@ -5,6 +5,7 @@
 import type {Evaluation} from './evaluation';
 import {EvaluationStatus, EvaluationType} from './evaluation';
 import {ProjectRanking} from './common';
+import pkg from '../../package.json';
 
 // Re-export for backward compatibility
 export {ProjectRanking} from './common';
@@ -14,10 +15,11 @@ export {ProjectRanking} from './common';
 // ============================================================================
 
 /**
- * Current application version (from package.json)
- * Used to track which version created/modified a project
+ * Current application version, read at build time from package.json
+ * (single source of truth). Used to track which version created/modified
+ * a project.
  */
-export const APP_VERSION = '0.0.1';
+export const APP_VERSION = pkg.version;
 
 /**
  * Project with support for multiple evaluation types

@@ -15,6 +15,7 @@ import {
     getAllProjects as storageGetAllProjects,
     getProjectById as storageGetProjectById,
     migrateStorageIfNeeded as storageMigrateIfNeeded,
+    restoreProject as storageRestoreProject,
     saveProject as storageSaveProject
 } from '../utils/storage';
 
@@ -48,6 +49,14 @@ export function getProject(id: string): Project | undefined {
  */
 export function saveProject(project: Project): void {
     storageSaveProject(project);
+}
+
+/**
+ * Restore a project verbatim (create or update), preserving its original
+ * timestamps and app version. Used when importing a backup.
+ */
+export function restoreProject(project: Project): void {
+    storageRestoreProject(project);
 }
 
 /**

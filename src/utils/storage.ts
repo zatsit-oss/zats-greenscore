@@ -164,6 +164,26 @@ export function saveProject(project: Project): void {
 }
 
 /**
+ * Restore a project exactly as provided (create or update).
+ *
+ * Unlike saveProject, this does NOT bump updatedAt or re-stamp appVersion:
+ * it writes the project verbatim. Used by import/restore so a backup keeps
+ * its original timestamps and originating app version.
+ */
+export function restoreProject(project: Project): void {
+  const projects = getAllProjects();
+  const index = projects.findIndex((p) => p.id === project.id);
+
+  if (index >= 0) {
+    projects[index] = project;
+  } else {
+    projects.push(project);
+  }
+
+  safeSetItem(StorageKeys.PROJECTS, JSON.stringify(projects));
+}
+
+/**
  * Delete a project
  */
 export function deleteProject(id: string): void {

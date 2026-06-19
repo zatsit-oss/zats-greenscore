@@ -4,8 +4,10 @@ import {
   hasEvaluationType,
   getHighestScore,
   getBestRanking,
-  createProject
+  createProject,
+  APP_VERSION
 } from '../../../src/types/project'
+import pkg from '../../../package.json'
 import { ProjectRanking } from '../../../src/types/common'
 import { EvaluationType, EvaluationStatus } from '../../../src/types/evaluation'
 import type { Project } from '../../../src/types/project'
@@ -158,6 +160,12 @@ describe('getBestRanking', () => {
 // ============================================================================
 // createProject
 // ============================================================================
+
+describe('APP_VERSION', () => {
+  it('derives from package.json (single source of truth)', () => {
+    expect(APP_VERSION).toBe(pkg.version)
+  })
+})
 
 describe('createProject', () => {
   it('creates a project with correct structure', () => {
