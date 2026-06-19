@@ -41,6 +41,16 @@ const evaluationTypes = getAvailableEvaluationTypes()
             </div>
         </div>
 
+        <!-- Backup actions -->
+        <div class="flex flex-wrap gap-3 mb-8">
+            <button id="exportBtn" class="btn btn-secondary" type="button">
+                Export projects
+            </button>
+            <button id="importBtn" class="btn btn-secondary" type="button">
+                Import projects
+            </button>
+        </div>
+
         <!-- Evaluation Type Filter -->
         <div class="flex items-center gap-3 mb-8">
             <label for="evaluationTypeFilter" class="text-sm font-medium text-muted">
@@ -107,10 +117,84 @@ const evaluationTypes = getAvailableEvaluationTypes()
         </div>
     </div>
 
+    <!-- Import Modal -->
+    <div
+            id="importModal"
+            class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="importModalTitle"
+            aria-describedby="importModalDesc"
+    >
+        <div class="glass-card max-w-md w-full mx-4 p-6" role="document">
+            <h2 id="importModalTitle" class="text-xl font-bold mb-4">Import projects</h2>
+            <p id="importModalDesc" class="text-muted mb-4">
+                Select a previously exported JSON file, or paste its content below.
+            </p>
+
+            <label for="importFile" class="block text-sm font-medium mb-2">JSON file</label>
+            <input
+                    id="importFile"
+                    type="file"
+                    accept="application/json,.json"
+                    class="form-input mb-4 w-full"
+            />
+
+            <label for="importText" class="block text-sm font-medium mb-2">Or paste JSON</label>
+            <textarea
+                    id="importText"
+                    rows="5"
+                    class="form-input w-full mb-6 font-mono text-xs"
+                    placeholder="&#123; &quot;projects&quot;: [ ... ] &#125;"
+            ></textarea>
+
+            <div class="flex gap-4 justify-end">
+                <button class="btn btn-secondary" id="cancelImportBtn" type="button">Cancel</button>
+                <button class="btn btn-primary" id="confirmImportBtn" type="button">Import</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Conflict Modal -->
+    <div
+            id="conflictModal"
+            class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="conflictModalTitle"
+            aria-describedby="conflictModalDesc"
+    >
+        <div class="glass-card max-w-md w-full mx-4 p-6" role="document">
+            <h2 id="conflictModalTitle" class="text-xl font-bold mb-4">Projects already exist</h2>
+            <p id="conflictModalDesc" class="text-muted mb-2">
+                The following projects already exist (matched by name):
+            </p>
+            <ul id="conflictList" class="list-disc list-inside text-sm mb-4 text-[var(--color-text)]"></ul>
+            <p class="text-sm text-muted mb-6">
+                Do you want to overwrite them? Overwriting replaces the existing data.
+            </p>
+            <div class="flex flex-wrap gap-4 justify-end">
+                <button class="btn btn-secondary" id="cancelConflictBtn" type="button">Cancel</button>
+                <button class="btn btn-secondary" id="skipConflictBtn" type="button">Skip existing</button>
+                <button class="btn btn-primary" id="overwriteConflictBtn" type="button">Overwrite</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         import {loadProjects, getEvaluationTypeName} from '../utils/ui'
-        import {deleteProject} from '../services/project-service'
+        import {deleteProject, getAllProjects} from '../services/project-service'
+        import {
+            exportAllProjects,
+            parseProjectsFile,
+            detectNameConflicts,
+            applyImport
+        } from '../services/project-transfer-service'
+        import type {ImportSummary} from '../services/project-transfer-service'
+        import {downloadTextFile, readTextFile} from '../utils/file'
+        import {showToast} from '../utils/toast'
         import {EvaluationType} from '../types/evaluation'
+        import type {Project} from '../types/project'
 
         // Get filter element
         const filterSelect = document.getElementById('evaluationTypeFilter') as HTMLSelectElement
@@ -218,6 +302,176 @@ const evaluationTypes = getAvailableEvaluationTypes()
 
         // Listen for filter changes
         filterSelect?.addEventListener('change', loadWithFilter)
+
+        // ================================================================
+        // Export / Import projects (backup & restore)
+        // ================================================================
+        const exportBtn = document.getElementById('exportBtn')
+        const importBtn = document.getElementById('importBtn')
+        const importBtnHero = document.getElementById('importBtnHero')
+
+        const importModal = document.getElementById('importModal')
+        const importFileInput = document.getElementById('importFile') as HTMLInputElement | null
+        const importTextInput = document.getElementById('importText') as HTMLTextAreaElement | null
+        const cancelImportBtn = document.getElementById('cancelImportBtn')
+        const confirmImportBtn = document.getElementById('confirmImportBtn')
+
+        const conflictModal = document.getElementById('conflictModal')
+        const conflictList = document.getElementById('conflictList')
+        const cancelConflictBtn = document.getElementById('cancelConflictBtn')
+        const skipConflictBtn = document.getElementById('skipConflictBtn')
+        const overwriteConflictBtn = document.getElementById('overwriteConflictBtn')
+
+        // Generic modal helpers (focus management + escape + tab trap)
+        const openModal = (modal: HTMLElement | null, focusTarget?: HTMLElement | null) => {
+            if (!modal) return
+            modal.dataset.trigger = (document.activeElement as HTMLElement)?.id || ''
+            modal.classList.remove('hidden')
+            modal.classList.add('flex')
+            setTimeout(() => focusTarget?.focus(), 50)
+        }
+
+        const closeModal = (modal: HTMLElement | null) => {
+            if (!modal) return
+            modal.classList.add('hidden')
+            modal.classList.remove('flex')
+            const triggerId = modal.dataset.trigger
+            if (triggerId) document.getElementById(triggerId)?.focus()
+        }
+
+        const trapFocus = (modal: HTMLElement, e: KeyboardEvent) => {
+            if (e.key !== 'Tab') return
+            const focusable = modal.querySelectorAll<HTMLElement>(
+                'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            )
+            const first = focusable[0]
+            const last = focusable[focusable.length - 1]
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault()
+                last?.focus()
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault()
+                first?.focus()
+            }
+        }
+
+        // --- Export ---
+        const handleExport = () => {
+            if (getAllProjects().length === 0) {
+                showToast('No projects to export.', 'info')
+                return
+            }
+            const date = new Date().toISOString().slice(0, 10)
+            downloadTextFile(`greenscore-projects-${date}.json`, exportAllProjects())
+            showToast('Projects exported.', 'success')
+        }
+
+        // --- Import ---
+        let pendingImport: Project[] | null = null
+
+        const openImportModal = () => {
+            if (importFileInput) importFileInput.value = ''
+            if (importTextInput) importTextInput.value = ''
+            openModal(importModal, importFileInput)
+        }
+
+        const summarize = (s: ImportSummary) => {
+            const parts: string[] = []
+            if (s.added) parts.push(`${s.added} added`)
+            if (s.overwritten) parts.push(`${s.overwritten} overwritten`)
+            if (s.skipped) parts.push(`${s.skipped} skipped`)
+            showToast(parts.length ? `Import done: ${parts.join(', ')}.` : 'Nothing imported.', 'success')
+            loadWithFilter()
+        }
+
+        const runImport = (overwrite: boolean) => {
+            if (!pendingImport) return
+            const summary = applyImport(pendingImport, overwrite)
+            pendingImport = null
+            summarize(summary)
+        }
+
+        const handleImportConfirm = async () => {
+            let content = ''
+            const file = importFileInput?.files?.[0]
+            try {
+                if (file) {
+                    content = await readTextFile(file)
+                } else if (importTextInput?.value.trim()) {
+                    content = importTextInput.value
+                } else {
+                    showToast('Select a file or paste JSON content.', 'error')
+                    return
+                }
+            } catch {
+                showToast('Failed to read the file.', 'error')
+                return
+            }
+
+            const result = parseProjectsFile(content)
+            if (!result.ok) {
+                showToast(result.error, 'error')
+                return
+            }
+
+            closeModal(importModal)
+
+            const conflicts = detectNameConflicts(result.projects, getAllProjects())
+            if (conflicts.length === 0) {
+                summarize(applyImport(result.projects, false))
+                return
+            }
+
+            // Name conflicts: ask for a single global decision before applying
+            pendingImport = result.projects
+            if (conflictList) {
+                conflictList.innerHTML = ''
+                conflicts.forEach((name) => {
+                    const li = document.createElement('li')
+                    li.textContent = name
+                    conflictList.appendChild(li)
+                })
+            }
+            openModal(conflictModal, cancelConflictBtn as HTMLElement)
+        }
+
+        // Wiring
+        exportBtn?.addEventListener('click', handleExport)
+        importBtn?.addEventListener('click', openImportModal)
+        importBtnHero?.addEventListener('click', openImportModal)
+        cancelImportBtn?.addEventListener('click', () => closeModal(importModal))
+        confirmImportBtn?.addEventListener('click', handleImportConfirm)
+        importModal?.addEventListener('click', (e) => {
+            if (e.target === importModal) closeModal(importModal)
+        })
+
+        cancelConflictBtn?.addEventListener('click', () => {
+            pendingImport = null
+            closeModal(conflictModal)
+            showToast('Import cancelled.', 'info')
+        })
+        skipConflictBtn?.addEventListener('click', () => {
+            closeModal(conflictModal)
+            runImport(false)
+        })
+        overwriteConflictBtn?.addEventListener('click', () => {
+            closeModal(conflictModal)
+            runImport(true)
+        })
+        conflictModal?.addEventListener('click', (e) => {
+            if (e.target === conflictModal) closeModal(conflictModal)
+        })
+
+        // Escape + tab trap for the backup modals
+        document.addEventListener('keydown', (e) => {
+            if (importModal?.classList.contains('flex')) {
+                if (e.key === 'Escape') closeModal(importModal)
+                else trapFocus(importModal, e)
+            } else if (conflictModal?.classList.contains('flex')) {
+                if (e.key === 'Escape') closeModal(conflictModal)
+                else trapFocus(conflictModal, e)
+            }
+        })
 
         // Initial load with default filter
         loadWithFilter()
