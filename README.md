@@ -2,7 +2,7 @@
 
 [![GitHub release](https://img.shields.io/github/v/release/zatsit-oss/zats-greenscore)](https://github.com/zatsit-oss/zats-greenscore/releases)
 [![License](https://img.shields.io/github/license/zatsit-oss/zats-greenscore)](LICENSE)
-[![Deploy to Firebase Hosting](https://img.shields.io/github/actions/workflow/status/zatsit-oss/zats-greenscore/firebase-hosting-merge.yml?label=deploy)](https://github.com/zatsit-oss/zats-greenscore/actions)
+[![Deploy to Clever Cloud](https://img.shields.io/github/actions/workflow/status/zatsit-oss/zats-greenscore/cellar-deploy.yml?label=deploy)](https://github.com/zatsit-oss/zats-greenscore/actions)
 [![Release Desktop App](https://img.shields.io/github/actions/workflow/status/zatsit-oss/zats-greenscore/release-desktop.yml?label=desktop%20build)](https://github.com/zatsit-oss/zats-greenscore/actions)
 [![Astro](https://img.shields.io/badge/Astro-5.x-bc52ee?logo=astro&logoColor=white)](https://astro.build)
 [![Tauri](https://img.shields.io/badge/Tauri-2.x-24c8d8?logo=tauri&logoColor=white)](https://tauri.app)
@@ -36,7 +36,7 @@ A hybrid **web + desktop** application for evaluating the eco-design of digital 
 - **Styling:** [Tailwind CSS](https://tailwindcss.com) 4.x — Utility-first CSS
 - **Language:** [TypeScript](https://www.typescriptlang.org) — Type safety
 - **Testing:** [Vitest](https://vitest.dev) (unit) + [Playwright](https://playwright.dev) (e2e)
-- **Deployment:** Firebase Hosting (web), GitHub Actions (CI/CD)
+- **Deployment:** Clever Cloud Cellar (web, production), Firebase Hosting (PR previews), GitHub Actions (CI/CD)
 - **Storage:** LocalStorage (browser), with future backend planned
 
 ---

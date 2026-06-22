@@ -92,7 +92,8 @@ public/                 # Static assets
 - **Rust** - Backend logic
 
 ### Deployment
-- **Firebase Hosting** - Web deployment
+- **Clever Cloud Cellar** - Web production hosting (sovereign, French)
+- **Firebase Hosting** - PR preview deployments
 - **Docker** - Containerization
 - **GitHub Actions** - CI/CD
 
