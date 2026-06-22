@@ -3,7 +3,7 @@
 # cellar-deploy.yml and ADR-002). This GCP/GCS deploy is kept for reference and
 # rollback only; the automatic push-to-main trigger is disabled, so it runs only
 # when manually dispatched.
-name: Publish API GreenScore UI
+name: Deploy to GCP (deprecated)
 on:
   workflow_dispatch:
     inputs:
