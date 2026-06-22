@@ -1,97 +1,100 @@
-# ADR-001 : Application desktop avec Tauri
+# ADR-001: Desktop application with Tauri
 
-## Statut
+## Status
 
-**Accepté** - Janvier 2025
+**Accepted** - January 2025
 
-## Contexte
+## Context
 
-L'application zats-greenscore est initialement une application web statique générée avec Astro. Pour étendre la portée du projet et permettre une utilisation offline native, une version desktop a été envisagée.
+The zats-greenscore application is initially a static web app generated with
+Astro. To extend the project's reach and enable native offline usage, a desktop
+version was considered.
 
-### Options considérées
+### Options considered
 
-1. **Electron** - Framework populaire basé sur Chromium
-2. **Tauri** - Framework léger basé sur WebView natif + Rust
-3. **PWA** - Progressive Web App sans application native
+1. **Electron** - Popular framework based on Chromium
+2. **Tauri** - Lightweight framework based on the native WebView + Rust
+3. **PWA** - Progressive Web App without a native application
 
-## Décision
+## Decision
 
-Nous avons choisi **Tauri 2.x** pour créer l'application desktop.
+We chose **Tauri 2.x** to build the desktop application.
 
-## Justification
+## Rationale
 
-### Cohérence avec la philosophie du projet
+### Consistency with the project's philosophy
 
-L'application évalue l'éco-conception des APIs. Utiliser un framework léger et efficient est cohérent avec nos valeurs :
+The application evaluates the eco-design of APIs. Using a lightweight, efficient
+framework is consistent with our values:
 
-| Critère | Electron | Tauri |
-|---------|----------|-------|
-| Taille du bundle | ~150 MB | ~3-10 MB |
-| RAM utilisée | ~100-300 MB | ~30-50 MB |
-| Empreinte carbone | Élevée | Faible |
+| Criterion | Electron | Tauri |
+|-----------|----------|-------|
+| Bundle size | ~150 MB | ~3-10 MB |
+| RAM usage | ~100-300 MB | ~30-50 MB |
+| Carbon footprint | High | Low |
 
-### Avantages techniques
+### Technical advantages
 
-- **Légèreté** : Utilise le WebView natif de l'OS
-- **Performance** : Backend en Rust
-- **Sécurité** : Sandboxing et permissions granulaires
-- **Multi-plateforme** : macOS, Windows, Linux
+- **Lightweight**: uses the OS's native WebView
+- **Performance**: Rust backend
+- **Security**: sandboxing and granular permissions
+- **Cross-platform**: macOS, Windows, Linux
 
-### Pattern "Integrated Repo"
+### "Integrated Repo" pattern
 
-Le code Tauri est intégré dans le même repository :
+The Tauri code lives in the same repository:
 
 ```
 zats-greenscore/
-├── src/           # Code Astro (partagé web/desktop)
-├── src-tauri/     # Code spécifique Tauri
-│   ├── src/       # Backend Rust
-│   ├── icons/     # Icônes multi-plateformes
+├── src/           # Astro code (shared web/desktop)
+├── src-tauri/     # Tauri-specific code
+│   ├── src/       # Rust backend
+│   ├── icons/     # Cross-platform icons
 │   └── tauri.conf.json
 └── package.json
 ```
 
-**Avantages** :
-- Une seule source de vérité pour l'UI
-- Versioning unifié web/desktop
-- CI/CD simplifié
+**Advantages**:
+- A single source of truth for the UI
+- Unified web/desktop versioning
+- Simplified CI/CD
 
-## Conséquences
+## Consequences
 
-### Positives
+### Positive
 
-- Application native légère (~5 MB)
-- Fonctionnement offline complet
-- Pas de dépendance à un navigateur externe
+- Lightweight native application (~5 MB)
+- Full offline operation
+- No dependency on an external browser
 - Distribution via DMG/EXE/DEB
 
-### Négatives
+### Negative
 
-- Nécessite Rust toolchain pour le développement
-- Courbe d'apprentissage pour les features natives
-- Tests end-to-end plus complexes
+- Requires the Rust toolchain for development
+- Learning curve for native features
+- More complex end-to-end testing
 
-### Neutres
+### Neutral
 
-- Le stockage reste en LocalStorage (via WebView)
-- Pas de feature native spécifique pour l'instant
+- Storage stays in LocalStorage (via the WebView)
+- No specific native feature for now
 
-## Implémentation
+## Implementation
 
-### Scripts npm
+### npm scripts
 
 ```bash
-npm run dev:desktop      # Dev avec hot reload
-npm run build:desktop    # Build production
-npm run tauri            # CLI Tauri direct
+npm run dev:desktop      # Dev with hot reload
+npm run build:desktop    # Production build
+npm run tauri            # Direct Tauri CLI
 ```
 
 ### Configuration
 
-- `src-tauri/tauri.conf.json` : Configuration principale
-- `src-tauri/capabilities/` : Permissions de l'app
+- `src-tauri/tauri.conf.json`: main configuration
+- `src-tauri/capabilities/`: app permissions
 
-## Références
+## References
 
 - [Tauri Documentation](https://tauri.app/)
 - [Tauri vs Electron](https://tauri.app/v1/references/benchmarks/)
