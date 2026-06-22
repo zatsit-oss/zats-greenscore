@@ -1,9 +1,10 @@
 ---
-name: Publish API GreenScore UI
+# DEPRECATED: production hosting moved to Clever Cloud Cellar (see
+# cellar-deploy.yml and ADR-002). This GCP/GCS deploy is kept for reference and
+# rollback only; the automatic push-to-main trigger is disabled, so it runs only
+# when manually dispatched.
+name: Deploy to GCP (deprecated)
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       env:

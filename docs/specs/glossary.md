@@ -1,59 +1,59 @@
-# Glossaire
+# Glossary
 
-Termes métier et techniques utilisés dans le projet.
+Business and technical terms used in the project.
 
-## Termes API Green Score
+## API Green Score Terms
 
 ### Green Score
-Score global d'éco-conception d'une API, exprimé sur une échelle de 0 à 100. Plus le score est élevé, meilleure est l'éco-conception.
+Overall eco-design score of an API, expressed on a scale from 0 to 100. The higher the score, the better the eco-design.
 
-### Ranking (Classement)
-Lettre de classement basée sur le score :
-- **A** : Excellent (score élevé)
-- **B** : Bon
-- **C** : Moyen
-- **D** : À améliorer
-- **E** : Faible (score bas)
+### Ranking
+Ranking letter based on the score:
+- **A**: Excellent (high score)
+- **B**: Good
+- **C**: Average
+- **D**: Needs improvement
+- **E**: Poor (low score)
 
 ### Section
-Catégorie regroupant plusieurs questions du questionnaire :
-- **Architecture** : Choix architecturaux (event-driven, localisation, scalabilité)
-- **Design** : Conception de l'API (format, cache, tokens, filtres)
-- **Usage** : Utilisation et exploitation (versioning, pagination, monitoring)
-- **Logs** : Gestion des logs (rétention, volumétrie)
+Category grouping several questions of the questionnaire:
+- **Architecture**: Architectural choices (event-driven, location, scalability)
+- **Design**: API design (format, cache, tokens, filters)
+- **Usage**: Usage and operation (versioning, pagination, monitoring)
+- **Logs**: Log management (retention, volume)
 
 ### Points
-Pondération d'une question dans le calcul du score. Chaque question a un nombre de points associé reflétant son importance dans l'éco-conception.
+Weighting of a question in the score calculation. Each question has an associated number of points reflecting its importance in eco-design.
 
-## Termes techniques
+## Technical Terms
 
 ### Audit
-Session d'évaluation d'un projet via le questionnaire. Un audit produit un score et un ranking.
+Evaluation session of a project via the questionnaire. An audit produces a score and a ranking.
 
-### Projet
-Entité représentant une API ou un système à évaluer. Contient les métadonnées et les réponses au questionnaire.
+### Project
+Entity representing an API or a system to evaluate. Contains the metadata and the answers to the questionnaire.
 
-### Answer (Réponse)
-Réponse à une question du questionnaire. Peut être :
-- **Boolean** : Oui/Non (la pratique est-elle appliquée ?)
-- **Numeric** : Valeur numérique (ex: taux d'erreur, nombre de consommateurs)
+### Answer
+Answer to a question of the questionnaire. Can be:
+- **Boolean**: Yes/No (is the practice applied?)
+- **Numeric**: Numeric value (e.g.: error rate, number of consumers)
 
 ### Formula
-Certaines questions utilisent une formule pour calculer les points en fonction de la valeur numérique saisie. Ex: `(x * 50) - 50` pour le nombre de consommateurs.
+Some questions use a formula to calculate the points based on the numeric value entered. E.g.: `(x * 50) - 50` for the number of consumers.
 
-## Bonnes pratiques évaluées
+## Evaluated Best Practices
 
 ### Event Driven Architecture (AR01)
-Architecture basée sur les événements pour éviter le polling excessif.
+Event-based architecture to avoid excessive polling.
 
 ### Cache
-Mécanisme de mise en cache pour réduire les requêtes inutiles et préserver les ressources.
+Caching mechanism to reduce unnecessary requests and preserve resources.
 
 ### Opaque Token
-Token d'authentification opaque (vs JWT), plus léger et sécurisé.
+Opaque authentication token (vs JWT), lighter and more secure.
 
 ### Pagination
-Mécanisme permettant de limiter le volume de données retourné par requête.
+Mechanism allowing to limit the volume of data returned per request.
 
 ### Filtering
-Capacité à filtrer les données retournées pour ne récupérer que le nécessaire.
+Ability to filter the returned data to retrieve only what is needed.

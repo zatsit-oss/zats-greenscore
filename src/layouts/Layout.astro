@@ -5,22 +5,42 @@ import pkg from "../../package.json";
 
 interface Props {
     title: string;
+    description?: string;
 }
 
-const {title} = Astro.props;
+const defaultDescription = "Evaluate the eco-design of your digital projects with API Green Score and EROOM.";
+const {title, description = defaultDescription} = Astro.props;
 // App version, read at build time from package.json (single source of truth)
 const appVersion = pkg.version;
+
+// Absolute URLs for Open Graph (LinkedIn etc. require an absolute og:image).
+// Astro.site is set in astro.config.mjs.
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL('/og-image.png', Astro.site).href;
+const fullTitle = `${title} | Zats Green Score`;
 ---
 
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
-    <meta name="description" content="Zats Green Score - Eco-design evaluation for digital projects"/>
+    <meta name="description" content={description}/>
     <meta name="viewport" content="width=device-width"/>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
     <meta name="generator" content={Astro.generator}/>
-    <title>{title} | Zats Green Score</title>
+    <title>{fullTitle}</title>
+
+    <!-- Open Graph (LinkedIn, etc.) -->
+    <meta property="og:type" content="website"/>
+    <meta property="og:site_name" content="Zats Green Score"/>
+    <meta property="og:locale" content="fr_FR"/>
+    <meta property="og:url" content={pageUrl}/>
+    <meta property="og:title" content={fullTitle}/>
+    <meta property="og:description" content={description}/>
+    <meta property="og:image" content={ogImage}/>
+    <meta property="og:image:width" content="1200"/>
+    <meta property="og:image:height" content="630"/>
+    <meta property="og:image:alt" content="Zats Green Score"/>
     <!-- Using system fonts for eco-design (no external font CDN) -->
     <script is:inline>
         // Immediate theme application to prevent FOUC (Flash Of Unstyled Content).
