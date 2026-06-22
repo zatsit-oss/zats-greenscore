@@ -1,54 +1,54 @@
-# Vue d'ensemble du projet
+# Project Overview
 
-## Contexte
+## Context
 
-**zats-greenscore** est une application hybride web/desktop permettant d'évaluer le score d'éco-conception des projets digitaux, en particulier les APIs.
+**zats-greenscore** is a hybrid web/desktop application for evaluating the eco-design score of digital projects, in particular APIs.
 
-Ce projet s'inspire de l'initiative [API Green Score](https://github.com/API-Green-Score/APIGreenScore) et implémente leur questionnaire d'évaluation sous forme d'interface web interactive.
+This project is inspired by the [API Green Score](https://github.com/API-Green-Score/APIGreenScore) initiative and implements their evaluation questionnaire as an interactive web interface.
 
-## Problème résolu
+## Problem Solved
 
-Le questionnaire original API Green Score est fourni sous forme de fichier Excel, ce qui limite :
-- L'accessibilité pour les utilisateurs non techniques
-- L'engagement et l'expérience utilisateur
-- La possibilité de suivre plusieurs projets dans le temps
-- La collaboration en équipe
+The original API Green Score questionnaire is provided as an Excel file, which limits:
+- Accessibility for non-technical users
+- Engagement and user experience
+- The ability to track multiple projects over time
+- Team collaboration
 
 ## Solution
 
-Une application web moderne et légère qui :
-1. Transforme le questionnaire statique en interface dynamique
-2. Calcule le score en temps réel
-3. Permet de gérer plusieurs projets
-4. Reste elle-même éco-conçue (cohérence avec la philosophie du projet)
+A modern, lightweight web application that:
+1. Transforms the static questionnaire into a dynamic interface
+2. Calculates the score in real time
+3. Allows managing multiple projects
+4. Remains eco-designed itself (consistent with the project's philosophy)
 
-## Objectifs
+## Goals
 
-### Court terme
-- [x] Interface de questionnaire interactive
-- [x] Calcul du score en temps réel
-- [x] Gestion de projets multiples (stockage local)
-- [x] Application desktop avec Tauri
-- [ ] Export PDF des résultats
+### Short term
+- [x] Interactive questionnaire interface
+- [x] Real-time score calculation
+- [x] Management of multiple projects (local storage)
+- [x] Desktop application with Tauri
+- [ ] PDF export of results
 
-### Long terme
-- [ ] Support multi-langues
-- [ ] Collaboration d'équipe
-- [ ] Backend de stockage alternatif (cloud)
-- [ ] Questionnaires personnalisables
-- [ ] Analytics et suivi des améliorations
+### Long term
+- [ ] Multi-language support
+- [ ] Team collaboration
+- [ ] Alternative storage backend (cloud)
+- [ ] Customizable questionnaires
+- [ ] Analytics and improvement tracking
 
-## Public cible
+## Target Audience
 
-- **Développeurs d'APIs** souhaitant évaluer l'impact environnemental de leurs APIs
-- **Architectes** cherchant à appliquer les bonnes pratiques d'éco-conception
-- **Équipes DevOps/SRE** responsables de l'infrastructure
-- **Product Owners** sensibilisés à l'impact environnemental du numérique
+- **API developers** wishing to evaluate the environmental impact of their APIs
+- **Architects** seeking to apply eco-design best practices
+- **DevOps/SRE teams** responsible for the infrastructure
+- **Product Owners** aware of the environmental impact of digital technology
 
-## Principes directeurs
+## Guiding Principles
 
-1. **Lead by example** - L'application doit elle-même être éco-conçue
-2. **Simplicité** - Interface claire et intuitive
-3. **Légèreté** - Minimal footprint (pas de framework JS lourd)
-4. **Offline-first** - Fonctionne sans connexion internet
-5. **Open source** - Contribution communautaire encouragée
+1. **Lead by example** - The application must itself be eco-designed
+2. **Simplicity** - Clear and intuitive interface
+3. **Lightweight** - Minimal footprint (no heavy JS framework)
+4. **Offline-first** - Works without an internet connection
+5. **Open source** - Community contribution encouraged
