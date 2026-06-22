@@ -40,25 +40,43 @@ fi
 echo "==> Building (standard Astro)"
 npm run build
 
-# Wipe the bucket first so no stale object survives a deploy. The build is done
-# BEFORE the wipe, so the site is only unavailable during the short upload below.
-echo "==> Cleaning bucket s3://$BUCKET/ (remove any leftover)"
-s3cmd "${S3CMD_OPTS[@]}" del --recursive --force "s3://$BUCKET/" || true
+# Incremental, zero-downtime publish: additively upload changed objects first,
+# refresh the aliases in place, then prune only true orphans at the end. Live
+# objects are never deleted-then-recreated, so no request ever 403s mid-deploy.
 
-echo "==> Uploading $DIST/ to s3://$BUCKET/ (assets + index.html files)"
+echo "==> Uploading $DIST/ to s3://$BUCKET/ (additive: new/changed only)"
 s3cmd "${S3CMD_OPTS[@]}" sync "$DIST/" "s3://$BUCKET/" \
   --acl-public --no-mime-magic --guess-mime-type
 
-echo "==> Creating extensionless aliases so bare links (/about, /projects/view) resolve"
+echo "==> Refreshing extensionless aliases so bare links (/about, /projects/view) resolve"
+# Cellar serves exact keys only (no ".html" append, no bare->slash redirect).
 # Every sub-route page (dist/<route>/index.html) is also uploaded as the
-# extensionless key <route>, served as text/html. The root (dist/index.html)
-# is left as-is: Cellar already serves it at "/".
-find "$DIST" -mindepth 2 -name index.html | while read -r file; do
+# extensionless key <route>, served as text/html (overwrite in place, no gap).
+# The root (dist/index.html) is left as-is: Cellar already serves it at "/".
+aliases=()
+while IFS= read -r file; do
   route="${file#"$DIST"/}"        # e.g. about/index.html
   key="${route%/index.html}"      # e.g. about
-  echo "    + $key"
   s3cmd "${S3CMD_OPTS[@]}" put "$file" "s3://$BUCKET/$key" \
     --mime-type=text/html --acl-public >/dev/null
+  aliases+=("$key")
+  echo "    + $key"
+done < <(find "$DIST" -mindepth 2 -name index.html)
+
+echo "==> Pruning orphan objects (stale assets / removed pages)"
+# Valid keys = every file in dist/ (relative) + the alias keys above. Any remote
+# object not in this set is a leftover from a previous build and is deleted.
+valid="$(mktemp)"; remote="$(mktemp)"
+( cd "$DIST" && find . -type f | sed 's#^\./##' ) > "$valid"
+printf '%s\n' "${aliases[@]}" >> "$valid"
+sort -u -o "$valid" "$valid"
+s3cmd "${S3CMD_OPTS[@]}" ls --recursive "s3://$BUCKET/" \
+  | sed -E "s#.*s3://$BUCKET/##" | sort -u > "$remote"
+comm -13 "$valid" "$remote" | while IFS= read -r key; do
+  [ -z "$key" ] && continue
+  echo "    - $key"
+  s3cmd "${S3CMD_OPTS[@]}" del "s3://$BUCKET/$key" >/dev/null
 done
+rm -f "$valid" "$remote"
 
 echo "==> Done. https://$BUCKET/"

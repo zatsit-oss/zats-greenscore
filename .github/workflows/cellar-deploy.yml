@@ -1,0 +1,69 @@
+name: Deploy to Clever Cloud Cellar
+
+# Production deploy of the static site to Clever Cloud Cellar (S3-compatible
+# object storage), sovereign hosting in Paris. Runs on push to main.
+# Preview deploys for PRs are still handled by Firebase (see
+# firebase-hosting-deploy.yml).
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: cellar-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test:run
+
+      - name: Install s3cmd
+        run: sudo apt-get update && sudo apt-get install -y s3cmd
+
+      # Write the s3cmd config from secrets. Secrets are passed via `env:`
+      # (never interpolated into the script body) and the file is created with
+      # umask 077 so credentials never appear in logs nor on the command line.
+      - name: Configure s3cmd from secrets
+        env:
+          CELLAR_KEY_ID: ${{ secrets.CELLAR_ADDON_KEY_ID }}
+          CELLAR_KEY_SECRET: ${{ secrets.CELLAR_ADDON_KEY_SECRET }}
+        run: |
+          umask 077
+          cat > "$HOME/.s3cfg" <<'EOF'
+          [default]
+          host_base = cellar-c2.services.clever-cloud.com
+          host_bucket = cellar-c2.services.clever-cloud.com
+          use_https = True
+          EOF
+          # Append secrets without echoing them (no set -x in this step).
+          printf 'access_key = %s\nsecret_key = %s\n' "$CELLAR_KEY_ID" "$CELLAR_KEY_SECRET" >> "$HOME/.s3cfg"
+
+      # The deploy script reads ~/.s3cfg (no CELLAR_ADDON_KEY_ID env set), so
+      # keys are never passed as command-line arguments.
+      - name: Deploy to Cellar
+        env:
+          CELLAR_BUCKET: greenscore.zatsit.fr
+        run: npm run deploy:cellar
