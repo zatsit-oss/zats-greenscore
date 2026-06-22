@@ -79,4 +79,18 @@ comm -13 "$valid" "$remote" | while IFS= read -r key; do
 done
 rm -f "$valid" "$remote"
 
+# Normalize Cache-Control deterministically on ALL current objects via in-place
+# metadata edits (s3cmd modify), independent of whether sync re-uploaded them
+# (sync's --add-header only applies to files it actually transfers, so stable
+# hashed assets would otherwise keep no header).
+# - everything revalidates by default (HTML pages + extensionless aliases:
+#   their URLs are not hashed and change on each deploy);
+# - /_astro/* is then overridden to immutable (Astro fingerprints those names,
+#   so the content is safe to cache for a year).
+echo "==> Setting Cache-Control headers"
+s3cmd "${S3CMD_OPTS[@]}" modify --recursive "s3://$BUCKET/" --acl-public \
+  --add-header='Cache-Control: public, max-age=0, must-revalidate' >/dev/null
+s3cmd "${S3CMD_OPTS[@]}" modify --recursive "s3://$BUCKET/_astro/" --acl-public \
+  --add-header='Cache-Control: public, max-age=31536000, immutable' >/dev/null
+
 echo "==> Done. https://$BUCKET/"
