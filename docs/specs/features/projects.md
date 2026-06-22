@@ -1,135 +1,135 @@
-# Fonctionnalité : Gestion des projets
+# Feature: Project management
 
 ## Description
 
-La gestion des projets permet aux utilisateurs de créer, modifier et suivre plusieurs évaluations d'éco-conception.
+Project management allows users to create, edit and track multiple eco-design evaluations.
 
-## Modèle de données
+## Data model
 
-### Interface Project
+### Project interface
 
 ```typescript
 interface Project {
-  id: string              // UUID unique
-  name: string            // Nom du projet/API
-  description: string     // Description optionnelle
-  createdAt: string       // Date de création (ISO 8601)
-  updatedAt: string       // Date de dernière modification
-  status: ProjectStatus   // État de l'évaluation
-  score?: number          // Score calculé (0-100)
-  ranking?: Ranking       // Classement (A-E)
-  answers?: Record<string, boolean | string | number>  // Réponses au questionnaire
+  id: string              // Unique UUID
+  name: string            // Project/API name
+  description: string     // Optional description
+  createdAt: string       // Creation date (ISO 8601)
+  updatedAt: string       // Last modification date
+  status: ProjectStatus   // Evaluation status
+  score?: number          // Computed score (0-100)
+  ranking?: Ranking       // Ranking (A-E)
+  answers?: Record<string, boolean | string | number>  // Survey answers
 }
 
 type ProjectStatus = "InProgress" | "Completed"
 type Ranking = "A" | "B" | "C" | "D" | "E"
 ```
 
-## Stockage
+## Storage
 
-### Version web
-- **LocalStorage** du navigateur
-- Clé : `greenscore_projects`
-- Format : JSON array de projets
+### Web version
+- Browser **LocalStorage**
+- Key: `greenscore_projects`
+- Format: JSON array of projects
 
-### Version desktop (Tauri)
-- Même mécanisme via LocalStorage
-- Persistance assurée par le WebView
+### Desktop version (Tauri)
+- Same mechanism via LocalStorage
+- Persistence handled by the WebView
 
-### Limitations actuelles
-- Pas de synchronisation entre appareils
-- Pas de sauvegarde cloud
-- Données liées au navigateur/profil
+### Current limitations
+- No synchronization across devices
+- No cloud backup
+- Data tied to the browser/profile
 
-## Fonctionnalités
+## Features
 
-### Création de projet
+### Project creation
 
-1. Clic sur "Nouveau projet"
-2. Saisie du nom (obligatoire)
-3. Saisie de la description (optionnel)
-4. Génération automatique de l'ID et des dates
-5. Status initial : `InProgress`
+1. Click on "New project"
+2. Enter the name (required)
+3. Enter the description (optional)
+4. Automatic generation of the ID and dates
+5. Initial status: `InProgress`
 
-### Liste des projets
+### Project list
 
-- Affichage de tous les projets
-- Tri par date de modification (plus récent en premier)
-- Affichage du statut, score et ranking
-- Actions : Ouvrir, Supprimer
+- Display of all projects
+- Sorted by modification date (most recent first)
+- Display of status, score and ranking
+- Actions: Open, Delete
 
-### Modification d'un projet
+### Editing a project
 
-- Édition du nom et de la description
-- Les réponses au questionnaire mettent à jour automatiquement :
+- Editing the name and description
+- Survey answers automatically update:
   - `updatedAt`
   - `score`
   - `ranking`
   - `answers`
 
-### Complétion d'un projet
+### Completing a project
 
-- Passage en status `Completed` quand toutes les questions sont répondues
-- Ou action manuelle de l'utilisateur
+- Switches to `Completed` status when all questions are answered
+- Or by manual action from the user
 
-### Suppression d'un projet
+### Deleting a project
 
-- Confirmation demandée
-- Suppression définitive (pas de corbeille)
+- Confirmation required
+- Permanent deletion (no trash bin)
 
-## Parcours utilisateur
+## User journey
 
-### Premier lancement
+### First launch
 ```
-Accueil → Aucun projet → Bouton "Créer mon premier projet"
+Home → No project → "Create my first project" button
 ```
 
-### Utilisateur avec projets
+### User with projects
 ```
-Accueil → Liste des projets → Sélection → Questionnaire
+Home → Project list → Selection → Survey
 ```
 
 ### Navigation
 ```
-/                     → Accueil (liste projets ou landing)
-/projects             → Liste des projets
-/projects/new         → Création de projet
-/projects/[id]        → Détail et questionnaire du projet
-/projects/[id]/edit   → Édition des métadonnées
+/                     → Home (project list or landing)
+/projects             → Project list
+/projects/new         → Project creation
+/projects/[id]        → Project detail and survey
+/projects/[id]/edit   → Metadata editing
 ```
 
-## Règles métier
+## Business rules
 
-1. **Unicité du nom** : Non imposée (plusieurs projets peuvent avoir le même nom)
-2. **Suppression** : Toujours possible, même pour un projet complété
-3. **Score** : Recalculé à chaque modification de réponse
-4. **Status** : Peut revenir de `Completed` à `InProgress` si une réponse est modifiée
+1. **Name uniqueness**: Not enforced (several projects can have the same name)
+2. **Deletion**: Always possible, even for a completed project
+3. **Score**: Recomputed on every answer change
+4. **Status**: Can revert from `Completed` to `InProgress` if an answer is modified
 
-## Interface utilisateur
+## User interface
 
-### Carte projet (liste)
+### Project card (list)
 ```
 ┌─────────────────────────────────────┐
-│ [Ranking]  Nom du projet            │
-│            Description courte...    │
+│ [Ranking]  Project name             │
+│            Short description...     │
 │                                     │
-│ Status: En cours    Score: 65/100   │
-│ Modifié le 02/02/2026               │
+│ Status: In progress  Score: 65/100  │
+│ Modified on 02/02/2026              │
 └─────────────────────────────────────┘
 ```
 
-### Actions disponibles
-- **Ouvrir** : Accéder au questionnaire
-- **Éditer** : Modifier nom/description
-- **Supprimer** : Avec confirmation
+### Available actions
+- **Open**: Access the survey
+- **Edit**: Modify name/description
+- **Delete**: With confirmation
 
-## Évolutions futures
+## Future improvements
 
-- [ ] Duplication de projet (template)
-- [ ] Export/Import de projets (JSON)
-- [ ] Tags et catégorisation
-- [ ] Recherche et filtres
-- [ ] Archivage (soft delete)
-- [ ] Backend de stockage cloud
-- [ ] Partage de projet (lecture seule)
-- [ ] Versioning des évaluations
+- [ ] Project duplication (template)
+- [ ] Export/Import of projects (JSON)
+- [ ] Tags and categorization
+- [ ] Search and filters
+- [ ] Archiving (soft delete)
+- [ ] Cloud storage backend
+- [ ] Project sharing (read-only)
+- [ ] Evaluation versioning

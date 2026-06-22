@@ -21,6 +21,7 @@ Project-specific guidelines for AI assistants working on this codebase.
 | Scoring system | [docs/specs/features/scoring.md](docs/specs/features/scoring.md) |
 | Project management | [docs/specs/features/projects.md](docs/specs/features/projects.md) |
 | ADR: Tauri desktop | [docs/specs/adr/001-tauri-desktop.md](docs/specs/adr/001-tauri-desktop.md) |
+| ADR: Clever Cloud Cellar hosting | [docs/specs/adr/002-clever-cloud-cellar-hosting.md](docs/specs/adr/002-clever-cloud-cellar-hosting.md) |
 
 ## Skills
 
@@ -92,7 +93,8 @@ public/                 # Static assets
 - **Rust** - Backend logic
 
 ### Deployment
-- **Firebase Hosting** - Web deployment
+- **Clever Cloud Cellar** - Web production hosting (sovereign, French)
+- **Firebase Hosting** - PR preview deployments
 - **Docker** - Containerization
 - **GitHub Actions** - CI/CD
 

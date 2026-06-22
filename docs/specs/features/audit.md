@@ -1,75 +1,75 @@
-# Fonctionnalité : Questionnaire d'audit
+# Feature: Audit Questionnaire
 
 ## Description
 
-Le questionnaire d'audit est le cœur de l'application. Il permet d'évaluer l'éco-conception d'une API en répondant à une série de questions organisées par section.
+The audit questionnaire is the heart of the application. It evaluates the eco-design of an API by answering a series of questions organized by section.
 
-## Source des données
+## Data Source
 
-Le questionnaire provient du fichier Excel officiel API Green Score (`48_CAT_Sustainable_API_GreenScore_V1-2.xlsx`) et est stocké dans `src/data/surveyQuestions.json`.
+The questionnaire comes from the official API Green Score Excel file (`48_CAT_Sustainable_API_GreenScore_V1-2.xlsx`) and is stored in `src/data/surveyQuestions.json`.
 
-## Structure du questionnaire
+## Questionnaire Structure
 
 ### Sections
 
-| Section | Nb questions | Focus |
+| Section | No. of questions | Focus |
 |---------|--------------|-------|
-| Architecture | 4 | Choix structurants (event-driven, déploiement, scalabilité) |
-| Design | 11 | Conception de l'API (format, cache, tokens, filtres) |
-| Usage | 7 | Exploitation (versioning, pagination, monitoring) |
-| Logs | 1 | Gestion des logs |
+| Architecture | 4 | Structural choices (event-driven, deployment, scalability) |
+| Design | 11 | API design (format, cache, tokens, filters) |
+| Usage | 7 | Operation (versioning, pagination, monitoring) |
+| Logs | 1 | Log management |
 
-**Total : 23 questions**
+**Total: 23 questions**
 
-### Structure d'une question
+### Structure of a Question
 
 ```typescript
 interface SurveyQuestion {
-  id: string           // Ex: "AR01", "DE05"
+  id: string           // E.g.: "AR01", "DE05"
   section: string      // Architecture, Design, Usage, Logs
-  question: string     // Intitulé court
-  description: string  // Description détaillée
-  tooltip: string      // Explication et bonnes pratiques
-  points: number       // Pondération (48 à 600 points)
-  formula?: string     // Formule optionnelle pour questions numériques
+  question: string     // Short title
+  description: string  // Detailed description
+  tooltip: string      // Explanation and best practices
+  points: number       // Weighting (48 to 600 points)
+  formula?: string     // Optional formula for numeric questions
 }
 ```
 
-### Types de réponses
+### Answer Types
 
-1. **Questions booléennes** (majoritaires)
-   - Oui = points attribués
-   - Non = 0 points
+1. **Boolean questions** (the majority)
+   - Yes = points awarded
+   - No = 0 points
 
-2. **Questions avec formule** (US06, US07)
-   - Valeur numérique saisie
-   - Points calculés via la formule
-   - Ex: US06 (Number of Consumers) : `(x * 50) - 50`
-   - Ex: US07 (Error rate) : `(1 - (x / 100)) * 100`
+2. **Questions with a formula** (US06, US07)
+   - Numeric value entered
+   - Points computed via the formula
+   - Ex: US06 (Number of Consumers): `(x * 50) - 50`
+   - Ex: US07 (Error rate): `(1 - (x / 100)) * 100`
 
-## Parcours utilisateur
+## User Journey
 
-1. L'utilisateur sélectionne un projet existant ou en crée un nouveau
-2. Le questionnaire s'affiche section par section
-3. Pour chaque question :
-   - Affichage de la question et description
-   - Tooltip disponible pour plus de contexte
-   - Réponse Oui/Non ou saisie numérique
-4. Le score se met à jour en temps réel
-5. À la fin, affichage du score final et du ranking
+1. The user selects an existing project or creates a new one
+2. The questionnaire is displayed section by section
+3. For each question:
+   - The question and description are shown
+   - A tooltip is available for more context
+   - A Yes/No answer or a numeric input
+4. The score updates in real time
+5. At the end, the final score and ranking are displayed
 
-## Règles métier
+## Business Rules
 
-### Calcul du score
+### Score Calculation
 
 ```
-Score = (Points obtenus / Points maximum) * 100
+Score = (Points obtained / Maximum points) * 100
 ```
 
-- Points maximum = somme de tous les `points` des questions
-- Points obtenus = somme des points des réponses positives + points calculés via formules
+- Maximum points = sum of all the `points` of the questions
+- Points obtained = sum of the points of positive answers + points computed via formulas
 
-### Détermination du ranking
+### Ranking Determination
 
 | Score | Ranking |
 |-------|---------|
@@ -79,22 +79,22 @@ Score = (Points obtenus / Points maximum) * 100
 | 20-39 | D |
 | 0-19 | E |
 
-## Questions clés par impact
+## Key Questions by Impact
 
-### Plus fort impact (600 points)
-- **DE01** : Format d'échange léger (JSON vs XML)
-- **LO01** : Rétention des logs alignée sur le besoin métier
+### Highest impact (600 points)
+- **DE01**: Lightweight exchange format (JSON vs XML)
+- **LO01**: Log retention aligned with business need
 
-### Impact élevé (375 points)
-- **AR01** : Architecture Event Driven
-- **AR02** : API déployée proche du consommateur
-- **AR03** : Éviter les APIs dupliquées
-- **AR04** : Infrastructure scalable
-- **US06** : Nombre de consommateurs (réutilisation)
+### High impact (375 points)
+- **AR01**: Event Driven architecture
+- **AR02**: API deployed close to the consumer
+- **AR03**: Avoid duplicated APIs
+- **AR04**: Scalable infrastructure
+- **US06**: Number of consumers (reuse)
 
-## Évolutions futures
+## Future Improvements
 
-- [ ] Sauvegarde automatique des réponses en cours
-- [ ] Mode "quick audit" avec questions essentielles uniquement
-- [ ] Comparaison entre versions d'un même projet
-- [ ] Recommandations personnalisées basées sur les réponses
+- [ ] Automatic saving of in-progress answers
+- [ ] "Quick audit" mode with essential questions only
+- [ ] Comparison between versions of the same project
+- [ ] Personalized recommendations based on the answers
