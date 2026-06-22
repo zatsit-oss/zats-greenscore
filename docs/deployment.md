@@ -1,60 +1,61 @@
-# Déploiement
+# Deployment
 
 ## Production — Clever Cloud Cellar
 
-Le site web est hébergé sur un bucket **Clever Cloud Cellar** (stockage objet
-S3, hébergeur français, souverain). Le bucket porte le nom du domaine :
+The web app is hosted on a **Clever Cloud Cellar** bucket (S3-compatible object
+storage, French sovereign host). The bucket is named after the domain:
 `greenscore.zatsit.fr`.
 
-### Déploiement automatique
+### Automatic deployment
 
-Le workflow GitHub Actions `.github/workflows/cellar-deploy.yml` déploie à
-chaque `push` sur `main` (lint + tests unitaires, puis `npm run deploy:cellar`).
+The GitHub Actions workflow `.github/workflows/cellar-deploy.yml` deploys on each
+`push` to `main` (lint + unit tests, then `npm run deploy:cellar`).
 
-Secrets GitHub requis (Settings → Secrets and variables → Actions) :
+Required GitHub secrets (Settings → Secrets and variables → Actions):
 
 | Secret | Source |
 |--------|--------|
-| `CELLAR_ADDON_KEY_ID` | Console Clever → add-on Cellar → Configuration |
-| `CELLAR_ADDON_KEY_SECRET` | idem |
+| `CELLAR_ADDON_KEY_ID` | Clever console → Cellar add-on → Configuration |
+| `CELLAR_ADDON_KEY_SECRET` | same |
 
-### Déploiement manuel
+### Manual deployment
 
 ```bash
-# Nécessite un ~/.s3cfg configuré (s3cmd --configure) avec les clés Cellar,
+# Requires a configured ~/.s3cfg (s3cmd --configure) with the Cellar keys and
 # host_base = host_bucket = cellar-c2.services.clever-cloud.com
 npm run deploy:cellar
 ```
 
-Le script `scripts/deploy-cellar.sh` :
+The `scripts/deploy-cellar.sh` script:
 
-1. build Astro standard ;
-2. upload incrémental (zéro interruption) ;
-3. crée des **alias sans extension** pour chaque route (`about`, `projects/view`,
-   …) servis en `text/html` — Cellar sert la clé exacte sans ajouter `.html`,
-   donc les liens de l'app (`/about`) doivent correspondre à un objet `about` ;
-4. supprime les objets orphelins (anciens assets) ;
-5. pose les en-têtes `Cache-Control` (assets hashés `/_astro/*` immutables 1 an,
-   HTML/alias en `must-revalidate`).
+1. runs a standard Astro build;
+2. uploads incrementally (zero downtime);
+3. creates **extensionless aliases** for each route (`about`, `projects/view`,
+   …) served as `text/html` — Cellar serves the exact key without appending
+   `.html`, so the app's bare-path links (`/about`) must map to an `about`
+   object;
+4. prunes orphan objects (stale assets);
+5. sets `Cache-Control` headers (hashed `/_astro/*` assets immutable for 1 year,
+   HTML/aliases `must-revalidate`).
 
-L'application reste **100 % Astro standard** : toute la logique spécifique à
-Cellar vit dans le script de déploiement.
+The application stays **100% standard Astro**: all Cellar-specific logic lives in
+the deploy script.
 
-### HTTPS sur le domaine personnalisé
+### HTTPS on the custom domain
 
-Le premier certificat TLS doit être **généré manuellement par le support Clever
-Cloud** (un ticket par domaine) ; il est ensuite renouvelé automatiquement. Le
-domaine doit déjà pointer vers Cellar (CNAME vers
-`cellar-c2.services.clever-cloud.com`) pour que la validation aboutisse.
+The first TLS certificate must be **generated manually by Clever Cloud support**
+(one ticket per domain); it then auto-renews. The domain must already point to
+Cellar (CNAME to `cellar-c2.services.clever-cloud.com`) for validation to
+succeed.
 
-## Previews de Pull Request — Firebase Hosting
+## Pull request previews — Firebase Hosting
 
-Les previews par PR restent gérées par Firebase Hosting
-(`.github/workflows/firebase-hosting-deploy.yml`), qui génère une URL éphémère
-par PR. Cellar ne convient pas aux previews (un certificat par sous-domaine
-nécessiterait une génération manuelle à chaque fois).
+PR previews are still handled by Firebase Hosting
+(`.github/workflows/firebase-hosting-deploy.yml`), which generates an ephemeral
+URL per PR. Cellar is not suitable for previews (a per-subdomain certificate
+would require a manual generation every time).
 
 ## Desktop
 
-L'application desktop (Tauri) est construite séparément
+The desktop app (Tauri) is built separately
 (`.github/workflows/release-desktop.yml`).
