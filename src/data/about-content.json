@@ -13,7 +13,7 @@
       "title": "Evaluation Types",
       "types": [
         {
-          "name": "API Green Score",
+          "name": "API Green Score (v{{apigreenscore.version}})",
           "description": "Based on the API Green Score methodology, this evaluation focuses on API design best practices for eco-design: architecture, data management, caching strategies, and more.",
           "link": {
             "text": "API Green Score",
@@ -21,7 +21,7 @@
           }
         },
         {
-          "name": "EROOM (EOF v1.1)",
+          "name": "EROOM (EOF v{{eroom.version}})",
           "description": "Based on Boavizta's EROOM Optimization Framework, this evaluation measures the optimization potential of digital services across multiple dimensions: product, architecture, infrastructure, and more.",
           "link": {
             "text": "Boavizta",

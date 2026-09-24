@@ -4,8 +4,11 @@ import {
   EvaluationStatus,
   getAvailableEvaluationTypes,
   getEvaluationTypeInfo,
-  createEmptyEvaluation
+  createEmptyEvaluation,
+  getFrameworkTemplateVars,
+  EVALUATION_TYPES
 } from '../../../src/types/evaluation'
+import eroomData from '../../../src/data/eroom-data-model-1-1.json'
 
 // ============================================================================
 // getAvailableEvaluationTypes
@@ -28,6 +31,7 @@ describe('getAvailableEvaluationTypes', () => {
       expect(type.description).toBeDefined()
       expect(type.source).toBeDefined()
       expect(type.version).toBeDefined()
+      expect(type.sourceUrl).toMatch(/^https:\/\//)
     })
   })
 })
@@ -82,5 +86,33 @@ describe('createEmptyEvaluation', () => {
     const after = new Date().toISOString()
     expect(evaluation.startedAt >= before).toBe(true)
     expect(evaluation.startedAt <= after).toBe(true)
+  })
+})
+
+// ============================================================================
+// Framework versions
+// ============================================================================
+
+describe('framework versions', () => {
+  it('keeps frameworks.json in sync with the embedded EROOM data model', () => {
+    expect(EVALUATION_TYPES[EvaluationType.EROOM].version).toBe(eroomData.version)
+  })
+
+  it('has a valid syncedAt date and upstream URL for every framework', () => {
+    Object.values(EVALUATION_TYPES).forEach(type => {
+      expect(type.syncedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+      expect(type.upstreamUrl).toMatch(/^https:\/\//)
+    })
+  })
+
+  it('stamps new evaluations with the current framework version', () => {
+    const evaluation = createEmptyEvaluation(EvaluationType.EROOM)
+    expect(evaluation.frameworkVersion).toBe(eroomData.version)
+  })
+
+  it('exposes versions as template variables', () => {
+    const vars = getFrameworkTemplateVars()
+    expect(vars['eroom.version']).toBe(eroomData.version)
+    expect(vars['apigreenscore.version']).toBe(EVALUATION_TYPES[EvaluationType.API_GREEN_SCORE].version)
   })
 })

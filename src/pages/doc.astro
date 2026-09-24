@@ -1,7 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import docContent from '../data/doc-content.json';
+import rawDocContent from '../data/doc-content.json';
+import {getFrameworkTemplateVars} from '../types/evaluation';
+import {interpolateContent} from '../utils/template';
 
+// Resolve framework placeholders (e.g. {{eroom.version}}) at build time
+const docContent = interpolateContent(rawDocContent, getFrameworkTemplateVars());
 const {title, subtitle, tableOfContents, sections} = docContent;
 
 // Color mapping for Tailwind classes

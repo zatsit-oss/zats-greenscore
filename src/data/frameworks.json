@@ -1,0 +1,16 @@
+{
+  "apigreenscore": {
+    "version": "1.2",
+    "source": "API Green Score",
+    "sourceUrl": "https://github.com/API-Green-Score/APIGreenScore",
+    "upstreamUrl": "https://github.com/API-Green-Score/APIGreenScore",
+    "syncedAt": "2025-12-20"
+  },
+  "eroom": {
+    "version": "1.1",
+    "source": "Boavizta",
+    "sourceUrl": "https://boavizta.org/eroom/la-genese",
+    "upstreamUrl": "https://drive.google.com/drive/folders/10gcaVlUuJPp_GDJTILE4HCGFpZKVFYro",
+    "syncedAt": "2026-02-04"
+  }
+}
