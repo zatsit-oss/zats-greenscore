@@ -46,6 +46,7 @@ npm run build
 
 echo "==> Uploading $DIST/ to s3://$BUCKET/ (additive: new/changed only)"
 s3cmd "${S3CMD_OPTS[@]}" sync "$DIST/" "s3://$BUCKET/" \
+  --exclude='(^|/)sw\.js$' \
   --acl-public --no-mime-magic --guess-mime-type
 
 echo "==> Refreshing extensionless aliases so bare links (/about, /projects/view) resolve"
@@ -92,5 +93,20 @@ s3cmd "${S3CMD_OPTS[@]}" modify --recursive "s3://$BUCKET/" --acl-public \
   --add-header='Cache-Control: public, max-age=0, must-revalidate' >/dev/null
 s3cmd "${S3CMD_OPTS[@]}" modify --recursive "s3://$BUCKET/_astro/" --acl-public \
   --add-header='Cache-Control: public, max-age=31536000, immutable' >/dev/null
+
+# The manifest is not fingerprinted and must always be revalidated. Keep its
+# MIME type explicit because object storage cannot be relied on to infer it.
+echo "==> Setting PWA metadata"
+s3cmd "${S3CMD_OPTS[@]}" modify "s3://$BUCKET/manifest.webmanifest" --acl-public \
+  --mime-type='application/manifest+json' \
+  --add-header='Cache-Control: public, max-age=0, must-revalidate' >/dev/null
+
+# Publish the worker only after every resource, HTML alias, and its dependency
+# has been made available. If an earlier step fails, the previous worker stays
+# active and continues to reference the previous precache revision set.
+echo "==> Publishing service worker last"
+s3cmd "${S3CMD_OPTS[@]}" put "$DIST/sw.js" "s3://$BUCKET/sw.js" \
+  --mime-type='application/javascript' --acl-public \
+  --add-header='Cache-Control: public, max-age=0, must-revalidate' >/dev/null
 
 echo "==> Done. https://$BUCKET/"

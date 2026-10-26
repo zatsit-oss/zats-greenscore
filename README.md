@@ -101,8 +101,17 @@ npm run preview
 | `npm run build:desktop`   | Build native desktop app (DMG, EXE, DEB)          |
 | `npm run test:run`        | Run unit tests (Vitest)                           |
 | `npm run test:e2e`        | Run e2e tests (Playwright)                        |
-| `npm run lint`            | Run ESLint check                                  |
-| `npm run lint:fix`        | Run ESLint with auto-fix                          |
+| `npm run test:e2e:pwa` | Run production PWA e2e tests (Chromium)          |
+| `npm run lint`             | Run ESLint check                                  |
+| `npm run lint:fix`         | Run ESLint with auto-fix                          |
+
+### PWA and offline use
+
+The web application can be used offline after one complete online visit has finished installing the browser cache. The service worker covers the seven static routes and their local assets; it does not replace project backups, so continue to use the JSON export for durable data ownership.
+
+New versions are offered through an explicit update notification. Choose **Later** to keep working without interruption, or **Reload and update** when it is safe to reload; unsaved form fields may be lost during that reload. Installation and update behavior depends on browser and operating-system support, and is not enabled inside the Tauri desktop application.
+
+Use `npm run build && npm run preview` to inspect the production PWA locally, and `npm run test:e2e:pwa` to run the Chromium desktop and mobile offline/update scenarios. Service-worker support is validated by these Chromium tests; Firefox, Safari, Android, and iOS still require device-specific verification.
 
 ## 🚀 Project Structure
 

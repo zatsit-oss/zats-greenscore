@@ -1,0 +1,196 @@
+<aside
+    id="pwa-notification"
+    class="fixed inset-x-4 bottom-4 z-[100] mx-auto max-w-xl rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] p-4 text-[var(--color-text)] shadow-xl backdrop-blur-xl sm:right-6 sm:left-auto sm:mx-0 sm:w-[min(32rem,calc(100vw-3rem))] sm:p-5"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+    hidden
+>
+    <div class="flex items-start justify-between gap-4">
+        <p id="pwa-message" class="text-sm leading-relaxed"></p>
+        <button
+            id="pwa-dismiss"
+            type="button"
+            class="shrink-0 rounded-lg p-2 text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface)] hover:text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+            aria-label="Dismiss notification"
+            hidden
+        >
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="mt-4 flex flex-wrap justify-end gap-3">
+        <button
+            id="pwa-later"
+            type="button"
+            class="min-h-11 rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm font-medium transition-colors hover:bg-[var(--color-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+            hidden
+        >
+            Later
+        </button>
+        <button
+            id="pwa-update"
+            type="button"
+            class="min-h-11 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--color-on-primary)] transition-colors hover:bg-[var(--color-primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2"
+            hidden
+        >
+            Reload and update
+        </button>
+    </div>
+</aside>
+
+<style>
+    #pwa-notification[hidden],
+    #pwa-dismiss[hidden],
+    #pwa-later[hidden],
+    #pwa-update[hidden] {
+        display: none;
+    }
+</style>
+
+<script>
+    import {isTauri} from "@tauri-apps/api/core";
+    import {registerSW} from "virtual:pwa-register";
+
+    const UPDATE_DISMISSED_KEY = "pwa-update-dismissed";
+
+    const notification = document.getElementById("pwa-notification");
+    const message = document.getElementById("pwa-message");
+    const dismissButton = document.getElementById("pwa-dismiss");
+    const laterButton = document.getElementById("pwa-later");
+    const updateButton = document.getElementById("pwa-update") as HTMLButtonElement | null;
+
+    type NotificationKind = "offline" | "update" | "error";
+
+    let updateServiceWorker: ((reloadPage?: boolean) => Promise<void>) | undefined;
+    let offlineReady = false;
+
+    const setUpdateDismissed = (dismissed: boolean) => {
+        try {
+            if (dismissed) {
+                sessionStorage.setItem(UPDATE_DISMISSED_KEY, "true");
+            } else {
+                sessionStorage.removeItem(UPDATE_DISMISSED_KEY);
+            }
+        } catch (error) {
+            console.warn("[PWA] Unable to persist the update notification state.", error);
+        }
+    };
+
+    const isUpdateDismissed = () => {
+        try {
+            return sessionStorage.getItem(UPDATE_DISMISSED_KEY) === "true";
+        } catch (error) {
+            console.warn("[PWA] Unable to read the update notification state.", error);
+            return false;
+        }
+    };
+
+    const hideNotification = () => {
+        if (!notification) {
+            return;
+        }
+        notification.hidden = true;
+    };
+
+    const showNotification = (kind: NotificationKind, text: string) => {
+        if (!notification || !message || !dismissButton || !laterButton || !updateButton) {
+            return;
+        }
+
+        notification.setAttribute("role", kind === "error" ? "alert" : "status");
+        message.textContent = text;
+        dismissButton.hidden = kind === "update";
+        laterButton.hidden = kind !== "update";
+        updateButton.hidden = kind !== "update";
+        notification.hidden = false;
+    };
+
+    const showRegistrationError = (error: unknown) => {
+        console.error("[PWA] Service worker registration or installation failed.", error);
+        showNotification(
+            "error",
+            "Offline support could not be installed. The app remains available online.",
+        );
+    };
+
+    const observeInstallation = (registration: ServiceWorkerRegistration | undefined) => {
+        const worker = registration?.installing;
+        if (!worker) {
+            return;
+        }
+
+        worker.addEventListener("statechange", () => {
+            if (worker.state === "redundant" && !offlineReady) {
+                showRegistrationError(new Error("The service worker became redundant before installation completed."));
+            }
+        });
+    };
+
+    const startRegistration = () => {
+        if (
+            !import.meta.env.PROD ||
+            isTauri() ||
+            !("serviceWorker" in navigator) ||
+            document.documentElement.dataset.pwaRegistration === "started"
+        ) {
+            return;
+        }
+
+        document.documentElement.dataset.pwaRegistration = "started";
+
+        try {
+            updateServiceWorker = registerSW({
+                immediate: true,
+                onOfflineReady() {
+                    offlineReady = true;
+                    showNotification(
+                        "offline",
+                        "This app is ready to work offline after this first complete load.",
+                    );
+                },
+                onNeedRefresh() {
+                    if (!isUpdateDismissed()) {
+                        showNotification(
+                            "update",
+                            "A new version is available. Reloading may discard unsaved fields.",
+                        );
+                    }
+                },
+                onRegisteredSW(_scriptUrl, registration) {
+                    observeInstallation(registration);
+                    registration?.addEventListener("updatefound", () => {
+                        observeInstallation(registration);
+                    });
+                },
+                onRegisterError: showRegistrationError,
+            });
+        } catch (error) {
+            showRegistrationError(error);
+        }
+    };
+
+    dismissButton?.addEventListener("click", hideNotification);
+
+    laterButton?.addEventListener("click", () => {
+        setUpdateDismissed(true);
+        hideNotification();
+    });
+
+    updateButton?.addEventListener("click", async () => {
+        if (!updateServiceWorker || !updateButton) {
+            return;
+        }
+
+        updateButton.disabled = true;
+        setUpdateDismissed(false);
+
+        try {
+            await updateServiceWorker(true);
+        } catch (error) {
+            updateButton.disabled = false;
+            showRegistrationError(error);
+        }
+    });
+
+    startRegistration();
+</script>
