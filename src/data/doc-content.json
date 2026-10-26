@@ -35,14 +35,14 @@
       "title": "Evaluation Types",
       "types": [
         {
-          "name": "API Green Score",
+          "name": "API Green Score (v{{apigreenscore.version}})",
           "borderColor": "primary",
           "description": "Evaluates API design and implementation against eco-design best practices.",
           "sections": "Architecture, Design, Usage, Logs",
           "scoring": "Higher score = Better eco-design (0-100)"
         },
         {
-          "name": "EROOM (EOF v1.1)",
+          "name": "EROOM (EOF v{{eroom.version}})",
           "borderColor": "amber",
           "description": "Measures optimization potential across 6 categories plus a quick diagnosis.",
           "categories": "Product, Architecture, Infrastructure, Storage & Data, Algo & Code, Ease of Change",

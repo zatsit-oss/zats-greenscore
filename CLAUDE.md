@@ -34,6 +34,7 @@ Project-specific guidelines for AI assistants working on this codebase.
 | `/new-component <Name>` | Create a new Astro component |
 | `/new-page <path>` | Create a new page |
 | `/review` | Perform code review |
+| `/check-frameworks` | Check for new upstream versions of API Green Score and EROOM |
 
 ## Project Overview
 

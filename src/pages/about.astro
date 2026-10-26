@@ -1,7 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import aboutContent from '../data/about-content.json';
+import rawAboutContent from '../data/about-content.json';
+import {getFrameworkTemplateVars} from '../types/evaluation';
+import {interpolateContent} from '../utils/template';
 
+// Resolve framework placeholders (e.g. {{eroom.version}}) at build time
+const aboutContent = interpolateContent(rawAboutContent, getFrameworkTemplateVars());
 const {title, subtitle, sections} = aboutContent;
 
 // Pre-process evaluation types to split description around link text (avoids set:html)

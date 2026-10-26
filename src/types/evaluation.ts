@@ -3,6 +3,7 @@
  */
 
 import {ProjectRanking} from './common';
+import frameworks from '../data/frameworks.json';
 
 // ============================================================================
 // ENUMS
@@ -55,8 +56,15 @@ export interface EvaluationTypeInfo {
     name: string;
     shortName: string;
     description: string;
+    /** Provenance of the embedded framework, loaded from src/data/frameworks.json */
     source: string;
     version: string;
+    /** Public page cited for attribution */
+    sourceUrl: string;
+    /** Raw upstream source watched to detect new versions */
+    upstreamUrl: string;
+    /** Date (YYYY-MM-DD) the embedded data was last synced with upstream */
+    syncedAt: string;
     /** Optional preliminary assessment step configuration */
     preliminary?: PreliminaryConfig;
 }
@@ -67,16 +75,14 @@ export const EVALUATION_TYPES: Record<EvaluationType, EvaluationTypeInfo> = {
         name: 'API Green Score',
         shortName: 'GreenScore',
         description: 'Evaluate API sustainability based on architecture, design, usage and logs',
-        source: 'API Green Score',
-        version: '1.0'
+        ...frameworks.apigreenscore
     },
     [EvaluationType.EROOM]: {
         id: EvaluationType.EROOM,
         name: 'EROOM',
         shortName: 'EROOM Score',
         description: 'EROOM Optimization Framework - Digital service optimization potential assessment',
-        source: 'Boavizta',
-        version: '1.1',
+        ...frameworks.eroom,
         preliminary: {
             label: 'Quick Diagnosis',
             blocking: false,
@@ -114,6 +120,11 @@ export interface Evaluation {
     totalQuestions?: number;
     /** Score from the preliminary assessment step (0-100), if applicable */
     preliminaryScore?: number | null;
+    /**
+     * Framework version the evaluation was started with.
+     * Undefined for evaluations created before this field existed.
+     */
+    frameworkVersion?: string;
 }
 
 // ============================================================================
@@ -135,6 +146,18 @@ export function getEvaluationTypeInfo(type: EvaluationType): EvaluationTypeInfo 
 }
 
 /**
+ * Variables exposed to content templates, e.g. "EROOM (EOF v{{eroom.version}})"
+ */
+export function getFrameworkTemplateVars(): Record<string, string> {
+    const vars: Record<string, string> = {};
+    for (const info of Object.values(EVALUATION_TYPES)) {
+        vars[`${info.id}.version`] = info.version;
+        vars[`${info.id}.sourceUrl`] = info.sourceUrl;
+    }
+    return vars;
+}
+
+/**
  * Create a new empty evaluation
  */
 export function createEmptyEvaluation(type: EvaluationType): Evaluation {
@@ -144,6 +167,7 @@ export function createEmptyEvaluation(type: EvaluationType): Evaluation {
         answers: {},
         score: null,
         ranking: null,
-        startedAt: new Date().toISOString()
+        startedAt: new Date().toISOString(),
+        frameworkVersion: EVALUATION_TYPES[type].version
     };
 }
