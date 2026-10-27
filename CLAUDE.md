@@ -131,3 +131,17 @@ npm run test             # Unit tests (watch mode)
 npm run test:run         # Unit tests (single run)
 npm run test:e2e         # E2E tests (Playwright)
 ```
+
+## Code graph
+
+`graphify-out/graph.json` is a [Graphify](https://github.com/Graphify-Labs/graphify) call graph of this repository, rebuilt by CI on every push to `main` (`.github/workflows/code-graph.yml`). It is derived from the AST: every node is a symbol (function, class, type, file), every edge is an `imports`, `calls`, `extends` or `references` relation read from the source, with file and line. It contains no code.
+
+Use it to orient yourself before reading files, through the Graphify CLI (`uv tool install graphifyy==0.9.80`, or `pipx`). Never run `graphify install`: the hook it registers is not wanted here.
+
+- `graphify explain "<symbol>"`: who defines, calls and imports a symbol, with file and line. The right first step before changing a function.
+- `graphify path "<A>" "<B>"`: how two symbols are connected.
+- `graphify-out/GRAPH_REPORT.md`: the most connected symbols (hubs) and the detected clusters. A 5-minute read for a newcomer, human or agent.
+
+Skip `graphify query "<question>"`: it is a keyword match and returns noise.
+
+The graph reflects the last push to `main`. On a feature branch, symbols you added or renamed are not in it yet: read the files directly for those. Never feed `graph.json` to a prompt as is (several hundred KB); query it.

@@ -1,0 +1,85 @@
+name: Code graph
+
+# Rebuilds the Graphify code graph of this repository on every push to main
+# and commits the two queryable products (graph.json, GRAPH_REPORT.md).
+# Everything runs locally on the runner: tree-sitter AST parsing, no LLM.
+# The graph only holds symbol names, file paths and line numbers, never code.
+#
+# Consumers: AI assistants (see the "Code graph" section of the agent file).
+# Humans should not read graph.json; GRAPH_REPORT.md lists the hubs.
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'graphify-out/**'
+      - '**.md'
+  workflow_dispatch:
+
+concurrency:
+  group: code-graph-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+env:
+  GRAPHIFY_VERSION: '0.9.80'
+  GRAPHIFY_QUERY_LOG_DISABLE: '1'
+
+jobs:
+  build-graph:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Graphify (pinned)
+        run: python -m pip install --quiet "graphifyy[leiden]==${GRAPHIFY_VERSION}"
+
+      # Graphify falls back to `claude -p` for community naming whenever the
+      # Claude CLI is on PATH, and to any API key found in the environment.
+      # Neither must exist here: refuse to run rather than send code to an LLM.
+      - name: Assert no LLM backend is reachable
+        run: |
+          if command -v claude >/dev/null 2>&1; then
+            echo "::error::claude CLI found on the runner, refusing to build the graph"
+            exit 1
+          fi
+          for v in ANTHROPIC_API_KEY OPENAI_API_KEY GOOGLE_API_KEY GEMINI_API_KEY DEEPSEEK_API_KEY \
+                   KIMI_API_KEY MOONSHOT_API_KEY AZURE_OPENAI_API_KEY OLLAMA_BASE_URL OLLAMA_HOST; do
+            if [ -n "${!v:-}" ]; then
+              echo "::error::$v is set on the runner, refusing to build the graph"
+              exit 1
+            fi
+          done
+
+      # Start from an empty folder: Graphify's incremental cache keeps stale
+      # nodes between runs when the output folder already exists.
+      - name: Extract the graph (AST only)
+        run: |
+          rm -rf graphify-out
+          graphify extract . --code-only
+
+      # cluster-only writes GRAPH_REPORT.md and names each community after its
+      # most connected symbol. With no backend available it never calls an LLM.
+      - name: Cluster and write the report
+        run: graphify cluster-only .
+
+      - name: Commit the queryable products
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f graphify-out/graph.json graphify-out/GRAPH_REPORT.md
+          if git diff --cached --quiet; then
+            echo "Graph unchanged, nothing to commit"
+            exit 0
+          fi
+          git commit -m "Update code graph for ${GITHUB_SHA::7}"
+          git push
