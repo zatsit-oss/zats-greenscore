@@ -10,6 +10,7 @@
 [![Playwright](https://img.shields.io/badge/Playwright-e2e-2ead33?logo=playwright&logoColor=white)](https://playwright.dev)
 [![Vitest](https://img.shields.io/badge/Vitest-165%20tests-6e9f18?logo=vitest&logoColor=white)](https://vitest.dev)
 [![WCAG](https://img.shields.io/badge/WCAG-AA%20compliant-228b22)](https://www.w3.org/WAI/WCAG21/quickref/)
+[![Site greenscore.zatsit.fr](https://img.shields.io/badge/site-greenscore.zatsit.fr-0f15fd)](https://greenscore.zatsit.fr)
 
 A hybrid **web + desktop** application for evaluating the eco-design of digital projects. Manage multiple projects, run evaluations, and track your scores over time.
 
