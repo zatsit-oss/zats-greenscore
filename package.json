@@ -15,6 +15,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:e2e": "playwright test",
+    "test:e2e:pwa": "playwright test --config=playwright.pwa.config.ts",
     "test:e2e:ui": "playwright test --ui",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
@@ -31,6 +32,7 @@
     "@tauri-apps/cli": "^2.9.6",
     "@types/node": "^25.3.3",
     "@typescript-eslint/parser": "^8.57.0",
+    "@vite-pwa/astro": "^1.2.0",
     "eslint": "^9.39.4",
     "eslint-plugin-astro": "^1.6.0",
     "typescript-eslint": "^8.57.0",

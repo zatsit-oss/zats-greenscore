@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import PwaNotifications from "../components/PwaNotifications.astro";
 import ThemeToggle from "../components/ThemeToggle.astro";
 import pkg from "../../package.json";
 
@@ -27,6 +28,13 @@ const fullTitle = `${title} | Zats Green Score`;
     <meta name="description" content={description}/>
     <meta name="viewport" content="width=device-width"/>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png"/>
+    <link rel="manifest" href="/manifest.webmanifest"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+    <meta name="theme-color" content="#0f15fd"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
     <meta name="generator" content={Astro.generator}/>
     <title>{fullTitle}</title>
 
@@ -156,6 +164,7 @@ const fullTitle = `${title} | Zats Green Score`;
 <main id="main-content" class="container mx-auto px-4">
     <slot/>
 </main>
+<PwaNotifications/>
 <footer
         class="mt-16 text-sm text-[var(--color-text)] opacity-80 border-t border-[var(--color-border)]"
 >
