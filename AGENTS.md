@@ -136,7 +136,7 @@ npm run test:e2e         # E2E tests (Playwright)
 
 `graphify-out/graph.json` is a [Graphify](https://github.com/Graphify-Labs/graphify) call graph of this repository, rebuilt by CI on every push to `main` (`.github/workflows/code-graph.yml`). It is derived from the AST: every node is a symbol (function, class, type, file), every edge is an `imports`, `calls`, `extends` or `references` relation read from the source, with file and line. It contains no code.
 
-Use it to orient yourself before reading files, through the Graphify CLI (`uv tool install graphifyy==0.9.80`, or `pipx`). Never run `graphify install`: the hook it registers is not wanted here.
+Use it to orient yourself before reading files, through the Graphify CLI (`uv tool install graphifyy==0.9.105`, or `pipx`). Never run `graphify install`: the hook it registers is not wanted here.
 
 - `graphify explain "<symbol>"`: who defines, calls and imports a symbol, with file and line. The right first step before changing a function.
 - `graphify path "<A>" "<B>"`: how two symbols are connected.

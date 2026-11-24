@@ -25,8 +25,9 @@ permissions:
   contents: write
 
 env:
-  GRAPHIFY_VERSION: '0.9.80'
+  GRAPHIFY_VERSION: '0.9.105'
   GRAPHIFY_QUERY_LOG_DISABLE: '1'
+  GRAPHIFY_BACKEND: 'none'
 
 jobs:
   build-graph:
